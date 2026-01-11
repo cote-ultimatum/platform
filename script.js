@@ -469,9 +469,18 @@ function showStudentProfile(student) {
         `;
         statList.appendChild(statRow);
 
-        // Animate bar
+        // Animate bar with color class
         setTimeout(() => {
-            statRow.querySelector('.stat-bar-fill').style.width = value + '%';
+            const fill = statRow.querySelector('.stat-bar-fill');
+            fill.style.width = value + '%';
+            // Add color class based on value
+            if (value < 40) {
+                fill.classList.add('stat-low');
+            } else if (value < 70) {
+                fill.classList.add('stat-medium');
+            } else {
+                fill.classList.add('stat-high');
+            }
         }, 100 + index * 80);
     });
 
