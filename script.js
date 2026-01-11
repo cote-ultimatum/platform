@@ -1,11 +1,13 @@
 // ========================================
 // COTE: ULTIMATUM - OAA Website Script
-// Enhanced Version
+// PC-Optimized Version
 // ========================================
 
 // State
+let currentScreen = 'lock-screen';
 let currentClass = null;
 let currentStudent = null;
+let currentOAAView = 'oaa-dashboard';
 
 // ========================================
 // INITIALIZATION
@@ -15,13 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarfield();
     createParticles();
     updateTime();
-    updateGreeting();
     setInterval(updateTime, 1000);
     initLockScreen();
     initHomeScreen();
+    initNavButtons();
     initOAAApp();
-    initBackButtons();
-    initHomeButtons();
+    initKeyboardNav();
 });
 
 // ========================================
@@ -32,26 +33,23 @@ function createStarfield() {
     const starfield = document.getElementById('starfield');
     if (!starfield) return;
 
-    const starCount = 100;
+    const starCount = 80;
 
     for (let i = 0; i < starCount; i++) {
         const star = document.createElement('div');
         star.className = 'star';
 
-        // Random position
         star.style.left = Math.random() * 100 + '%';
         star.style.top = Math.random() * 100 + '%';
 
-        // Random size (1-3px)
         const size = Math.random() * 2 + 1;
         star.style.width = size + 'px';
         star.style.height = size + 'px';
 
-        // Random animation duration and delay
         const duration = Math.random() * 3 + 2;
         const delay = Math.random() * 5;
         star.style.setProperty('--duration', duration + 's');
-        star.style.setProperty('--opacity', Math.random() * 0.5 + 0.3);
+        star.style.setProperty('--opacity', Math.random() * 0.5 + 0.2);
         star.style.animationDelay = delay + 's';
 
         starfield.appendChild(star);
@@ -62,21 +60,18 @@ function createParticles() {
     const starfield = document.getElementById('starfield');
     if (!starfield) return;
 
-    const particleCount = 15;
+    const particleCount = 12;
 
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
 
-        // Random horizontal position
         particle.style.left = Math.random() * 100 + '%';
 
-        // Random size (2-5px)
         const size = Math.random() * 3 + 2;
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
 
-        // Random animation duration (15-30s) and delay
         const duration = Math.random() * 15 + 15;
         const delay = Math.random() * 20;
         particle.style.setProperty('--duration', duration + 's');
@@ -88,7 +83,7 @@ function createParticles() {
 }
 
 // ========================================
-// TIME & GREETING
+// TIME DISPLAY
 // ========================================
 
 function updateTime() {
@@ -113,26 +108,6 @@ function updateTime() {
     if (homeTime) homeTime.textContent = timeStr;
 }
 
-function updateGreeting() {
-    const greetingEl = document.getElementById('greeting-text');
-    if (!greetingEl) return;
-
-    const hour = new Date().getHours();
-    let greeting;
-
-    if (hour >= 5 && hour < 12) {
-        greeting = 'Good morning';
-    } else if (hour >= 12 && hour < 17) {
-        greeting = 'Good afternoon';
-    } else if (hour >= 17 && hour < 21) {
-        greeting = 'Good evening';
-    } else {
-        greeting = 'Good night';
-    }
-
-    greetingEl.textContent = greeting;
-}
-
 // ========================================
 // SCREEN NAVIGATION
 // ========================================
@@ -144,6 +119,23 @@ function showScreen(screenId) {
     const target = document.getElementById(screenId);
     if (target) {
         target.classList.add('active');
+        currentScreen = screenId;
+    }
+}
+
+function goBack() {
+    if (currentScreen === 'oaa-app') {
+        if (currentOAAView === 'oaa-profile') {
+            showOAAView('oaa-class');
+        } else if (currentOAAView === 'oaa-class') {
+            showOAAView('oaa-dashboard');
+        } else {
+            showScreen('home-screen');
+        }
+    } else if (currentScreen === 'events-app') {
+        showScreen('home-screen');
+    } else if (currentScreen === 'home-screen') {
+        showScreen('lock-screen');
     }
 }
 
@@ -158,8 +150,22 @@ function initLockScreen() {
             showScreen('home-screen');
         });
     }
+}
 
-    // Lock button on home screen
+// ========================================
+// HOME SCREEN
+// ========================================
+
+function initHomeScreen() {
+    // App icons
+    document.querySelectorAll('.app-icon').forEach(icon => {
+        icon.addEventListener('click', () => {
+            const appId = icon.dataset.app;
+            openApp(appId);
+        });
+    });
+
+    // Lock button
     const lockBtn = document.getElementById('lock-btn');
     if (lockBtn) {
         lockBtn.addEventListener('click', (e) => {
@@ -169,38 +175,31 @@ function initLockScreen() {
     }
 }
 
-// ========================================
-// HOME SCREEN
-// ========================================
-
-function initHomeScreen() {
-    document.querySelectorAll('.app-icon').forEach(icon => {
-        icon.addEventListener('click', () => {
-            const appId = icon.dataset.app;
-            if (appId === 'oaa') {
-                showScreen('oaa-app');
-                showOAAView('oaa-dashboard');
-            } else if (appId === 'events') {
-                showScreen('events-app');
-            }
-        });
-    });
+function openApp(appId) {
+    if (appId === 'oaa') {
+        showScreen('oaa-app');
+        showOAAView('oaa-dashboard');
+    } else if (appId === 'events') {
+        showScreen('events-app');
+    }
 }
 
 // ========================================
-// BACK & HOME BUTTONS
+// NAVIGATION BUTTONS
 // ========================================
 
-function initBackButtons() {
-    // App header back buttons (return to home)
-    document.querySelectorAll('.back-btn').forEach(btn => {
+function initNavButtons() {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const target = btn.dataset.back;
-            showScreen(target);
+            const action = btn.dataset.action;
+            if (action === 'back') {
+                goBack();
+            } else if (action === 'home') {
+                showScreen('home-screen');
+            }
         });
     });
 
-    // In-app view navigation
     document.querySelectorAll('.back-link').forEach(link => {
         link.addEventListener('click', () => {
             const target = link.dataset.view;
@@ -209,12 +208,32 @@ function initBackButtons() {
     });
 }
 
-function initHomeButtons() {
-    document.querySelectorAll('.home-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.home;
-            showScreen(target);
-        });
+// ========================================
+// KEYBOARD NAVIGATION
+// ========================================
+
+function initKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+        // Enter to unlock
+        if (e.key === 'Enter' && currentScreen === 'lock-screen') {
+            showScreen('home-screen');
+            return;
+        }
+
+        // ESC to go back
+        if (e.key === 'Escape') {
+            goBack();
+            return;
+        }
+
+        // Number keys for apps (from home screen)
+        if (currentScreen === 'home-screen') {
+            if (e.key === '1') {
+                openApp('oaa');
+            } else if (e.key === '2') {
+                openApp('events');
+            }
+        }
     });
 }
 
@@ -229,6 +248,7 @@ function showOAAView(viewId) {
     const target = document.getElementById(viewId);
     if (target) {
         target.classList.add('active');
+        currentOAAView = viewId;
     }
 }
 
@@ -243,42 +263,59 @@ function renderClassCards() {
     const classes = ['A', 'B', 'C', 'D'];
     container.innerHTML = '';
 
+    let totalStudents = 0;
+
     classes.forEach(className => {
         const students = getStudentsByClass(1, className);
+        totalStudents += students.length;
         const card = createClassCard(1, className, students);
         container.appendChild(card);
     });
+
+    // Update total count
+    const countEl = document.getElementById('first-year-count');
+    if (countEl) {
+        countEl.textContent = `${totalStudents} total`;
+    }
 }
 
 function createClassCard(year, className, students) {
     const card = document.createElement('div');
-    card.className = 'class-card';
+    card.className = `class-card class-${className.toLowerCase()}`;
     card.addEventListener('click', () => {
         showClassView(year, className);
     });
 
     const previewStudents = students.slice(0, 3);
-    const studentPreviews = previewStudents.map(s => createStudentPreview(s)).join('');
+    const studentPreviews = previewStudents.map(s => createStudentPreview(s, className)).join('');
+
     const emptyMessage = students.length === 0
-        ? '<p style="color: var(--text-muted); font-size: 0.9rem;">No students found</p>'
+        ? '<div class="empty-class">No students enrolled</div>'
+        : '';
+
+    const viewAllLink = students.length > 3
+        ? `<div class="view-all-link">View all ${students.length} students</div>`
         : '';
 
     card.innerHTML = `
         <div class="class-card-header">
-            <span class="class-card-title">Class ${className}</span>
-            <span class="class-card-count">${students.length} Students</span>
+            <div class="class-badge">
+                <div class="class-letter">${className}</div>
+                <span class="class-label">Class ${className}</span>
+            </div>
+            <span class="class-card-count">${students.length}</span>
         </div>
         <div class="class-card-students">
             ${studentPreviews}
             ${emptyMessage}
         </div>
-        ${students.length > 3 ? `<span class="view-all-link">View all ${students.length} students →</span>` : ''}
+        ${viewAllLink}
     `;
 
     return card;
 }
 
-function createStudentPreview(student) {
+function createStudentPreview(student, className) {
     const initials = getInitials(student.name);
     const avatarHtml = student.image
         ? `<img class="student-avatar" src="${student.image}" alt="${student.name}">`
@@ -289,9 +326,8 @@ function createStudentPreview(student) {
             ${avatarHtml}
             <div class="student-preview-info">
                 <div class="student-preview-name">${student.name}</div>
-                <div class="student-preview-class">${student.year}${getYearSuffix(student.year)} Year - Class ${student.class}</div>
+                <div class="student-preview-id">${student.id}</div>
             </div>
-            <div class="student-preview-id">${student.id}</div>
         </div>
     `;
 }
@@ -300,6 +336,13 @@ function showClassView(year, className) {
     currentClass = { year, className };
     const students = getStudentsByClass(year, className);
 
+    // Update badge
+    const badge = document.getElementById('class-badge');
+    if (badge) {
+        badge.textContent = className;
+        badge.className = `class-view-badge class-${className.toLowerCase()}`;
+    }
+
     document.getElementById('class-title').textContent = `${year}${getYearSuffix(year)} Year - Class ${className}`;
     document.getElementById('student-count').textContent = `${students.length} Students`;
 
@@ -307,7 +350,7 @@ function showClassView(year, className) {
     container.innerHTML = '';
 
     if (students.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No students found</p>';
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 3rem;">No students enrolled in this class</p>';
     } else {
         students.forEach(student => {
             const card = createStudentCard(student);
@@ -315,7 +358,6 @@ function showClassView(year, className) {
         });
     }
 
-    // Update back link
     const backLink = document.querySelector('#oaa-class .back-link');
     if (backLink) {
         backLink.dataset.view = 'oaa-dashboard';
@@ -334,7 +376,7 @@ function createStudentCard(student) {
     const initials = getInitials(student.name);
     const avatarHtml = student.image
         ? `<img class="student-card-avatar" src="${student.image}" alt="${student.name}">`
-        : `<div class="student-avatar-placeholder" style="width:50px;height:50px;font-size:1rem;">${initials}</div>`;
+        : `<div class="student-card-avatar-placeholder">${initials}</div>`;
 
     card.innerHTML = `
         ${avatarHtml}
@@ -356,12 +398,15 @@ function showStudentProfile(student) {
     document.getElementById('profile-id').textContent = student.id;
 
     const profileImage = document.getElementById('profile-image');
+    const profilePlaceholder = document.getElementById('profile-placeholder');
+
     if (student.image) {
         profileImage.src = student.image;
         profileImage.style.display = 'block';
+        if (profilePlaceholder) profilePlaceholder.style.display = 'none';
     } else {
-        profileImage.src = '';
         profileImage.style.display = 'none';
+        if (profilePlaceholder) profilePlaceholder.style.display = 'flex';
     }
 
     // Calculate and display overall grade
@@ -388,23 +433,22 @@ function showStudentProfile(student) {
         const statRow = document.createElement('div');
         statRow.className = 'stat-row';
         statRow.innerHTML = `
-            <div class="stat-label">${statNames[index]}</div>
-            <div class="stat-bar-container">
-                <div class="stat-bar">
-                    <div class="stat-bar-fill" style="width: 0%"></div>
-                </div>
-                <div class="stat-value">${value}/100 <span class="stat-grade">${grade}</span></div>
+            <div class="stat-header">
+                <span class="stat-label">${statNames[index]}</span>
+                <span class="stat-value">${value}/100 <span class="stat-grade">${grade}</span></span>
+            </div>
+            <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: 0%"></div>
             </div>
         `;
         statList.appendChild(statRow);
 
-        // Animate the bar after a short delay
+        // Animate bar
         setTimeout(() => {
             statRow.querySelector('.stat-bar-fill').style.width = value + '%';
-        }, 100 + index * 100);
+        }, 100 + index * 80);
     });
 
-    // Update back link to return to class view
     const backLink = document.querySelector('#oaa-profile .back-link');
     if (backLink) {
         backLink.dataset.view = 'oaa-class';
