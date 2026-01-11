@@ -505,14 +505,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
+    gap: 0.5rem;
+    min-width: 44px;
     height: 44px;
+    padding: 0 0.75rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.nav-btn .key-hint-inline {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    color: var(--text-muted);
 }
 
 .nav-btn:hover {
@@ -698,11 +709,13 @@ body {
     gap: 0.75rem;
     padding: 0.5rem;
     border-radius: 8px;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
-.class-card:hover .student-preview:hover {
-    background: rgba(255, 255, 255, 0.05);
+.student-preview:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
 }
 
 .student-avatar {

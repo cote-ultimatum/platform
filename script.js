@@ -253,7 +253,25 @@ function showOAAView(viewId) {
 }
 
 function initOAAApp() {
+    buildStudentLookup();
     renderClassCards();
+    initStudentPreviewClicks();
+}
+
+function initStudentPreviewClicks() {
+    // Use event delegation for student preview clicks
+    document.addEventListener('click', (e) => {
+        const preview = e.target.closest('.student-preview');
+        if (preview && preview.dataset.studentId) {
+            e.stopPropagation();
+            const student = studentLookup[preview.dataset.studentId];
+            if (student) {
+                // Set the current class context first
+                currentClass = { year: student.year, className: student.class };
+                showStudentProfile(student);
+            }
+        }
+    });
 }
 
 function renderClassCards() {
@@ -322,7 +340,7 @@ function createStudentPreview(student, className) {
         : `<div class="student-avatar-placeholder">${initials}</div>`;
 
     return `
-        <div class="student-preview">
+        <div class="student-preview" data-student-id="${student.id}">
             ${avatarHtml}
             <div class="student-preview-info">
                 <div class="student-preview-name">${student.name}</div>
@@ -330,6 +348,16 @@ function createStudentPreview(student, className) {
             </div>
         </div>
     `;
+}
+
+// Store students for quick lookup
+let studentLookup = {};
+
+function buildStudentLookup() {
+    if (typeof studentData === 'undefined') return;
+    studentData.forEach(s => {
+        studentLookup[s.id] = s;
+    });
 }
 
 function showClassView(year, className) {
