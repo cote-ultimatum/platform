@@ -255,23 +255,6 @@ function showOAAView(viewId) {
 function initOAAApp() {
     buildStudentLookup();
     renderClassCards();
-    initStudentPreviewClicks();
-}
-
-function initStudentPreviewClicks() {
-    // Use event delegation for student preview clicks
-    document.addEventListener('click', (e) => {
-        const preview = e.target.closest('.student-preview');
-        if (preview && preview.dataset.studentId) {
-            e.stopPropagation();
-            const student = studentLookup[preview.dataset.studentId];
-            if (student) {
-                // Set the current class context first
-                currentClass = { year: student.year, className: student.class };
-                showStudentProfile(student);
-            }
-        }
-    });
 }
 
 function renderClassCards() {
@@ -300,9 +283,6 @@ function renderClassCards() {
 function createClassCard(year, className, students) {
     const card = document.createElement('div');
     card.className = `class-card class-${className.toLowerCase()}`;
-    card.addEventListener('click', () => {
-        showClassView(year, className);
-    });
 
     const previewStudents = students.slice(0, 3);
     const studentPreviews = previewStudents.map(s => createStudentPreview(s, className)).join('');
@@ -329,6 +309,24 @@ function createClassCard(year, className, students) {
         </div>
         ${viewAllLink}
     `;
+
+    // Add click handlers for student previews
+    card.querySelectorAll('.student-preview').forEach(preview => {
+        preview.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const studentId = preview.dataset.studentId;
+            const student = studentLookup[studentId];
+            if (student) {
+                currentClass = { year: student.year, className: student.class };
+                showStudentProfile(student);
+            }
+        });
+    });
+
+    // Card click goes to class view
+    card.addEventListener('click', () => {
+        showClassView(year, className);
+    });
 
     return card;
 }
