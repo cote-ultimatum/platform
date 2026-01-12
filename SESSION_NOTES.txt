@@ -1,0 +1,182 @@
+COTE: ULTIMATUM - Website Session Notes
+=======================================
+
+Last Updated: 2026-01-12
+
+================================================================================
+PROJECT OVERVIEW
+================================================================================
+
+A phone-style interface website for the COTE: ULTIMATUM roleplay community.
+Live at: https://coteultimatum.github.io/platform/
+
+Features:
+- Boot screen with COTE ULTIMATUM branding
+- Lock screen with time/date and aurora background
+- Home screen with app dock and rotating quotes
+- OAA App: Student database with class cards, profiles, stats
+- Events App: Special exam tracking (Current/Upcoming/History)
+
+Tech: Vanilla HTML/CSS/JS, hosted on GitHub Pages
+
+================================================================================
+CURRENT STATE
+================================================================================
+
+Visual Features:
+- Custom cyan cursor globally
+- Aurora background effects with blur
+- Scan lines + noise texture overlays
+- Glitch effect on COTE title hover
+- Staggered card entrance animations
+- Animated border glow on app dock
+- Profile card hover glow
+
+Functional Features:
+- Rotating lore-accurate quotes (8 quotes from LN/anime)
+- Class points display with ranking (1st-4th)
+- Overall OAA grade on student cards
+- Search with keyboard shortcut (/ or Ctrl+K)
+- Keyboard navigation (ESC back, 1/2 for apps, ENTER to unlock)
+- Time display in all headers
+
+Student Data (students.js):
+- 13 students across 4 classes (A: 4, B: 3, C: 3, D: 3)
+- Lore-accurate ID format: S01TXXXXXX (e.g., S01T004801)
+- All stats default to 50 (to be customized per character)
+- Class points all set to 1000 (to be updated as RP progresses)
+
+================================================================================
+FILES STRUCTURE
+================================================================================
+
+/website/
+  index.html      - Main HTML structure
+  styles.css      - All styling (~2200 lines)
+  script.js       - All interactivity (~850 lines)
+  students.js     - Student data and class points
+  SESSION_NOTES.txt - This file
+
+================================================================================
+QUOTES (Lore-Accurate)
+================================================================================
+
+1. "All people are nothing but tools. In this world, winning is everything."
+   - Kiyotaka Ayanokoji
+
+2. "I've never once thought of you as an ally. Not you. Not Kushida. Not Hirata."
+   - Kiyotaka Ayanokoji
+
+3. "Class D is an assemblage of defective products."
+   - Sae Chabashira
+
+4. "Violence is the most powerful weapon. True strength means the power to use it."
+   - Kakeru Ryuen
+
+5. "Smiling means letting your guard down in front of another person, even if just a little."
+   - Kiyotaka Ayanokoji
+
+6. "There are two things that define a person: their patience when they have nothing, and their attitude when they have everything."
+   - Arisu Sakayanagi
+
+7. "Those who remember there was someone named Kiyotaka Ayanokoji will never forget."
+   - Manabu Horikita
+
+8. "It doesn't matter what needs to be sacrificed. As long as I win in the end, that's all that matters."
+   - Kiyotaka Ayanokoji
+
+================================================================================
+PENDING IMPROVEMENTS (For Next Session)
+================================================================================
+
+High Priority:
+- [ ] 2nd/3rd Year sections (currently only 1st years shown)
+- [ ] Favicon (COTE-themed icon)
+- [ ] Search results counter ("X students found")
+
+Medium Priority:
+- [ ] Student sorting (by name, ID, or OAA grade)
+- [ ] Class stats summary (average grade, top student)
+- [ ] Profile enhancements (notes field, gender, birthday)
+
+Events Page (when RP has events):
+- [ ] Countdown timer for upcoming exams
+- [ ] Expandable past events with results
+- [ ] Class point changes from each event
+
+Polish:
+- [ ] Loading skeleton placeholders
+- [ ] Sound effects (optional, toggleable)
+- [ ] Mobile responsiveness testing
+- [ ] preview.png for Discord embeds (1200x630px)
+
+================================================================================
+HOW TO ADD STUDENTS
+================================================================================
+
+In students.js, add entry to studentData array:
+
+{
+    name: "Student Name",
+    year: 1,                    // 1, 2, or 3
+    class: "A",                 // A, B, C, or D
+    id: "S01T004805",          // S + year(01/02/03) + T + 6-digit number
+    image: "",                  // Discord/Imgur URL or leave empty
+    stats: {
+        academic: 50,           // 0-100
+        intelligence: 50,
+        decision: 50,
+        physical: 50,
+        cooperativeness: 50
+    }
+}
+
+ID Format: S[year]T[6-digit number]
+- Year 1: S01TXXXXXX (current range: 004801-004863)
+- Year 2: S02TXXXXXX
+- Year 3: S03TXXXXXX
+
+================================================================================
+HOW TO UPDATE CLASS POINTS
+================================================================================
+
+In students.js, modify classPoints object:
+
+const classPoints = {
+    1: { A: 1000, B: 950, C: 900, D: 850 },  // 1st Year
+    2: { A: 1000, B: 1000, C: 1000, D: 1000 },
+    3: { A: 1000, B: 1000, C: 1000, D: 1000 }
+};
+
+Rankings auto-calculate based on points.
+
+================================================================================
+GIT COMMITS THIS SESSION
+================================================================================
+
+c782378 - (previous session work)
+a48a75d - Polish UI and fix lore accuracy (IDs, quotes, subtitle)
+45af00b - UI polish and consistency improvements
+f6e34f9 - Update quotes to be lore-accurate
+
+================================================================================
+STYLE REFERENCE
+================================================================================
+
+Colors:
+- Cyan (primary): #4dc9e6
+- Crimson (accent): #7a2438
+- Background: #050a12 to #0a1220
+- Text: #ffffff, #94a3b8, #64748b
+
+Class Colors:
+- A: Gold (#d4af37)
+- B: Purple (#9b59b6)
+- C: Red (#c0392b)
+- D: Teal (#00c4cc)
+
+Fonts:
+- Orbitron (titles, tech elements)
+- Inter (body text)
+
+================================================================================
