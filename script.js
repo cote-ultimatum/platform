@@ -185,48 +185,52 @@ function playSound(type) {
 // ========================================
 
 function startAmbientNoise() {
-    if (!audioContext || ambientNoiseNode) return;
+    try {
+        if (!audioContext || ambientNoiseNode) return;
 
-    // Create noise using an AudioBufferSourceNode
-    const bufferSize = audioContext.sampleRate * 2; // 2 seconds of noise
-    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-    const data = buffer.getChannelData(0);
+        // Create noise using an AudioBufferSourceNode
+        const bufferSize = audioContext.sampleRate * 2; // 2 seconds of noise
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
 
-    // Generate pink-ish noise (filtered white noise)
-    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-    for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        b0 = 0.99886 * b0 + white * 0.0555179;
-        b1 = 0.99332 * b1 + white * 0.0750759;
-        b2 = 0.96900 * b2 + white * 0.1538520;
-        b3 = 0.86650 * b3 + white * 0.3104856;
-        b4 = 0.55000 * b4 + white * 0.5329522;
-        b5 = -0.7616 * b5 - white * 0.0168980;
-        data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
-        b6 = white * 0.115926;
+        // Generate pink-ish noise (filtered white noise)
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+            b6 = white * 0.115926;
+        }
+
+        // Create source node
+        ambientNoiseNode = audioContext.createBufferSource();
+        ambientNoiseNode.buffer = buffer;
+        ambientNoiseNode.loop = true;
+
+        // Create filter to make it more subtle (low-pass)
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 400;
+
+        // Create gain node for volume control
+        ambientGainNode = audioContext.createGain();
+        ambientGainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        ambientGainNode.gain.linearRampToValueAtTime(0.015, audioContext.currentTime + 2); // Fade in
+
+        // Connect: noise -> filter -> gain -> output
+        ambientNoiseNode.connect(filter);
+        filter.connect(ambientGainNode);
+        ambientGainNode.connect(audioContext.destination);
+
+        ambientNoiseNode.start();
+    } catch (e) {
+        console.log('Ambient noise failed:', e);
     }
-
-    // Create source node
-    ambientNoiseNode = audioContext.createBufferSource();
-    ambientNoiseNode.buffer = buffer;
-    ambientNoiseNode.loop = true;
-
-    // Create filter to make it more subtle (low-pass)
-    const filter = audioContext.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 400;
-
-    // Create gain node for volume control
-    ambientGainNode = audioContext.createGain();
-    ambientGainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    ambientGainNode.gain.linearRampToValueAtTime(0.015, audioContext.currentTime + 2); // Fade in
-
-    // Connect: noise -> filter -> gain -> output
-    ambientNoiseNode.connect(filter);
-    filter.connect(ambientGainNode);
-    ambientGainNode.connect(audioContext.destination);
-
-    ambientNoiseNode.start();
 }
 
 function stopAmbientNoise() {
@@ -300,6 +304,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initTypingEffect();
     initHoverSounds();
+
+    // Backup: forcefully hide boot screen after animation should be complete
+    setTimeout(() => {
+        const bootScreen = document.getElementById('boot-screen');
+        if (bootScreen) {
+            bootScreen.style.display = 'none';
+        }
+    }, 3500); // 2.2s delay + 0.8s animation + buffer
 });
 
 // ========================================

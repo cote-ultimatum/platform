@@ -174,7 +174,14 @@ body::before {
 }
 
 @keyframes bootFadeOut {
-    to {
+    0% {
+        opacity: 1;
+        visibility: visible;
+    }
+    1% {
+        pointer-events: none; /* Disable clicks immediately when fade starts */
+    }
+    100% {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
