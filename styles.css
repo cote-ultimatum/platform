@@ -1163,12 +1163,61 @@ body::before {
 /* Dashboard Header with Search */
 .dashboard-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding: 1.5rem 3rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-bottom: 1rem;
     gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Sort Controls */
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sort-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.25rem;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sort-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.sort-btn:hover {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sort-btn.active {
+    color: var(--cyan);
+    background: rgba(77, 201, 230, 0.15);
+    box-shadow: 0 0 10px rgba(77, 201, 230, 0.2);
 }
 
 /* Search Bar */
@@ -2241,6 +2290,181 @@ body::before {
     margin-left: 0.5rem;
 }
 
+/* Exam Types Grid */
+.exam-types-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+@media (max-width: 800px) {
+    .exam-types-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.exam-type-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, rgba(15, 26, 46, 0.8) 0%, rgba(10, 18, 32, 0.6) 100%);
+    border: 1px solid rgba(77, 201, 230, 0.1);
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+.exam-type-card:hover {
+    border-color: rgba(77, 201, 230, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.exam-type-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(77, 201, 230, 0.1);
+    border: 1px solid rgba(77, 201, 230, 0.2);
+}
+
+.exam-type-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--cyan);
+}
+
+.exam-type-icon.survival {
+    background: rgba(46, 204, 113, 0.1);
+    border-color: rgba(46, 204, 113, 0.3);
+}
+.exam-type-icon.survival svg { color: #2ecc71; }
+
+.exam-type-icon.written {
+    background: rgba(155, 89, 182, 0.1);
+    border-color: rgba(155, 89, 182, 0.3);
+}
+.exam-type-icon.written svg { color: #9b59b6; }
+
+.exam-type-icon.zodiac {
+    background: rgba(241, 196, 15, 0.1);
+    border-color: rgba(241, 196, 15, 0.3);
+}
+.exam-type-icon.zodiac svg { color: #f1c40f; }
+
+.exam-type-icon.poll {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: rgba(231, 76, 60, 0.3);
+}
+.exam-type-icon.poll svg { color: #e74c3c; }
+
+.exam-type-icon.sports {
+    background: rgba(230, 126, 34, 0.1);
+    border-color: rgba(230, 126, 34, 0.3);
+}
+.exam-type-icon.sports svg { color: #e67e22; }
+
+.exam-type-icon.special {
+    background: rgba(122, 36, 56, 0.15);
+    border-color: rgba(122, 36, 56, 0.4);
+}
+.exam-type-icon.special svg { color: var(--crimson-light); }
+
+.exam-type-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.exam-type-info h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.exam-type-info p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.exam-type-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.exam-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(77, 201, 230, 0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(77, 201, 230, 0.2);
+}
+
+.exam-tag.physical {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+    border-color: rgba(46, 204, 113, 0.3);
+}
+
+.exam-tag.academic {
+    background: rgba(155, 89, 182, 0.1);
+    color: #9b59b6;
+    border-color: rgba(155, 89, 182, 0.3);
+}
+
+.exam-tag.intelligence {
+    background: rgba(241, 196, 15, 0.1);
+    color: #f1c40f;
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.exam-tag.social, .exam-tag.teamwork {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border-color: rgba(52, 152, 219, 0.3);
+}
+
+.exam-tag.strategy, .exam-tag.deception {
+    background: rgba(149, 165, 166, 0.1);
+    color: #95a5a6;
+    border-color: rgba(149, 165, 166, 0.3);
+}
+
+.exam-tag.competition {
+    background: rgba(230, 126, 34, 0.1);
+    color: #e67e22;
+    border-color: rgba(230, 126, 34, 0.3);
+}
+
+.exam-tag.danger {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.exam-tag.unknown {
+    background: rgba(122, 36, 56, 0.15);
+    color: var(--crimson-light);
+    border-color: rgba(122, 36, 56, 0.3);
+}
+
+.section-indicator.info {
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan-glow);
+    animation: none;
+}
+
 /* ========================================
    SCROLLBAR
    ======================================== */
@@ -2266,6 +2490,110 @@ body::before {
 ::selection {
     background: var(--cyan);
     color: var(--bg-primary);
+}
+
+/* ========================================
+   GLITCH EFFECTS
+   ======================================== */
+
+.glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9995;
+    opacity: 0;
+}
+
+.glitch-overlay.active {
+    animation: glitchFlash 0.15s ease-out;
+}
+
+@keyframes glitchFlash {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(77, 201, 230, 0.03) 15%,
+            transparent 15.5%,
+            transparent 30%,
+            rgba(122, 36, 56, 0.03) 30%,
+            rgba(122, 36, 56, 0.03) 31%,
+            transparent 31.5%
+        );
+        transform: translateX(-2px);
+    }
+    40% {
+        opacity: 0.8;
+        transform: translateX(2px);
+    }
+    60% {
+        opacity: 0.5;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(122, 36, 56, 0.02) 45%,
+            transparent 45.5%,
+            transparent 70%,
+            rgba(77, 201, 230, 0.02) 70%,
+            transparent 71%
+        );
+        transform: translateX(-1px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+}
+
+/* Screen flicker class */
+.screen-flicker {
+    animation: screenFlicker 0.1s ease;
+}
+
+@keyframes screenFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+}
+
+/* Scan line glitch */
+.scan-glitch {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(77, 201, 230, 0.5), transparent);
+    pointer-events: none;
+    z-index: 9994;
+    opacity: 0;
+}
+
+.scan-glitch.active {
+    animation: scanGlitch 0.4s ease-out;
+}
+
+@keyframes scanGlitch {
+    0% {
+        opacity: 0;
+        top: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0;
+        top: 100%;
+    }
 }
 
 /* ========================================

@@ -46,6 +46,10 @@
     <!-- Noise Texture Overlay -->
     <div class="noise-overlay"></div>
 
+    <!-- Glitch Effects -->
+    <div class="glitch-overlay" id="glitch-overlay"></div>
+    <div class="scan-glitch" id="scan-glitch"></div>
+
     <!-- Starfield Background -->
     <div class="starfield" id="starfield"></div>
 
@@ -147,6 +151,16 @@
         <!-- OAA Dashboard View -->
         <div id="oaa-dashboard" class="app-view active">
             <div class="dashboard-header">
+                <div class="sort-container">
+                    <span class="sort-label">Sort by:</span>
+                    <div class="sort-buttons">
+                        <button class="sort-btn active" data-sort="default">Default</button>
+                        <button class="sort-btn" data-sort="academic">Academic</button>
+                        <button class="sort-btn" data-sort="physical">Physical</button>
+                        <button class="sort-btn" data-sort="intelligence">Intelligence</button>
+                        <button class="sort-btn" data-sort="overall">Overall</button>
+                    </div>
+                </div>
                 <div class="search-container">
                     <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"/>
@@ -243,7 +257,7 @@
                 </button>
                 <span class="nav-hint">ESC</span>
             </div>
-            <h1 class="app-title">EVENTS</h1>
+            <h1 class="app-title">SPECIAL EXAMS</h1>
             <div class="header-right">
                 <span class="header-time" id="events-time">12:00</span>
                 <button class="nav-btn" data-action="home" title="Home">
@@ -286,6 +300,118 @@
                 <div class="upcoming-list">
                     <div class="upcoming-empty">
                         <p>No scheduled exams</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Types Reference -->
+            <div class="events-section">
+                <div class="events-section-header">
+                    <div class="section-indicator info"></div>
+                    <h2 class="events-section-title">EXAM TYPES</h2>
+                </div>
+                <div class="exam-types-grid">
+                    <div class="exam-type-card">
+                        <div class="exam-type-icon survival">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <div class="exam-type-info">
+                            <h4>Survival Exam</h4>
+                            <p>Uninhabited island wilderness test. Classes compete for resources and territory.</p>
+                            <div class="exam-type-tags">
+                                <span class="exam-tag physical">Physical</span>
+                                <span class="exam-tag teamwork">Teamwork</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-type-card">
+                        <div class="exam-type-icon written">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="exam-type-info">
+                            <h4>Paper Shuffle</h4>
+                            <p>Academic showdown between classes. Students create and exchange test problems.</p>
+                            <div class="exam-type-tags">
+                                <span class="exam-tag academic">Academic</span>
+                                <span class="exam-tag strategy">Strategy</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-type-card">
+                        <div class="exam-type-icon zodiac">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 2a10 10 0 0 1 0 20"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="exam-type-info">
+                            <h4>Zodiac Exam</h4>
+                            <p>Deduction game across the school ship. Identify VIPs while protecting your own.</p>
+                            <div class="exam-type-tags">
+                                <span class="exam-tag intelligence">Intelligence</span>
+                                <span class="exam-tag deception">Deception</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-type-card">
+                        <div class="exam-type-icon poll">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="exam-type-info">
+                            <h4>Class Poll</h4>
+                            <p>Vote for praise and criticism within your class. Lowest rated student faces expulsion.</p>
+                            <div class="exam-type-tags">
+                                <span class="exam-tag social">Social</span>
+                                <span class="exam-tag danger">High Stakes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-type-card">
+                        <div class="exam-type-icon sports">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20"/>
+                                <path d="M2 12h20"/>
+                                <path d="M12 2c2.5 2.5 4 6 4 10s-1.5 7.5-4 10c-2.5-2.5-4-6-4-10s1.5-7.5 4-10"/>
+                            </svg>
+                        </div>
+                        <div class="exam-type-info">
+                            <h4>Sports Festival</h4>
+                            <p>Athletic competition between all classes. Red and White team format with mixed classes.</p>
+                            <div class="exam-type-tags">
+                                <span class="exam-tag physical">Physical</span>
+                                <span class="exam-tag competition">Competition</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-type-card">
+                        <div class="exam-type-icon special">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </div>
+                        <div class="exam-type-info">
+                            <h4>Special Event</h4>
+                            <p>Unique examinations designed by the school. Rules revealed upon commencement.</p>
+                            <div class="exam-type-tags">
+                                <span class="exam-tag unknown">Unknown</span>
+                                <span class="exam-tag danger">High Stakes</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

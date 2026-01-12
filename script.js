@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarfield();
     createParticles();
     initShootingStars();
+    initGlitchEffects();
     updateTime();
     setInterval(updateTime, 1000);
     initLockScreen();
@@ -121,6 +122,48 @@ function initShootingStars() {
 
     // Start after initial delay
     setTimeout(scheduleShootingStar, 2000);
+}
+
+// ========================================
+// GLITCH EFFECTS
+// ========================================
+
+function initGlitchEffects() {
+    // Random glitch at intervals
+    function scheduleGlitch() {
+        const delay = Math.random() * 20000 + 15000; // 15-35 seconds between glitches
+        setTimeout(() => {
+            triggerRandomGlitch();
+            scheduleGlitch();
+        }, delay);
+    }
+
+    // Start after initial delay
+    setTimeout(scheduleGlitch, 8000);
+}
+
+function triggerRandomGlitch() {
+    const glitchType = Math.random();
+
+    if (glitchType < 0.5) {
+        // Glitch overlay flash
+        const overlay = document.getElementById('glitch-overlay');
+        if (overlay) {
+            overlay.classList.add('active');
+            setTimeout(() => overlay.classList.remove('active'), 150);
+        }
+    } else if (glitchType < 0.8) {
+        // Scan line glitch
+        const scanLine = document.getElementById('scan-glitch');
+        if (scanLine) {
+            scanLine.classList.add('active');
+            setTimeout(() => scanLine.classList.remove('active'), 400);
+        }
+    } else {
+        // Screen flicker
+        document.body.classList.add('screen-flicker');
+        setTimeout(() => document.body.classList.remove('screen-flicker'), 100);
+    }
 }
 
 function createShootingStar() {
@@ -495,6 +538,59 @@ function initOAAApp() {
     buildStudentLookup();
     renderClassCards();
     initSearch();
+    initSorting();
+}
+
+// ========================================
+// SORTING FUNCTIONALITY
+// ========================================
+
+let currentSort = 'default';
+
+function initSorting() {
+    const sortButtons = document.querySelectorAll('.sort-btn');
+    sortButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Update active state
+            sortButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Apply sort
+            currentSort = btn.dataset.sort;
+            renderClassCards();
+        });
+    });
+}
+
+function getSortedStudents(students, sortBy) {
+    if (sortBy === 'default') {
+        return students;
+    }
+
+    return [...students].sort((a, b) => {
+        let valueA, valueB;
+
+        if (sortBy === 'overall') {
+            valueA = calculateOverallValue(a.stats);
+            valueB = calculateOverallValue(b.stats);
+        } else {
+            valueA = a.stats[sortBy] || 50;
+            valueB = b.stats[sortBy] || 50;
+        }
+
+        return valueB - valueA; // Descending order (highest first)
+    });
+}
+
+function calculateOverallValue(stats) {
+    const values = [
+        stats.academic || 50,
+        stats.intelligence || 50,
+        stats.decision || 50,
+        stats.physical || 50,
+        stats.cooperativeness || 50
+    ];
+    return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
 // ========================================
@@ -574,8 +670,9 @@ function renderClassCards() {
 
     classes.forEach(className => {
         const students = getStudentsByClass(1, className);
+        const sortedStudents = getSortedStudents(students, currentSort);
         totalStudents += students.length;
-        const card = createClassCard(1, className, students);
+        const card = createClassCard(1, className, sortedStudents);
         container.appendChild(card);
     });
 
