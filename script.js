@@ -19,6 +19,10 @@ let mouseY = 0;
 // Audio context for sound effects
 let audioContext = null;
 
+// Ambient noise nodes
+let ambientNoiseNode = null;
+let ambientGainNode = null;
+
 // Key repeat prevention
 let keysHeld = {};
 
@@ -27,10 +31,18 @@ let keysHeld = {};
 // ========================================
 
 function initAudio() {
-    // Initialize on first user interaction
+    // Initialize on first user interaction (fallback if boot sounds didn't work)
     document.addEventListener('click', () => {
         if (!audioContext) {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        // Resume audio context if suspended (browser autoplay policy)
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        // Start ambient if not already playing
+        if (!ambientNoiseNode) {
+            startAmbientNoise();
         }
     }, { once: true });
 }
@@ -134,7 +146,131 @@ function playSound(type) {
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.06);
             break;
+
+        case 'bootLetter':
+            // Digital blip for each letter
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(800 + Math.random() * 400, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.08);
+            break;
+
+        case 'bootProgress':
+            // Subtle tick for progress
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(1500, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.02);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.02);
+            break;
+
+        case 'bootComplete':
+            // Rising chord for boot complete
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+            break;
     }
+}
+
+// ========================================
+// AMBIENT NOISE
+// ========================================
+
+function startAmbientNoise() {
+    if (!audioContext || ambientNoiseNode) return;
+
+    // Create noise using an AudioBufferSourceNode
+    const bufferSize = audioContext.sampleRate * 2; // 2 seconds of noise
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    // Generate pink-ish noise (filtered white noise)
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+        b6 = white * 0.115926;
+    }
+
+    // Create source node
+    ambientNoiseNode = audioContext.createBufferSource();
+    ambientNoiseNode.buffer = buffer;
+    ambientNoiseNode.loop = true;
+
+    // Create filter to make it more subtle (low-pass)
+    const filter = audioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 400;
+
+    // Create gain node for volume control
+    ambientGainNode = audioContext.createGain();
+    ambientGainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    ambientGainNode.gain.linearRampToValueAtTime(0.015, audioContext.currentTime + 2); // Fade in
+
+    // Connect: noise -> filter -> gain -> output
+    ambientNoiseNode.connect(filter);
+    filter.connect(ambientGainNode);
+    ambientGainNode.connect(audioContext.destination);
+
+    ambientNoiseNode.start();
+}
+
+function stopAmbientNoise() {
+    if (ambientGainNode) {
+        ambientGainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 1);
+        setTimeout(() => {
+            if (ambientNoiseNode) {
+                ambientNoiseNode.stop();
+                ambientNoiseNode = null;
+            }
+            ambientGainNode = null;
+        }, 1000);
+    }
+}
+
+// ========================================
+// BOOT SEQUENCE SOUNDS
+// ========================================
+
+function initBootSounds() {
+    // Initialize audio context immediately for boot sounds
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Play sounds synchronized with CSS animations
+    // Letters appear at 0.1s, 0.2s, 0.3s, 0.4s
+    setTimeout(() => playSound('bootLetter'), 100);
+    setTimeout(() => playSound('bootLetter'), 200);
+    setTimeout(() => playSound('bootLetter'), 300);
+    setTimeout(() => playSound('bootLetter'), 400);
+
+    // Subtitle appears at 0.6s
+    setTimeout(() => playSound('bootProgress'), 600);
+
+    // Progress bar ticks (loader runs from 0.5s to 2.3s)
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => playSound('bootProgress'), 600 + i * 200);
+    }
+
+    // Boot complete at ~2.2s (before fade out)
+    setTimeout(() => {
+        playSound('bootComplete');
+        // Start ambient noise after boot
+        setTimeout(() => startAmbientNoise(), 500);
+    }, 2200);
 }
 
 // ========================================
@@ -142,7 +278,8 @@ function playSound(type) {
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    initAudio();
+    initBootSounds();
+    initAudio(); // Fallback for browsers that block autoplay
     createStarfield();
     createParticles();
     initShootingStars();
