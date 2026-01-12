@@ -979,12 +979,19 @@ body::before {
 }
 
 /* OAA App keyboard hints */
-.oaa-hints {
+.oaa-hints,
+.events-hints {
     position: fixed;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
+    transition: bottom 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hide keyboard hints when compare bar is active */
+.compare-mode .oaa-hints {
+    bottom: 6rem;
 }
 
 .key {
@@ -1103,6 +1110,7 @@ body::before {
     background: var(--cyan-subtle);
     border-color: var(--cyan);
     color: var(--cyan);
+    box-shadow: 0 0 15px var(--cyan-glow);
 }
 
 .nav-btn:focus-visible {
@@ -1149,16 +1157,19 @@ body::before {
     margin: 0;
 }
 
-/* Dashboard Header with Search */
-.dashboard-header {
+/* Shared top bar styling for consistent sort UI positioning */
+.dashboard-header,
+.class-view-top {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-left: -3rem;
+    margin-right: -3rem;
     padding: 1.5rem 3rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-bottom: 1rem;
-    gap: 1rem;
-    flex-wrap: wrap;
 }
 
 .dashboard-header .filter-btn {
@@ -1643,19 +1654,7 @@ body::before {
     border-radius: 4px;
 }
 
-.class-view-top {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    /* Match dashboard-header exactly - extend to full width */
-    margin-left: -3rem;
-    margin-right: -3rem;
-    padding: 1.5rem 3rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 1rem;
-}
+/* class-view-top base styles merged into shared .dashboard-header, .class-view-top rule above */
 
 .class-sort {
     flex-wrap: wrap;
@@ -2964,9 +2963,17 @@ body::before {
    ======================================== */
 
 @media (max-width: 900px) {
-    .app-view, .app-header, .dashboard-header {
+    .app-view, .app-header {
         padding-left: 1.5rem;
         padding-right: 1.5rem;
+    }
+
+    /* Match negative margins with reduced padding for both headers */
+    .dashboard-header,
+    .class-view-top {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding: 1.5rem;
     }
 
     .home-header {
@@ -2992,6 +2999,14 @@ body::before {
     .dashboard-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .dashboard-header .filter-btn {
+        margin-left: 0;
+    }
+
+    .dashboard-header .search-container {
+        width: 100%;
     }
 
     .comparison-content {
