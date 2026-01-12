@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     createParticles();
     updateTime();
     setInterval(updateTime, 1000);
-    initBootScreen();
     initLockScreen();
     initHomeScreen();
     initNavButtons();
@@ -35,33 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initTypingEffect();
 });
-
-// ========================================
-// BOOT SCREEN (SKIP ON CLICK)
-// ========================================
-
-function initBootScreen() {
-    const bootScreen = document.getElementById('boot-screen');
-    if (!bootScreen) return;
-
-    // Click to skip boot animation
-    bootScreen.addEventListener('click', () => {
-        bootScreen.style.animation = 'none';
-        bootScreen.style.opacity = '0';
-        bootScreen.style.pointerEvents = 'none';
-    });
-
-    // Also skip on any key press
-    const skipOnKey = (e) => {
-        if (bootScreen.style.opacity !== '0') {
-            bootScreen.style.animation = 'none';
-            bootScreen.style.opacity = '0';
-            bootScreen.style.pointerEvents = 'none';
-        }
-        document.removeEventListener('keydown', skipOnKey);
-    };
-    document.addEventListener('keydown', skipOnKey);
-}
 
 // ========================================
 // STARFIELD & PARTICLES
@@ -151,14 +123,14 @@ function updateParallax() {
 // ========================================
 
 const quotes = [
-    { text: '"Every outcome is the result of the choices you make."', attribution: '- ANHS Student Handbook' },
-    { text: '"Talent is something you bloom, instinct is something you polish."', attribution: '- Sae Chabashira' },
-    { text: '"The weak are destined to lie beneath the boots of the strong."', attribution: '- Kakeru Ryūen' },
-    { text: '"People who cannot find something to live for always seem to be searching for something to die for."', attribution: '- Kiyotaka Ayanokōji' },
-    { text: '"It takes a great talent and skill to conceal one\'s talent and skill."', attribution: '- ANHS Principle' },
-    { text: '"True victory is not winning against others, but winning against yourself."', attribution: '- Manabu Horikita' },
-    { text: '"Those who are willing to defile themselves are the truly strong."', attribution: '- Kiyotaka Ayanokōji' },
-    { text: '"In this world, winning is everything."', attribution: '- ANHS Philosophy' }
+    { text: 'Every outcome is the result of the choices you make.', attribution: '- ANHS Student Handbook' },
+    { text: 'Talent is something you bloom, instinct is something you polish.', attribution: '- Sae Chabashira' },
+    { text: 'The weak are destined to lie beneath the boots of the strong.', attribution: '- Kakeru Ryūen' },
+    { text: 'People who cannot find something to live for always seem to be searching for something to die for.', attribution: '- Kiyotaka Ayanokōji' },
+    { text: 'It takes a great talent and skill to conceal one\'s talent and skill.', attribution: '- ANHS Principle' },
+    { text: 'True victory is not winning against others, but winning against yourself.', attribution: '- Manabu Horikita' },
+    { text: 'Those who are willing to defile themselves are the truly strong.', attribution: '- Kiyotaka Ayanokōji' },
+    { text: 'In this world, winning is everything.', attribution: '- ANHS Philosophy' }
 ];
 
 let currentTypingTimeout = null;

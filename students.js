@@ -7,7 +7,7 @@
 //   name: Student's full name
 //   year: 1, 2, or 3
 //   class: "A", "B", "C", or "D"
-//   id: Unique ID code (format: ABC-123)
+//   id: Unique ID code (format: S01T004714 - S=Student, 01=Year, T=separator, 6-digit number)
 //   image: URL to character image (Discord/Imgur link)
 //   stats: Object with 5 stats (0-100 scale)
 //     - academic: Academic Ability
@@ -30,7 +30,7 @@ const studentData = [
         name: "Sylvia Von Euleid",
         year: 1,
         class: "A",
-        id: "SFS-165",
+        id: "S01T004801",
         image: "",
         stats: {
             academic: 50,
@@ -44,7 +44,7 @@ const studentData = [
         name: "Rintaro Oikawa",
         year: 1,
         class: "A",
-        id: "RTV-648",
+        id: "S01T004802",
         image: "",
         stats: {
             academic: 50,
@@ -58,7 +58,7 @@ const studentData = [
         name: "Takagi Natsuki",
         year: 1,
         class: "A",
-        id: "TDN-427",
+        id: "S01T004803",
         image: "",
         stats: {
             academic: 50,
@@ -72,7 +72,7 @@ const studentData = [
         name: "Franz Rein",
         year: 1,
         class: "A",
-        id: "FXV-402",
+        id: "S01T004804",
         image: "",
         stats: {
             academic: 50,
@@ -88,7 +88,7 @@ const studentData = [
         name: "Ritsuka Juna",
         year: 1,
         class: "B",
-        id: "RIA-071",
+        id: "S01T004821",
         image: "",
         stats: {
             academic: 50,
@@ -102,7 +102,7 @@ const studentData = [
         name: "Hiroshi Takada",
         year: 1,
         class: "B",
-        id: "THK-455",
+        id: "S01T004822",
         image: "",
         stats: {
             academic: 50,
@@ -116,7 +116,7 @@ const studentData = [
         name: "Coralie Legrace",
         year: 1,
         class: "B",
-        id: "CWN-181",
+        id: "S01T004823",
         image: "",
         stats: {
             academic: 50,
@@ -132,7 +132,7 @@ const studentData = [
         name: "Toshi Akamatsu",
         year: 1,
         class: "C",
-        id: "TXI-355",
+        id: "S01T004841",
         image: "",
         stats: {
             academic: 50,
@@ -146,7 +146,7 @@ const studentData = [
         name: "Mikagami Reito",
         year: 1,
         class: "C",
-        id: "MBH-735",
+        id: "S01T004842",
         image: "",
         stats: {
             academic: 50,
@@ -160,7 +160,7 @@ const studentData = [
         name: "River Rossi",
         year: 1,
         class: "C",
-        id: "RHZ-849",
+        id: "S01T004843",
         image: "",
         stats: {
             academic: 50,
@@ -176,7 +176,7 @@ const studentData = [
         name: "Ayanagi Kazuki",
         year: 1,
         class: "D",
-        id: "AZH-090",
+        id: "S01T004861",
         image: "",
         stats: {
             academic: 50,
@@ -190,7 +190,7 @@ const studentData = [
         name: "Kami Nyoka",
         year: 1,
         class: "D",
-        id: "KBE-079",
+        id: "S01T004862",
         image: "",
         stats: {
             academic: 50,
@@ -204,7 +204,7 @@ const studentData = [
         name: "Matsushita Mitsuha",
         year: 1,
         class: "D",
-        id: "MTV-753",
+        id: "S01T004863",
         image: "",
         stats: {
             academic: 50,
