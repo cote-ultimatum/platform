@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initRippleEffect();
     initParallax();
     initTypingEffect();
-    initMouseTrail();
 });
 
 // ========================================
@@ -123,32 +122,28 @@ function updateParallax() {
 // TYPING EFFECT
 // ========================================
 
+let quoteOriginalText = '';
+let quoteHasTyped = false;
+
 function initTypingEffect() {
     const quoteText = document.querySelector('.quote-text');
     if (!quoteText) return;
 
-    const originalText = quoteText.textContent;
+    quoteOriginalText = quoteText.textContent;
     quoteText.textContent = '';
-    quoteText.style.visibility = 'visible';
+}
 
-    let hasTyped = false;
+function triggerQuoteTyping() {
+    if (quoteHasTyped) return;
 
-    // Only type when home screen is shown
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.target.classList.contains('active') &&
-                mutation.target.id === 'home-screen' &&
-                !hasTyped) {
-                hasTyped = true;
-                typeText(quoteText, originalText, 0);
-            }
-        });
-    });
+    const quoteText = document.querySelector('.quote-text');
+    if (!quoteText || !quoteOriginalText) return;
 
-    const homeScreen = document.getElementById('home-screen');
-    if (homeScreen) {
-        observer.observe(homeScreen, { attributes: true, attributeFilter: ['class'] });
-    }
+    quoteHasTyped = true;
+    // Small delay before typing starts
+    setTimeout(() => {
+        typeText(quoteText, quoteOriginalText, 0);
+    }, 300);
 }
 
 function typeText(element, text, index) {
@@ -205,6 +200,11 @@ function showScreen(screenId, addToHistory = true) {
     if (target) {
         target.classList.add('active');
         currentScreen = screenId;
+
+        // Trigger quote typing when home screen is shown
+        if (screenId === 'home-screen') {
+            triggerQuoteTyping();
+        }
     }
 }
 
@@ -767,48 +767,3 @@ function createRipple(e) {
     }, 600);
 }
 
-// ========================================
-// MOUSE TRAIL EFFECT
-// ========================================
-
-let trailThrottle = 0;
-const TRAIL_INTERVAL = 50; // ms between trail particles
-
-function initMouseTrail() {
-    document.addEventListener('mousemove', (e) => {
-        const now = Date.now();
-        if (now - trailThrottle < TRAIL_INTERVAL) return;
-        trailThrottle = now;
-
-        createTrailParticle(e.clientX, e.clientY);
-    });
-}
-
-function createTrailParticle(x, y) {
-    const particle = document.createElement('div');
-    particle.className = 'mouse-trail';
-
-    // Alternate colors occasionally
-    if (Math.random() < 0.3) {
-        particle.classList.add('crimson');
-    }
-
-    // Add slight random offset for organic feel
-    const offsetX = (Math.random() - 0.5) * 8;
-    const offsetY = (Math.random() - 0.5) * 8;
-
-    particle.style.left = (x + offsetX) + 'px';
-    particle.style.top = (y + offsetY) + 'px';
-
-    // Vary size slightly
-    const size = 4 + Math.random() * 4;
-    particle.style.width = size + 'px';
-    particle.style.height = size + 'px';
-
-    document.body.appendChild(particle);
-
-    // Remove after animation
-    setTimeout(() => {
-        particle.remove();
-    }, 800);
-}

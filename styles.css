@@ -66,6 +66,12 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='3' fill='none' stroke='%234dc9e6' stroke-width='1'/%3E%3Cline x1='12' y1='4' x2='12' y2='8' stroke='%234dc9e6' stroke-width='1'/%3E%3Cline x1='12' y1='16' x2='12' y2='20' stroke='%234dc9e6' stroke-width='1'/%3E%3Cline x1='4' y1='12' x2='8' y2='12' stroke='%234dc9e6' stroke-width='1'/%3E%3Cline x1='16' y1='12' x2='20' y2='12' stroke='%234dc9e6' stroke-width='1'/%3E%3C/svg%3E") 12 12, crosshair;
+}
+
+/* Pointer cursor for interactive elements */
+a, button, .app-icon, .class-card, .student-card, .student-preview, .back-link, .nav-btn, .lock-btn {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='%234dc9e6' opacity='0.8'/%3E%3Ccircle cx='12' cy='12' r='8' fill='none' stroke='%234dc9e6' stroke-width='1' opacity='0.5'/%3E%3C/svg%3E") 12 12, pointer;
 }
 
 /* Subtle vignette overlay */
@@ -99,6 +105,19 @@ body::before {
         rgba(0, 0, 0, 0.03) 4px
     );
     opacity: 0.5;
+}
+
+/* Noise texture overlay for film grain effect */
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9996;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
 /* ========================================
@@ -162,6 +181,7 @@ body::before {
     animation: bootLetterIn 0.3s ease forwards;
     color: var(--cyan);
     text-shadow: 0 0 30px var(--cyan-glow);
+    text-transform: uppercase;
 }
 
 .boot-c { animation-delay: 0.1s; }
@@ -180,6 +200,7 @@ body::before {
     opacity: 0;
     animation: bootSubtitleIn 0.5s ease 0.6s forwards;
     text-shadow: 0 0 20px var(--crimson-glow);
+    text-transform: uppercase;
 }
 
 @keyframes bootSubtitleIn {
@@ -452,6 +473,73 @@ body::before {
         0 0 60px rgba(0, 245, 255, 0.2);
     letter-spacing: 0.4em;
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    position: relative;
+    animation: titleGlow 4s ease-in-out infinite;
+}
+
+.lock-title:hover {
+    animation: glitch 0.3s ease infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        filter: brightness(1);
+        text-shadow:
+            0 0 20px var(--cyan-glow),
+            0 0 40px var(--cyan-glow),
+            0 0 60px rgba(0, 245, 255, 0.2);
+    }
+    50% {
+        filter: brightness(1.1);
+        text-shadow:
+            0 0 30px var(--cyan-glow),
+            0 0 60px var(--cyan-glow),
+            0 0 90px rgba(0, 245, 255, 0.3);
+    }
+}
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+        text-shadow:
+            0 0 20px var(--cyan-glow),
+            0 0 40px var(--cyan-glow);
+    }
+    20% {
+        transform: translate(-2px, 1px);
+        text-shadow:
+            2px 0 var(--crimson-light),
+            -2px 0 var(--cyan),
+            0 0 20px var(--cyan-glow);
+    }
+    40% {
+        transform: translate(2px, -1px);
+        text-shadow:
+            -2px 0 var(--crimson-light),
+            2px 0 var(--cyan),
+            0 0 20px var(--cyan-glow);
+    }
+    60% {
+        transform: translate(-1px, 2px);
+        text-shadow:
+            1px 0 var(--crimson-light),
+            -1px 0 var(--cyan),
+            0 0 20px var(--cyan-glow);
+    }
+    80% {
+        transform: translate(1px, -2px);
+        text-shadow:
+            -1px 0 var(--crimson-light),
+            1px 0 var(--cyan),
+            0 0 20px var(--cyan-glow);
+    }
+    100% {
+        transform: translate(0);
+        text-shadow:
+            0 0 20px var(--cyan-glow),
+            0 0 40px var(--cyan-glow);
+    }
 }
 
 .lock-subtitle {
@@ -461,6 +549,7 @@ body::before {
     color: var(--crimson-light);
     letter-spacing: 0.6em;
     text-shadow: 0 0 20px var(--crimson-glow);
+    text-transform: uppercase;
 }
 
 .enter-hint {
@@ -560,6 +649,7 @@ body::before {
     color: var(--cyan);
     letter-spacing: 0.2em;
     text-shadow: 0 0 20px var(--cyan-glow);
+    text-transform: uppercase;
 }
 
 .home-brand-subtitle {
@@ -567,6 +657,7 @@ body::before {
     font-size: 0.75rem;
     color: var(--crimson-light);
     letter-spacing: 0.3em;
+    text-transform: uppercase;
 }
 
 .home-actions {
@@ -932,6 +1023,7 @@ body::before {
     color: var(--cyan);
     text-shadow: 0 0 20px var(--cyan-glow);
     flex: 1;
+    text-transform: uppercase;
 }
 
 .app-subtitle {
@@ -1991,38 +2083,6 @@ body::before {
     }
 }
 
-/* ========================================
-   MOUSE TRAIL EFFECT
-   ======================================== */
-
-.mouse-trail {
-    position: fixed;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--cyan);
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.6;
-    box-shadow: 0 0 10px var(--cyan-glow), 0 0 20px var(--cyan-glow);
-    animation: trailFade 0.8s ease-out forwards;
-}
-
-.mouse-trail.crimson {
-    background: var(--crimson-light);
-    box-shadow: 0 0 10px var(--crimson-glow), 0 0 20px var(--crimson-glow);
-}
-
-@keyframes trailFade {
-    0% {
-        opacity: 0.6;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(0.3);
-    }
-}
 
 /* ========================================
    RESPONSIVE
