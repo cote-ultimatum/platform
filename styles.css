@@ -81,6 +81,26 @@ body::after {
     background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
 }
 
+/* Subtle scan lines overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9997;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+    );
+    opacity: 0.5;
+}
+
 /* ========================================
    PAGE CONTAINER
    ======================================== */
@@ -137,7 +157,7 @@ body::after {
     gap: 0.1em;
 }
 
-.boot-logo span {
+.boot-letter {
     opacity: 0;
     animation: bootLetterIn 0.3s ease forwards;
     color: var(--cyan);
@@ -148,6 +168,30 @@ body::after {
 .boot-o { animation-delay: 0.2s; }
 .boot-t { animation-delay: 0.3s; }
 .boot-e { animation-delay: 0.4s; }
+
+.boot-subtitle {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--crimson-light);
+    letter-spacing: 0.5em;
+    margin-top: -1.5rem;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: bootSubtitleIn 0.5s ease 0.6s forwards;
+    text-shadow: 0 0 20px var(--crimson-glow);
+}
+
+@keyframes bootSubtitleIn {
+    from {
+        opacity: 0;
+        letter-spacing: 1em;
+    }
+    to {
+        opacity: 1;
+        letter-spacing: 0.5em;
+    }
+}
 
 @keyframes bootLetterIn {
     from {
@@ -215,17 +259,15 @@ body::after {
 .screen.active {
     display: flex;
     flex-direction: column;
-    animation: screenSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: screenFadeIn 0.5s ease-out;
 }
 
-@keyframes screenSlideIn {
+@keyframes screenFadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.98);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
     }
 }
 
@@ -288,10 +330,7 @@ body::after {
    ======================================== */
 
 #lock-screen {
-    background:
-        radial-gradient(ellipse at 50% 0%, rgba(12, 22, 40, 0.9) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, rgba(122, 36, 56, 0.12) 0%, transparent 40%),
-        linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -300,23 +339,23 @@ body::after {
     overflow: hidden;
 }
 
-/* Animated gradient overlay - MUCH more visible */
+/* Smooth aurora background effect */
 #lock-screen::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background:
-        radial-gradient(ellipse at 30% 20%, rgba(122, 36, 56, 0.4) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 60%, rgba(77, 201, 230, 0.2) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 80%, rgba(122, 36, 56, 0.25) 0%, transparent 40%);
-    animation: gradientShift 20s ease-in-out infinite;
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(122, 36, 56, 0.3) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(77, 201, 230, 0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 100% 60% at 50% 100%, rgba(122, 36, 56, 0.2) 0%, transparent 60%);
+    filter: blur(60px);
+    animation: auroraFlow 30s ease-in-out infinite;
     pointer-events: none;
 }
 
-/* Secondary animated layer for more depth */
 #lock-screen::after {
     content: '';
     position: absolute;
@@ -325,23 +364,28 @@ body::after {
     width: 100%;
     height: 100%;
     background:
-        radial-gradient(circle at 20% 80%, rgba(77, 201, 230, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 80% 20%, rgba(122, 36, 56, 0.2) 0%, transparent 40%);
-    animation: gradientShift2 25s ease-in-out infinite reverse;
+        radial-gradient(ellipse 70% 70% at 70% 30%, rgba(77, 201, 230, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 100% at 30% 70%, rgba(122, 36, 56, 0.18) 0%, transparent 60%);
+    filter: blur(80px);
+    animation: auroraFlow 25s ease-in-out infinite reverse;
+    animation-delay: -5s;
     pointer-events: none;
     z-index: 0;
 }
 
-@keyframes gradientShift {
-    0%, 100% { transform: translate(0%, 0%) scale(1); }
-    25% { transform: translate(5%, -5%) scale(1.05); }
-    50% { transform: translate(-5%, 5%) scale(1); }
-    75% { transform: translate(5%, 5%) scale(0.95); }
-}
-
-@keyframes gradientShift2 {
-    0%, 100% { transform: translate(0%, 0%); opacity: 0.8; }
-    50% { transform: translate(-8%, 8%); opacity: 1; }
+@keyframes auroraFlow {
+    0%, 100% {
+        opacity: 0.7;
+        transform: translateX(0) translateY(0);
+    }
+    33% {
+        opacity: 1;
+        transform: translateX(30px) translateY(-20px);
+    }
+    66% {
+        opacity: 0.8;
+        transform: translateX(-20px) translateY(30px);
+    }
 }
 
 .lock-content {
@@ -458,10 +502,7 @@ body::after {
    ======================================== */
 
 #home-screen {
-    background:
-        radial-gradient(ellipse at 30% 10%, rgba(122, 36, 56, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(77, 201, 230, 0.04) 0%, transparent 50%),
-        linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -469,15 +510,16 @@ body::after {
 #home-screen::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background:
-        radial-gradient(ellipse at 20% 30%, rgba(77, 201, 230, 0.18) 0%, transparent 45%),
-        radial-gradient(ellipse at 80% 70%, rgba(122, 36, 56, 0.25) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 50%, rgba(77, 201, 230, 0.08) 0%, transparent 50%);
-    animation: homeGradient 25s ease-in-out infinite;
+        radial-gradient(ellipse 90% 50% at 20% 30%, rgba(77, 201, 230, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 80% at 80% 70%, rgba(122, 36, 56, 0.2) 0%, transparent 70%);
+    filter: blur(70px);
+    animation: auroraFlow 28s ease-in-out infinite;
+    animation-delay: -10s;
     pointer-events: none;
 }
 
@@ -489,22 +531,12 @@ body::after {
     width: 100%;
     height: 100%;
     background:
-        radial-gradient(circle at 70% 30%, rgba(122, 36, 56, 0.15) 0%, transparent 35%),
-        radial-gradient(circle at 30% 70%, rgba(77, 201, 230, 0.1) 0%, transparent 35%);
-    animation: homeGradient2 30s ease-in-out infinite reverse;
+        radial-gradient(ellipse 60% 60% at 60% 20%, rgba(122, 36, 56, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 50% at 40% 80%, rgba(77, 201, 230, 0.08) 0%, transparent 60%);
+    filter: blur(90px);
+    animation: auroraFlow 35s ease-in-out infinite reverse;
     pointer-events: none;
     z-index: 0;
-}
-
-@keyframes homeGradient {
-    0%, 100% { transform: translate(0%, 0%) scale(1); }
-    33% { transform: translate(8%, -8%) scale(1.02); }
-    66% { transform: translate(-8%, 8%) scale(0.98); }
-}
-
-@keyframes homeGradient2 {
-    0%, 100% { transform: translate(0%, 0%); }
-    50% { transform: translate(10%, -10%); }
 }
 
 .home-header {
@@ -781,9 +813,7 @@ body::after {
    ======================================== */
 
 .app-screen {
-    background:
-        radial-gradient(ellipse at 50% 0%, rgba(12, 22, 40, 0.6) 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -791,14 +821,16 @@ body::after {
 .app-screen::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background:
-        radial-gradient(ellipse at 25% 25%, rgba(77, 201, 230, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 75% 75%, rgba(122, 36, 56, 0.18) 0%, transparent 50%);
-    animation: appGradient 30s ease-in-out infinite;
+        radial-gradient(ellipse 80% 60% at 25% 20%, rgba(77, 201, 230, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 70% at 75% 80%, rgba(122, 36, 56, 0.15) 0%, transparent 70%);
+    filter: blur(80px);
+    animation: auroraFlow 32s ease-in-out infinite;
+    animation-delay: -15s;
     pointer-events: none;
     z-index: 0;
 }
@@ -811,20 +843,10 @@ body::after {
     width: 100%;
     height: 100%;
     background:
-        radial-gradient(circle at 50% 0%, rgba(77, 201, 230, 0.1) 0%, transparent 40%);
-    animation: appGradient2 20s ease-in-out infinite;
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(77, 201, 230, 0.08) 0%, transparent 60%);
+    filter: blur(50px);
     pointer-events: none;
     z-index: 0;
-}
-
-@keyframes appGradient {
-    0%, 100% { transform: translate(0%, 0%); }
-    50% { transform: translate(-10%, 10%); }
-}
-
-@keyframes appGradient2 {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
 }
 
 .app-header {
@@ -988,17 +1010,15 @@ body::after {
 
 .app-view.active {
     display: block;
-    animation: viewSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: viewFadeIn 0.35s ease-out;
 }
 
-@keyframes viewSlideIn {
+@keyframes viewFadeIn {
     from {
         opacity: 0;
-        transform: translateX(30px);
     }
     to {
         opacity: 1;
-        transform: translateX(0);
     }
 }
 
@@ -1460,11 +1480,9 @@ body::after {
 @keyframes profileCardIn {
     from {
         opacity: 0;
-        transform: scale(0.95) translateY(20px);
     }
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
     }
 }
 
@@ -1839,11 +1857,9 @@ body::after {
 @keyframes noEventIn {
     from {
         opacity: 0;
-        transform: translateY(15px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 
@@ -1972,6 +1988,39 @@ body::after {
     to {
         transform: scale(4);
         opacity: 0;
+    }
+}
+
+/* ========================================
+   MOUSE TRAIL EFFECT
+   ======================================== */
+
+.mouse-trail {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+    box-shadow: 0 0 10px var(--cyan-glow), 0 0 20px var(--cyan-glow);
+    animation: trailFade 0.8s ease-out forwards;
+}
+
+.mouse-trail.crimson {
+    background: var(--crimson-light);
+    box-shadow: 0 0 10px var(--crimson-glow), 0 0 20px var(--crimson-glow);
+}
+
+@keyframes trailFade {
+    0% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.3);
     }
 }
 

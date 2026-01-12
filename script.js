@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRippleEffect();
     initParallax();
     initTypingEffect();
+    initMouseTrail();
 });
 
 // ========================================
@@ -764,4 +765,50 @@ function createRipple(e) {
     setTimeout(() => {
         ripple.remove();
     }, 600);
+}
+
+// ========================================
+// MOUSE TRAIL EFFECT
+// ========================================
+
+let trailThrottle = 0;
+const TRAIL_INTERVAL = 50; // ms between trail particles
+
+function initMouseTrail() {
+    document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - trailThrottle < TRAIL_INTERVAL) return;
+        trailThrottle = now;
+
+        createTrailParticle(e.clientX, e.clientY);
+    });
+}
+
+function createTrailParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.className = 'mouse-trail';
+
+    // Alternate colors occasionally
+    if (Math.random() < 0.3) {
+        particle.classList.add('crimson');
+    }
+
+    // Add slight random offset for organic feel
+    const offsetX = (Math.random() - 0.5) * 8;
+    const offsetY = (Math.random() - 0.5) * 8;
+
+    particle.style.left = (x + offsetX) + 'px';
+    particle.style.top = (y + offsetY) + 'px';
+
+    // Vary size slightly
+    const size = 4 + Math.random() * 4;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+
+    document.body.appendChild(particle);
+
+    // Remove after animation
+    setTimeout(() => {
+        particle.remove();
+    }, 800);
 }
