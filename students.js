@@ -17,6 +17,13 @@
 //     - cooperativeness: Cooperativeness
 // ========================================
 
+// Class Points - update these as the RP progresses
+const classPoints = {
+    1: { A: 1000, B: 1000, C: 1000, D: 1000 },  // 1st Year
+    2: { A: 1000, B: 1000, C: 1000, D: 1000 },  // 2nd Year
+    3: { A: 1000, B: 1000, C: 1000, D: 1000 }   // 3rd Year
+};
+
 const studentData = [
     // ============ 1ST YEAR - CLASS A ============
     {

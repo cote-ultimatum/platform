@@ -484,13 +484,21 @@ function createClassCard(year, className, students) {
         ? `<div class="view-all-link">View all ${students.length} students</div>`
         : '';
 
+    // Get class points
+    const points = (typeof classPoints !== 'undefined' && classPoints[year])
+        ? classPoints[year][className] || 0
+        : 0;
+
     card.innerHTML = `
         <div class="class-card-header">
             <div class="class-badge">
                 <div class="class-letter">${className}</div>
                 <span class="class-label">Class ${className}</span>
             </div>
-            <span class="class-card-count">${students.length}</span>
+            <div class="class-card-stats">
+                <span class="class-points">${points.toLocaleString()} CP</span>
+                <span class="class-card-count">${students.length} students</span>
+            </div>
         </div>
         <div class="class-card-students">
             ${studentPreviews}
