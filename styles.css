@@ -230,7 +230,7 @@ body::after {
     position: absolute;
     width: 60px;
     height: 60px;
-    border: 2px solid rgba(0, 245, 255, 0.15);
+    border: 2px solid var(--cyan-subtle);
     pointer-events: none;
 }
 
@@ -309,7 +309,7 @@ body::after {
 .enter-hint:hover .enter-key {
     border-color: var(--cyan);
     color: var(--cyan);
-    background: rgba(0, 245, 255, 0.1);
+    background: var(--cyan-subtle);
 }
 
 .enter-key {
@@ -416,9 +416,18 @@ body::after {
 }
 
 .lock-btn:hover {
-    background: rgba(0, 245, 255, 0.1);
+    background: var(--cyan-subtle);
     border-color: var(--cyan);
     color: var(--cyan);
+}
+
+.lock-btn:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
+.lock-btn:active {
+    transform: scale(0.95);
 }
 
 .lock-btn svg {
@@ -441,10 +450,23 @@ body::after {
     display: flex;
     gap: 2rem;
     padding: 2rem 3rem;
-    background: rgba(10, 20, 40, 0.6);
-    border: 1px solid rgba(0, 245, 255, 0.1);
+    background: linear-gradient(135deg, rgba(10, 20, 40, 0.7) 0%, rgba(15, 26, 46, 0.6) 100%);
+    border: 1px solid rgba(77, 201, 230, 0.15);
     border-radius: var(--border-radius-lg);
     backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle top shine */
+.app-dock::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(77, 201, 230, 0.3), transparent);
 }
 
 .app-icon {
@@ -463,6 +485,15 @@ body::after {
 
 .app-icon:active {
     transform: scale(0.95);
+}
+
+.app-icon:focus-visible {
+    outline: none;
+}
+
+.app-icon:focus-visible .app-icon-image {
+    outline: 2px solid var(--cyan);
+    outline-offset: 4px;
 }
 
 .app-icon-image {
@@ -661,9 +692,18 @@ body::after {
 }
 
 .nav-btn:hover {
-    background: rgba(0, 245, 255, 0.1);
+    background: var(--cyan-subtle);
     border-color: var(--cyan);
     color: var(--cyan);
+}
+
+.nav-btn:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
+.nav-btn:active {
+    transform: scale(0.95);
 }
 
 .nav-btn svg {
@@ -719,7 +759,18 @@ body::after {
     gap: 1.5rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+    border-bottom: 1px solid rgba(77, 201, 230, 0.15);
+    position: relative;
+}
+
+.year-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
 }
 
 .year-title {
@@ -781,6 +832,28 @@ body::after {
 .class-card:hover::before {
     opacity: 1;
     box-shadow: 0 0 20px var(--class-glow);
+}
+
+.class-card:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 4px;
+}
+
+/* Staggered class card entrance */
+.class-card:nth-child(1) { animation: classCardIn 0.5s ease backwards 0.1s; }
+.class-card:nth-child(2) { animation: classCardIn 0.5s ease backwards 0.2s; }
+.class-card:nth-child(3) { animation: classCardIn 0.5s ease backwards 0.3s; }
+.class-card:nth-child(4) { animation: classCardIn 0.5s ease backwards 0.4s; }
+
+@keyframes classCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .class-card.class-a { --class-color: var(--class-a); --class-glow: var(--class-a-glow); }
@@ -968,6 +1041,12 @@ body::after {
     text-shadow: 0 0 10px var(--cyan-glow);
 }
 
+.back-link:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
 .class-view-header {
     display: flex;
     align-items: center;
@@ -1022,6 +1101,28 @@ body::after {
     padding: 1.25rem 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    animation: studentCardIn 0.4s ease backwards;
+}
+
+/* Staggered entrance animation */
+.student-card:nth-child(1) { animation-delay: 0.05s; }
+.student-card:nth-child(2) { animation-delay: 0.1s; }
+.student-card:nth-child(3) { animation-delay: 0.15s; }
+.student-card:nth-child(4) { animation-delay: 0.2s; }
+.student-card:nth-child(5) { animation-delay: 0.25s; }
+.student-card:nth-child(6) { animation-delay: 0.3s; }
+.student-card:nth-child(7) { animation-delay: 0.35s; }
+.student-card:nth-child(8) { animation-delay: 0.4s; }
+
+@keyframes studentCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .student-card:hover {
@@ -1029,6 +1130,15 @@ body::after {
     box-shadow: var(--glow-spread), 0 8px 32px rgba(0, 0, 0, 0.4);
     transform: translateY(-4px);
     background: linear-gradient(135deg, rgba(16, 29, 50, 0.95) 0%, rgba(0, 196, 204, 0.08) 100%);
+}
+
+.student-card:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 4px;
+}
+
+.student-card:active {
+    transform: translateY(-2px);
 }
 
 .student-card-avatar {
@@ -1091,6 +1201,18 @@ body::after {
     max-width: 1000px;
     margin: 0 auto;
     position: relative;
+    animation: profileCardIn 0.5s ease;
+}
+
+@keyframes profileCardIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .profile-card::before {
@@ -1199,6 +1321,25 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle shimmer effect */
+.profile-image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(77, 201, 230, 0.05), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
 }
 
 .profile-image-placeholder svg {
@@ -1260,6 +1401,24 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    animation: statRowIn 0.4s ease backwards;
+}
+
+.stat-row:nth-child(1) { animation-delay: 0.1s; }
+.stat-row:nth-child(2) { animation-delay: 0.2s; }
+.stat-row:nth-child(3) { animation-delay: 0.3s; }
+.stat-row:nth-child(4) { animation-delay: 0.4s; }
+.stat-row:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes statRowIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .stat-header {
@@ -1303,10 +1462,11 @@ body::after {
     background: repeating-linear-gradient(
         90deg,
         transparent,
-        transparent 10%,
-        rgba(255, 255, 255, 0.03) 10%,
-        rgba(255, 255, 255, 0.03) 20%
+        transparent 9.8%,
+        rgba(255, 255, 255, 0.06) 9.8%,
+        rgba(255, 255, 255, 0.06) 10%
     );
+    z-index: 1;
 }
 
 .stat-bar-fill {
@@ -1420,6 +1580,18 @@ body::after {
     text-align: center;
     padding: 2.5rem;
     background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, transparent 70%);
+    animation: noEventIn 0.6s ease backwards 0.2s;
+}
+
+@keyframes noEventIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .no-event-status {
