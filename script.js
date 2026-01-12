@@ -19,6 +19,9 @@ let mouseY = 0;
 // Audio context for sound effects
 let audioContext = null;
 
+// Track held keys to prevent repeat
+let keysHeld = {};
+
 // ========================================
 // SOUND EFFECTS
 // ========================================
@@ -105,6 +108,14 @@ function playSound(type) {
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.02);
             break;
+
+        case 'hover':
+            oscillator.frequency.setValueAtTime(1400, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.015, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.015);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.015);
+            break;
     }
 }
 
@@ -128,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRippleEffect();
     initParallax();
     initTypingEffect();
+    initHoverSounds();
 });
 
 // ========================================
@@ -558,6 +570,10 @@ function initNavButtons() {
 
 function initKeyboardNav() {
     document.addEventListener('keydown', (e) => {
+        // Prevent key repeat for navigation keys
+        if (keysHeld[e.key]) return;
+        keysHeld[e.key] = true;
+
         // Enter to unlock
         if (e.key === 'Enter' && currentScreen === 'lock-screen') {
             playSound('unlock');
@@ -601,6 +617,11 @@ function initKeyboardNav() {
                 openApp('events');
             }
         }
+    });
+
+    // Release key tracking on keyup
+    document.addEventListener('keyup', (e) => {
+        keysHeld[e.key] = false;
     });
 }
 
@@ -722,6 +743,7 @@ function initSearch() {
     if (!searchInput) return;
 
     searchInput.addEventListener('input', (e) => {
+        playSound('type');
         const query = e.target.value.toLowerCase().trim();
         filterStudents(query);
     });
@@ -1132,5 +1154,31 @@ function createRipple(e) {
     setTimeout(() => {
         ripple.remove();
     }, 600);
+}
+
+// ========================================
+// HOVER SOUNDS
+// ========================================
+
+function initHoverSounds() {
+    // Selectors for all interactive elements
+    const hoverSelectors = [
+        '.nav-btn',
+        '.lock-btn',
+        '.app-icon',
+        '.sort-btn',
+        '.class-card',
+        '.student-preview',
+        '.student-card',
+        '.view-all-link',
+        '.exam-type-card',
+        '.enter-hint'
+    ];
+
+    hoverSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+            el.addEventListener('mouseenter', () => playSound('hover'));
+        });
+    });
 }
 

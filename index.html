@@ -154,6 +154,7 @@
                     <span class="sort-label">Sort:</span>
                     <div class="sort-buttons">
                         <button class="sort-btn active" data-sort="default">Default</button>
+                        <button class="sort-btn" data-sort="overall">Overall</button>
                         <button class="sort-btn" data-sort="academic">Academic Ability</button>
                         <button class="sort-btn" data-sort="intelligence">Intelligence</button>
                         <button class="sort-btn" data-sort="decision">Decision Making</button>
@@ -185,21 +186,16 @@
         <!-- OAA Class View -->
         <div id="oaa-class" class="app-view">
             <div class="class-view-top">
-                <button class="back-link" data-view="oaa-dashboard">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 18l-6-6 6-6"/>
-                    </svg>
-                    Back to All Classes
-                </button>
                 <div class="sort-container class-sort">
                     <span class="sort-label">Sort:</span>
                     <div class="sort-buttons" id="class-sort-buttons">
                         <button class="sort-btn active" data-sort="default">Default</button>
-                        <button class="sort-btn" data-sort="academic">Academic</button>
+                        <button class="sort-btn" data-sort="overall">Overall</button>
+                        <button class="sort-btn" data-sort="academic">Academic Ability</button>
                         <button class="sort-btn" data-sort="intelligence">Intelligence</button>
-                        <button class="sort-btn" data-sort="decision">Decision</button>
-                        <button class="sort-btn" data-sort="physical">Physical</button>
-                        <button class="sort-btn" data-sort="cooperativeness">Coop</button>
+                        <button class="sort-btn" data-sort="decision">Decision Making</button>
+                        <button class="sort-btn" data-sort="physical">Physical Ability</button>
+                        <button class="sort-btn" data-sort="cooperativeness">Cooperativeness</button>
                     </div>
                 </div>
             </div>
@@ -217,12 +213,6 @@
 
         <!-- OAA Profile View -->
         <div id="oaa-profile" class="app-view">
-            <button class="back-link" data-view="oaa-class">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-                Back to Class
-            </button>
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="profile-header-info">
@@ -335,7 +325,7 @@
                             <h4>Uninhabited Island Exam</h4>
                             <p>Wilderness survival test. Classes compete for resources and territory over multiple days.</p>
                             <div class="exam-type-tags">
-                                <span class="exam-tag physical">Physical</span>
+                                <span class="exam-tag physical">Physical Ability</span>
                                 <span class="exam-tag cooperativeness">Cooperativeness</span>
                             </div>
                         </div>
@@ -353,7 +343,7 @@
                             <h4>Paper Shuffle</h4>
                             <p>Academic showdown between classes. Students create and exchange test problems.</p>
                             <div class="exam-type-tags">
-                                <span class="exam-tag academic">Academic</span>
+                                <span class="exam-tag academic">Academic Ability</span>
                                 <span class="exam-tag intelligence">Intelligence</span>
                             </div>
                         </div>
@@ -406,7 +396,7 @@
                             <h4>Sports Festival</h4>
                             <p>Athletic competition. Red and White teams with mixed class assignments.</p>
                             <div class="exam-type-tags">
-                                <span class="exam-tag physical">Physical</span>
+                                <span class="exam-tag physical">Physical Ability</span>
                                 <span class="exam-tag cooperativeness">Cooperativeness</span>
                             </div>
                         </div>
@@ -424,7 +414,7 @@
                             <h4>Final Exam</h4>
                             <p>End-of-term written examination. Class average determines pass or fail.</p>
                             <div class="exam-type-tags">
-                                <span class="exam-tag academic">Academic</span>
+                                <span class="exam-tag academic">Academic Ability</span>
                                 <span class="exam-tag danger">High Stakes</span>
                             </div>
                         </div>

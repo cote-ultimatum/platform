@@ -1577,12 +1577,14 @@ body::before {
     color: var(--text-muted);
     font-size: 0.85rem;
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
-.class-card:hover .view-all-link {
-    background: rgba(var(--class-color), 0.1);
-    border-color: var(--class-color);
-    color: var(--text-primary);
+.view-all-link:hover {
+    background: rgba(77, 201, 230, 0.15);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 15px rgba(77, 201, 230, 0.2);
 }
 
 .empty-class {
@@ -1628,7 +1630,7 @@ body::before {
 
 .class-view-top {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
