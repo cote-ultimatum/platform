@@ -1,6 +1,6 @@
 // ========================================
 // COTE: ULTIMATUM - OAA Website Script
-// PC-Optimized Version
+// PC-Optimized Version with Enhanced Features
 // ========================================
 
 // State
@@ -8,6 +8,13 @@ let currentScreen = 'lock-screen';
 let currentClass = null;
 let currentStudent = null;
 let currentOAAView = 'oaa-dashboard';
+
+// Navigation history for proper back navigation
+let navigationHistory = [];
+
+// Mouse position for parallax
+let mouseX = 0;
+let mouseY = 0;
 
 // ========================================
 // INITIALIZATION
@@ -24,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initOAAApp();
     initKeyboardNav();
     initRippleEffect();
+    initParallax();
+    initTypingEffect();
 });
 
 // ========================================
@@ -34,7 +43,7 @@ function createStarfield() {
     const starfield = document.getElementById('starfield');
     if (!starfield) return;
 
-    const starCount = 80;
+    const starCount = 100; // Increased for better effect
 
     for (let i = 0; i < starCount; i++) {
         const star = document.createElement('div');
@@ -43,14 +52,15 @@ function createStarfield() {
         star.style.left = Math.random() * 100 + '%';
         star.style.top = Math.random() * 100 + '%';
 
-        const size = Math.random() * 2 + 1;
+        const size = Math.random() * 2.5 + 0.5;
         star.style.width = size + 'px';
         star.style.height = size + 'px';
 
         const duration = Math.random() * 3 + 2;
         const delay = Math.random() * 5;
         star.style.setProperty('--duration', duration + 's');
-        star.style.setProperty('--opacity', Math.random() * 0.5 + 0.2);
+        star.style.setProperty('--opacity', Math.random() * 0.6 + 0.2);
+        star.style.setProperty('--depth', Math.random()); // For parallax
         star.style.animationDelay = delay + 's';
 
         starfield.appendChild(star);
@@ -61,7 +71,7 @@ function createParticles() {
     const starfield = document.getElementById('starfield');
     if (!starfield) return;
 
-    const particleCount = 12;
+    const particleCount = 15;
 
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
@@ -69,17 +79,81 @@ function createParticles() {
 
         particle.style.left = Math.random() * 100 + '%';
 
-        const size = Math.random() * 3 + 2;
+        const size = Math.random() * 4 + 2;
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
 
-        const duration = Math.random() * 15 + 15;
+        const duration = Math.random() * 15 + 12;
         const delay = Math.random() * 20;
         particle.style.setProperty('--duration', duration + 's');
-        particle.style.setProperty('--opacity', Math.random() * 0.3 + 0.1);
+        particle.style.setProperty('--opacity', Math.random() * 0.4 + 0.15);
         particle.style.animationDelay = delay + 's';
 
         starfield.appendChild(particle);
+    }
+}
+
+// ========================================
+// PARALLAX EFFECT
+// ========================================
+
+function initParallax() {
+    document.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        updateParallax();
+    });
+}
+
+function updateParallax() {
+    const starfield = document.getElementById('starfield');
+    if (!starfield) return;
+
+    const stars = starfield.querySelectorAll('.star');
+    stars.forEach(star => {
+        const depth = parseFloat(star.style.getPropertyValue('--depth')) || 0.5;
+        const moveX = mouseX * 15 * depth;
+        const moveY = mouseY * 15 * depth;
+        star.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    });
+}
+
+// ========================================
+// TYPING EFFECT
+// ========================================
+
+function initTypingEffect() {
+    const quoteText = document.querySelector('.quote-text');
+    if (!quoteText) return;
+
+    const originalText = quoteText.textContent;
+    quoteText.textContent = '';
+    quoteText.style.visibility = 'visible';
+
+    let hasTyped = false;
+
+    // Only type when home screen is shown
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.target.classList.contains('active') &&
+                mutation.target.id === 'home-screen' &&
+                !hasTyped) {
+                hasTyped = true;
+                typeText(quoteText, originalText, 0);
+            }
+        });
+    });
+
+    const homeScreen = document.getElementById('home-screen');
+    if (homeScreen) {
+        observer.observe(homeScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+}
+
+function typeText(element, text, index) {
+    if (index < text.length) {
+        element.textContent += text.charAt(index);
+        setTimeout(() => typeText(element, text, index + 1), 35);
     }
 }
 
@@ -110,10 +184,19 @@ function updateTime() {
 }
 
 // ========================================
-// SCREEN NAVIGATION
+// SCREEN NAVIGATION (with history)
 // ========================================
 
-function showScreen(screenId) {
+function showScreen(screenId, addToHistory = true) {
+    // Add current state to history before changing
+    if (addToHistory && currentScreen !== screenId) {
+        navigationHistory.push({
+            screen: currentScreen,
+            oaaView: currentOAAView,
+            classData: currentClass ? { ...currentClass } : null
+        });
+    }
+
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
@@ -125,18 +208,39 @@ function showScreen(screenId) {
 }
 
 function goBack() {
+    // If we have history, use it
+    if (navigationHistory.length > 0) {
+        const previous = navigationHistory.pop();
+
+        if (previous.screen === 'oaa-app') {
+            showScreen('oaa-app', false);
+
+            // Restore the correct OAA view
+            if (previous.oaaView === 'oaa-class' && previous.classData) {
+                // Restore class view
+                showClassView(previous.classData.year, previous.classData.className, false);
+            } else {
+                showOAAView(previous.oaaView, false);
+            }
+        } else {
+            showScreen(previous.screen, false);
+        }
+        return;
+    }
+
+    // Fallback logic if no history
     if (currentScreen === 'oaa-app') {
         if (currentOAAView === 'oaa-profile') {
-            showOAAView('oaa-class');
+            showOAAView('oaa-class', false);
         } else if (currentOAAView === 'oaa-class') {
-            showOAAView('oaa-dashboard');
+            showOAAView('oaa-dashboard', false);
         } else {
-            showScreen('home-screen');
+            showScreen('home-screen', false);
         }
     } else if (currentScreen === 'events-app') {
-        showScreen('home-screen');
+        showScreen('home-screen', false);
     } else if (currentScreen === 'home-screen') {
-        showScreen('lock-screen');
+        showScreen('lock-screen', false);
     }
 }
 
@@ -148,6 +252,7 @@ function initLockScreen() {
     const lockScreen = document.getElementById('lock-screen');
     if (lockScreen) {
         lockScreen.addEventListener('click', () => {
+            navigationHistory = []; // Clear history when unlocking
             showScreen('home-screen');
         });
     }
@@ -171,7 +276,8 @@ function initHomeScreen() {
     if (lockBtn) {
         lockBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            showScreen('lock-screen');
+            navigationHistory = []; // Clear history when locking
+            showScreen('lock-screen', false);
         });
     }
 }
@@ -179,7 +285,7 @@ function initHomeScreen() {
 function openApp(appId) {
     if (appId === 'oaa') {
         showScreen('oaa-app');
-        showOAAView('oaa-dashboard');
+        showOAAView('oaa-dashboard', false);
     } else if (appId === 'events') {
         showScreen('events-app');
     }
@@ -196,15 +302,15 @@ function initNavButtons() {
             if (action === 'back') {
                 goBack();
             } else if (action === 'home') {
-                showScreen('home-screen');
+                navigationHistory = []; // Clear history when going home
+                showScreen('home-screen', false);
             }
         });
     });
 
     document.querySelectorAll('.back-link').forEach(link => {
         link.addEventListener('click', () => {
-            const target = link.dataset.view;
-            showOAAView(target);
+            goBack();
         });
     });
 }
@@ -217,6 +323,7 @@ function initKeyboardNav() {
     document.addEventListener('keydown', (e) => {
         // Enter to unlock
         if (e.key === 'Enter' && currentScreen === 'lock-screen') {
+            navigationHistory = [];
             showScreen('home-screen');
             return;
         }
@@ -242,7 +349,16 @@ function initKeyboardNav() {
 // OAA APP
 // ========================================
 
-function showOAAView(viewId) {
+function showOAAView(viewId, addToHistory = true) {
+    // Add to history if changing views within OAA
+    if (addToHistory && currentOAAView !== viewId) {
+        navigationHistory.push({
+            screen: 'oaa-app',
+            oaaView: currentOAAView,
+            classData: currentClass ? { ...currentClass } : null
+        });
+    }
+
     document.querySelectorAll('#oaa-app .app-view').forEach(view => {
         view.classList.remove('active');
     });
@@ -256,6 +372,73 @@ function showOAAView(viewId) {
 function initOAAApp() {
     buildStudentLookup();
     renderClassCards();
+    initSearch();
+}
+
+// ========================================
+// SEARCH FUNCTIONALITY
+// ========================================
+
+function initSearch() {
+    const searchContainer = document.querySelector('.search-container');
+    if (!searchContainer) return;
+
+    const searchInput = searchContainer.querySelector('.search-input');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        filterStudents(query);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            filterStudents('');
+            searchInput.blur();
+        }
+    });
+}
+
+function filterStudents(query) {
+    const classCards = document.querySelectorAll('.class-card');
+
+    if (!query) {
+        // Show all
+        classCards.forEach(card => {
+            card.style.display = '';
+            card.querySelectorAll('.student-preview').forEach(preview => {
+                preview.style.display = '';
+            });
+        });
+        return;
+    }
+
+    classCards.forEach(card => {
+        const previews = card.querySelectorAll('.student-preview');
+        let hasMatch = false;
+
+        previews.forEach(preview => {
+            const name = preview.querySelector('.student-preview-name').textContent.toLowerCase();
+            const id = preview.querySelector('.student-preview-id').textContent.toLowerCase();
+
+            if (name.includes(query) || id.includes(query)) {
+                preview.style.display = '';
+                hasMatch = true;
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        // Also check class name
+        const classLabel = card.querySelector('.class-label').textContent.toLowerCase();
+        if (classLabel.includes(query)) {
+            hasMatch = true;
+            previews.forEach(preview => preview.style.display = '');
+        }
+
+        card.style.display = hasMatch ? '' : 'none';
+    });
 }
 
 function renderClassCards() {
@@ -318,8 +501,25 @@ function createClassCard(year, className, students) {
             const studentId = preview.dataset.studentId;
             const student = studentLookup[studentId];
             if (student) {
+                // First navigate to class view (in history), then to profile
                 currentClass = { year: student.year, className: student.class };
-                showStudentProfile(student);
+
+                // Add dashboard to history
+                navigationHistory.push({
+                    screen: 'oaa-app',
+                    oaaView: 'oaa-dashboard',
+                    classData: null
+                });
+
+                // Add class view to history
+                navigationHistory.push({
+                    screen: 'oaa-app',
+                    oaaView: 'oaa-class',
+                    classData: { year: student.year, className: student.class }
+                });
+
+                // Now show profile
+                showStudentProfile(student, false);
             }
         });
     });
@@ -359,7 +559,7 @@ function buildStudentLookup() {
     });
 }
 
-function showClassView(year, className) {
+function showClassView(year, className, addToHistory = true) {
     currentClass = { year, className };
     const students = getStudentsByClass(year, className);
 
@@ -385,12 +585,7 @@ function showClassView(year, className) {
         });
     }
 
-    const backLink = document.querySelector('#oaa-class .back-link');
-    if (backLink) {
-        backLink.dataset.view = 'oaa-dashboard';
-    }
-
-    showOAAView('oaa-class');
+    showOAAView('oaa-class', addToHistory);
 }
 
 function createStudentCard(student) {
@@ -417,7 +612,7 @@ function createStudentCard(student) {
     return card;
 }
 
-function showStudentProfile(student) {
+function showStudentProfile(student, addToHistory = true) {
     currentStudent = student;
 
     document.getElementById('profile-name').textContent = student.name;
@@ -485,12 +680,7 @@ function showStudentProfile(student) {
         }, 100 + index * 80);
     });
 
-    const backLink = document.querySelector('#oaa-profile .back-link');
-    if (backLink) {
-        backLink.dataset.view = 'oaa-class';
-    }
-
-    showOAAView('oaa-profile');
+    showOAAView('oaa-profile', addToHistory);
 }
 
 // ========================================
@@ -547,7 +737,7 @@ function calculateOverallGrade(stats) {
 
 function initRippleEffect() {
     // Add ripple to buttons and interactive elements
-    const rippleTargets = document.querySelectorAll('.nav-btn, .lock-btn, .app-icon-image, .class-card, .student-card');
+    const rippleTargets = document.querySelectorAll('.nav-btn, .lock-btn, .app-icon-image');
 
     rippleTargets.forEach(target => {
         target.classList.add('ripple-container');
