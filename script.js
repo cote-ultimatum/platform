@@ -176,10 +176,22 @@ function triggerScreenFlicker() {
 }
 
 function initGlitchEffects() {
-    // Glitch on hover for app icons (like COTE sign)
+    // Glitch on hover for app icons
     document.querySelectorAll('.app-icon-image').forEach(icon => {
         icon.addEventListener('mouseenter', () => triggerGlitch(icon));
     });
+
+    // Glitch on hover for COTE title
+    const lockTitle = document.querySelector('.lock-title');
+    if (lockTitle) {
+        lockTitle.addEventListener('mouseenter', () => triggerGlitch(lockTitle));
+    }
+
+    // Glitch on hover for home brand title
+    const homeBrandTitle = document.querySelector('.home-brand-title');
+    if (homeBrandTitle) {
+        homeBrandTitle.addEventListener('mouseenter', () => triggerGlitch(homeBrandTitle));
+    }
 }
 
 // ========================================

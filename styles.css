@@ -538,8 +538,8 @@ body::before {
     animation: titleGlow 4s ease-in-out infinite;
 }
 
-.lock-title:hover {
-    animation: glitch 0.3s ease infinite;
+.lock-title.glitching {
+    animation: glitchEffect 0.15s ease;
 }
 
 @keyframes titleGlow {
@@ -986,6 +986,15 @@ body::before {
     box-shadow: 0 0 10px var(--cyan-glow);
 }
 
+/* OAA App keyboard hints */
+.oaa-hints {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
 .key {
     display: inline-flex;
     align-items: center;
@@ -1151,13 +1160,17 @@ body::before {
 /* Dashboard Header with Search */
 .dashboard-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: 1.5rem 3rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-bottom: 1rem;
     gap: 1rem;
     flex-wrap: wrap;
+}
+
+.dashboard-header .search-container {
+    margin-left: auto;
 }
 
 /* Sort Controls */
@@ -1249,74 +1262,6 @@ body::before {
 
 .search-input::placeholder {
     color: var(--text-muted);
-}
-
-.search-shortcut {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    transition: all 0.2s ease;
-}
-
-.search-input:focus + .search-shortcut {
-    opacity: 0;
-}
-
-/* Header Right Group */
-.header-right-group {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* Keyboard Shortcut Hints */
-.shortcut-hints {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.shortcut-hint {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    transition: color 0.2s ease;
-}
-
-.shortcut-hint kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 0.4rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-.shortcut-hint:hover {
-    color: var(--cyan);
-}
-
-.shortcut-hint:hover kbd {
-    border-color: var(--cyan);
-    color: var(--cyan);
-    background: rgba(77, 201, 230, 0.1);
 }
 
 /* ========================================
@@ -1679,7 +1624,7 @@ body::before {
 
 .class-view-top {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
