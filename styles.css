@@ -2152,7 +2152,7 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding: 2rem 3rem;
+    padding: 2rem 3rem 5rem; /* Extra bottom padding for keyboard hints */
     max-width: 900px;
     margin: 0 auto;
     width: 100%;
@@ -2173,6 +2173,44 @@ body::before {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid rgba(77, 201, 230, 0.1);
     background: rgba(0, 0, 0, 0.2);
+}
+
+/* Collapsible sections */
+.events-section.collapsible .events-section-header {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.events-section.collapsible .events-section-header:hover {
+    background: rgba(77, 201, 230, 0.05);
+}
+
+.collapse-icon {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+}
+
+.collapsible-content.collapsed + .events-section-header .collapse-icon,
+.events-section.collapsible .events-section-header .collapse-icon {
+    transform: rotate(0deg);
+}
+
+.events-section.collapsible.expanded .collapse-icon {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 1;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
 }
 
 .section-indicator {

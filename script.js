@@ -211,9 +211,108 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavButtons();
     initOAAApp();
     initKeyboardNav();
+    initKeyboardHintClicks();
+    initCollapsibleSections();
     initTypingEffect();
     initParallax();
 });
+
+// ========================================
+// CLICKABLE KEYBOARD HINTS
+// ========================================
+
+function initCollapsibleSections() {
+    document.querySelectorAll('.events-section.collapsible .events-section-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const section = header.closest('.events-section');
+            const content = section.querySelector('.collapsible-content');
+
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                section.classList.add('expanded');
+                playSound('open');
+            } else {
+                content.classList.add('collapsed');
+                section.classList.remove('expanded');
+                playSound('back');
+            }
+        });
+
+        header.addEventListener('mouseenter', () => playSound('hover'));
+    });
+}
+
+function initKeyboardHintClicks() {
+    document.querySelectorAll('.key-hint').forEach(hint => {
+        hint.style.cursor = 'pointer';
+
+        const handleHintClick = () => {
+            const keyEl = hint.querySelector('.key');
+            if (!keyEl) return;
+            const key = keyEl.textContent.trim().toUpperCase();
+
+            // Simulate the keyboard action
+            switch (key) {
+                case 'ESC':
+                    if (state.currentScreen === 'oaa-app' || state.currentScreen === 'events-app') {
+                        playSound('back');
+                        goBack();
+                    } else if (state.currentScreen === 'home-screen') {
+                        playSound('back');
+                        state.navigationHistory = [];
+                        showScreen('lock-screen', false);
+                    }
+                    break;
+                case '/':
+                    if (state.currentScreen === 'oaa-app' && state.currentOAAView === 'oaa-dashboard') {
+                        const searchInput = document.querySelector('.search-input');
+                        if (searchInput) searchInput.focus();
+                    }
+                    break;
+                case 'F':
+                    if (state.currentScreen === 'oaa-app' && state.currentOAAView === 'oaa-dashboard') {
+                        toggleFavoritesFilter();
+                    }
+                    break;
+                case 'C':
+                    if (state.currentScreen === 'oaa-app' &&
+                        (state.currentOAAView === 'oaa-dashboard' || state.currentOAAView === 'oaa-class')) {
+                        toggleCompareMode();
+                    }
+                    break;
+                case '1':
+                    if (state.currentScreen === 'home-screen') {
+                        playSound('open');
+                        openApp('oaa');
+                    }
+                    break;
+                case '2':
+                    if (state.currentScreen === 'home-screen') {
+                        playSound('open');
+                        openApp('events');
+                    }
+                    break;
+                case 'LOCK':
+                    if (state.currentScreen === 'home-screen') {
+                        playSound('back');
+                        state.navigationHistory = [];
+                        showScreen('lock-screen', false);
+                    }
+                    break;
+            }
+        };
+
+        // Support both click and touch
+        hint.addEventListener('click', handleHintClick);
+        hint.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            handleHintClick();
+        });
+
+        // Add hover sound
+        hint.addEventListener('mouseenter', () => playSound('hover'));
+    });
+}
 
 // ========================================
 // STARFIELD & PARTICLES
@@ -442,7 +541,12 @@ function goBack() {
 function initLockScreen() {
     const lockScreen = document.getElementById('lock-screen');
     if (lockScreen) {
+        // Support both click and touch for mobile
         lockScreen.addEventListener('click', handleUnlock);
+        lockScreen.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            handleUnlock();
+        });
     }
 }
 

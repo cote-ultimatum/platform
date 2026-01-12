@@ -313,13 +313,15 @@
                 </div>
             </div>
 
-            <!-- Exam Types Reference -->
-            <div class="events-section">
-                <div class="events-section-header">
+            <!-- Exam Types Reference (Collapsible) -->
+            <div class="events-section collapsible">
+                <div class="events-section-header" data-toggle="exam-types">
                     <div class="section-indicator info"></div>
                     <h2 class="events-section-title">EXAM TYPES</h2>
+                    <span class="collapse-icon">▼</span>
                 </div>
-                <div class="exam-types-grid">
+                <div class="collapsible-content collapsed" id="exam-types">
+                  <div class="exam-types-grid">
                     <div class="exam-type-card">
                         <div class="exam-type-icon survival">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -425,6 +427,7 @@
                             </div>
                         </div>
                     </div>
+                  </div>
                 </div>
             </div>
 
