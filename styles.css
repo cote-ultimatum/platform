@@ -5,22 +5,22 @@
 
 :root {
     /* Core Colors - Deep Navy (from colors.png) */
-    --bg-primary: #060d18;
-    --bg-secondary: #0a1428;
-    --bg-tertiary: #0d1a2f;
-    --bg-card: #101d32;
-    --bg-card-hover: #142540;
+    --bg-primary: #050a12;
+    --bg-secondary: #0a1220;
+    --bg-tertiary: #0c1628;
+    --bg-card: #0f1a2e;
+    --bg-card-hover: #132238;
 
-    /* Accent Colors - Cyan (tech/UI) */
-    --cyan: #00f5ff;
-    --cyan-dim: #00c4cc;
-    --cyan-glow: rgba(0, 245, 255, 0.4);
-    --cyan-subtle: rgba(0, 245, 255, 0.1);
+    /* Accent Colors - Cool Blue (refined from cyan) */
+    --cyan: #4dc9e6;
+    --cyan-dim: #3a9db8;
+    --cyan-glow: rgba(77, 201, 230, 0.35);
+    --cyan-subtle: rgba(77, 201, 230, 0.1);
 
     /* Accent Colors - Crimson (from uniforms in colors.png) */
-    --crimson: #8b2942;
-    --crimson-light: #a83254;
-    --crimson-glow: rgba(139, 41, 66, 0.4);
+    --crimson: #7a2438;
+    --crimson-light: #9a2e48;
+    --crimson-glow: rgba(122, 36, 56, 0.4);
 
     /* Class Colors */
     --class-a: #d4af37;
@@ -38,8 +38,8 @@
     --text-muted: #64748b;
 
     /* Stat bar colors */
-    --stat-bar-bg: #1e293b;
-    --stat-bar-fill: linear-gradient(90deg, #00c4cc, #00f5ff);
+    --stat-bar-bg: #151f30;
+    --stat-bar-fill: linear-gradient(90deg, #3a9db8, #4dc9e6);
 
     /* Sizing */
     --border-radius: 12px;
@@ -68,8 +68,8 @@ body {
     overflow-x: hidden;
 }
 
-/* Subtle scanline overlay */
-body::before {
+/* Subtle vignette overlay */
+body::after {
     content: '';
     position: fixed;
     top: 0;
@@ -77,14 +77,8 @@ body::before {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 9999;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.03) 2px,
-        rgba(0, 0, 0, 0.03) 4px
-    );
+    z-index: 9998;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
 }
 
 /* ========================================
@@ -191,13 +185,35 @@ body::before {
 
 #lock-screen {
     background:
-        radial-gradient(ellipse at 50% 0%, rgba(13, 26, 47, 0.8) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, rgba(139, 41, 66, 0.15) 0%, transparent 40%),
-        linear-gradient(180deg, #0a1428 0%, #060d18 100%);
+        radial-gradient(ellipse at 50% 0%, rgba(12, 22, 40, 0.9) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(122, 36, 56, 0.12) 0%, transparent 40%),
+        linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     justify-content: center;
     align-items: center;
     cursor: pointer;
     user-select: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated gradient overlay */
+#lock-screen::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center, rgba(139, 41, 66, 0.08) 0%, transparent 50%);
+    animation: gradientShift 15s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes gradientShift {
+    0%, 100% { transform: translate(0%, 0%) rotate(0deg); }
+    25% { transform: translate(10%, 10%) rotate(90deg); }
+    50% { transform: translate(0%, 20%) rotate(180deg); }
+    75% { transform: translate(-10%, 10%) rotate(270deg); }
 }
 
 .lock-content {
@@ -283,18 +299,17 @@ body::before {
     justify-content: center;
     gap: 0.75rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .enter-hint:hover {
     color: var(--text-secondary);
-    background: rgba(0, 245, 255, 0.05);
 }
 
 .enter-hint:hover .enter-key {
     border-color: var(--cyan);
     color: var(--cyan);
+    background: rgba(0, 245, 255, 0.1);
 }
 
 .enter-key {
@@ -316,9 +331,31 @@ body::before {
 
 #home-screen {
     background:
-        radial-gradient(ellipse at 30% 10%, rgba(139, 41, 66, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(0, 196, 204, 0.05) 0%, transparent 50%),
-        linear-gradient(180deg, #0a1428 0%, #060d18 100%);
+        radial-gradient(ellipse at 30% 10%, rgba(122, 36, 56, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(77, 201, 230, 0.04) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+#home-screen::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+        radial-gradient(ellipse at 30% 30%, rgba(0, 196, 204, 0.04) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 70%, rgba(139, 41, 66, 0.05) 0%, transparent 40%);
+    animation: homeGradient 20s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes homeGradient {
+    0%, 100% { transform: translate(0%, 0%); }
+    33% { transform: translate(5%, -5%); }
+    66% { transform: translate(-5%, 5%); }
 }
 
 .home-header {
@@ -564,8 +601,8 @@ body::before {
 
 .app-screen {
     background:
-        radial-gradient(ellipse at 50% 0%, rgba(13, 26, 47, 0.5) 0%, transparent 60%),
-        var(--bg-primary);
+        radial-gradient(ellipse at 50% 0%, rgba(12, 22, 40, 0.6) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
 }
 
 .app-header {
@@ -1331,60 +1368,49 @@ body::before {
     pointer-events: none;
 }
 
-/* Static radar rings */
+/* Pulsing radar rings */
 .radar-ring {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border: 1px solid rgba(0, 245, 255, 0.1);
+    border: 1px solid var(--cyan);
     border-radius: 50%;
+    opacity: 0;
 }
 
 .radar-ring:nth-child(1) {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
+    animation: ringPulse 3s ease-out infinite;
 }
 
 .radar-ring:nth-child(2) {
-    width: 300px;
-    height: 300px;
-    border-style: dashed;
-    opacity: 0.6;
+    width: 180px;
+    height: 180px;
+    animation: ringPulse 3s ease-out infinite 1s;
 }
 
 .radar-ring:nth-child(3) {
-    width: 400px;
-    height: 400px;
-    opacity: 0.4;
+    width: 180px;
+    height: 180px;
+    animation: ringPulse 3s ease-out infinite 2s;
 }
 
-/* Rotating radar sweep */
+@keyframes ringPulse {
+    0% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.2);
+    }
+}
+
+/* Hidden sweep - not used */
 .radar-sweep {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 200px;
-    height: 200px;
-    transform-origin: center center;
-    animation: radarSweep 4s linear infinite;
-}
-
-.radar-sweep::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 50%;
-    height: 50%;
-    background: conic-gradient(from 0deg at 0% 100%, transparent 0deg, var(--cyan) 30deg, transparent 60deg);
-    opacity: 0.2;
-    transform-origin: bottom left;
-}
-
-@keyframes radarSweep {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
+    display: none;
 }
 
 /* Center content */
