@@ -496,7 +496,13 @@ function initLockScreen() {
     const lockScreen = document.getElementById('lock-screen');
     if (lockScreen) {
         lockScreen.addEventListener('click', () => {
-            playSound('unlock');
+            // Initialize audio on first interaction and play boot sound
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                playSound('boot');
+            } else {
+                playSound('unlock');
+            }
             navigationHistory = []; // Clear history when unlocking
             showScreen('home-screen');
         });
@@ -576,7 +582,13 @@ function initKeyboardNav() {
 
         // Enter to unlock
         if (e.key === 'Enter' && currentScreen === 'lock-screen') {
-            playSound('unlock');
+            // Initialize audio on first interaction and play boot sound
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                playSound('boot');
+            } else {
+                playSound('unlock');
+            }
             navigationHistory = [];
             showScreen('home-screen');
             return;
@@ -741,6 +753,10 @@ function initSearch() {
 
     const searchInput = searchContainer.querySelector('.search-input');
     if (!searchInput) return;
+
+    searchInput.addEventListener('focus', () => {
+        playSound('select');
+    });
 
     searchInput.addEventListener('input', (e) => {
         playSound('type');

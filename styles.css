@@ -91,6 +91,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
+    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
 }
 
 /* Subtle vignette overlay */
@@ -1634,6 +1635,7 @@ body::before {
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
+    padding-top: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
