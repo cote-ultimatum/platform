@@ -176,19 +176,10 @@ function triggerScreenFlicker() {
 }
 
 function initGlitchEffects() {
-    // Random ambient glitches
-    function scheduleGlitch() {
-        const delay = Math.random() * 20000 + 15000;
-        setTimeout(() => {
-            if (Math.random() < 0.7) {
-                triggerScreenGlitch();
-            } else {
-                triggerScreenFlicker();
-            }
-            scheduleGlitch();
-        }, delay);
-    }
-    setTimeout(scheduleGlitch, 8000);
+    // Glitch on hover for app icons (like COTE sign)
+    document.querySelectorAll('.app-icon-image').forEach(icon => {
+        icon.addEventListener('mouseenter', () => triggerGlitch(icon));
+    });
 }
 
 // ========================================
@@ -462,9 +453,8 @@ function initHomeScreen() {
         icon.addEventListener('mouseenter', () => playSound('hover'));
         icon.addEventListener('click', () => {
             playSound('open');
-            triggerGlitch(icon.querySelector('.app-icon-image'));
             const appId = icon.dataset.app;
-            setTimeout(() => openApp(appId), 50);
+            openApp(appId);
         });
     });
 
@@ -527,6 +517,15 @@ function initKeyboardNav() {
 
         // ESC to go back
         if (e.key === 'Escape') {
+            // Close comparison modal first if open
+            const modal = document.querySelector('.comparison-modal.active');
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+                playSound('back');
+                return;
+            }
+
             const searchInput = document.querySelector('.search-input');
             if (searchInput && document.activeElement === searchInput) {
                 searchInput.blur();
@@ -558,14 +557,10 @@ function initKeyboardNav() {
         if (state.currentScreen === 'home-screen') {
             if (e.key === '1') {
                 playSound('open');
-                const icon = document.querySelector('.app-icon[data-app="oaa"]');
-                if (icon) triggerGlitch(icon.querySelector('.app-icon-image'));
-                setTimeout(() => openApp('oaa'), 50);
+                openApp('oaa');
             } else if (e.key === '2') {
                 playSound('open');
-                const icon = document.querySelector('.app-icon[data-app="events"]');
-                if (icon) triggerGlitch(icon.querySelector('.app-icon-image'));
-                setTimeout(() => openApp('events'), 50);
+                openApp('events');
             }
         }
 
