@@ -31,20 +31,29 @@ let keysHeld = {};
 // ========================================
 
 function initAudio() {
-    // Initialize on first user interaction (fallback if boot sounds didn't work)
-    document.addEventListener('click', () => {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // Initialize on first user interaction
+    const startAudio = () => {
+        try {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            // Resume audio context if suspended (browser autoplay policy)
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            // Start ambient noise after a short delay
+            setTimeout(() => {
+                if (!ambientNoiseNode) {
+                    startAmbientNoise();
+                }
+            }, 500);
+        } catch (e) {
+            console.log('Audio init failed:', e);
         }
-        // Resume audio context if suspended (browser autoplay policy)
-        if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-        // Start ambient if not already playing
-        if (!ambientNoiseNode) {
-            startAmbientNoise();
-        }
-    }, { once: true });
+    };
+
+    document.addEventListener('click', startAudio, { once: true });
+    document.addEventListener('keydown', startAudio, { once: true });
 }
 
 function playSound(type) {
@@ -251,35 +260,8 @@ function stopAmbientNoise() {
 // ========================================
 
 function initBootSounds() {
-    try {
-        // Initialize audio context immediately for boot sounds
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        // Play sounds synchronized with CSS animations
-        // Letters appear at 0.1s, 0.2s, 0.3s, 0.4s
-        setTimeout(() => playSound('bootLetter'), 100);
-        setTimeout(() => playSound('bootLetter'), 200);
-        setTimeout(() => playSound('bootLetter'), 300);
-        setTimeout(() => playSound('bootLetter'), 400);
-
-        // Subtitle appears at 0.6s
-        setTimeout(() => playSound('bootProgress'), 600);
-
-        // Progress bar ticks (loader runs from 0.5s to 2.3s)
-        for (let i = 0; i < 8; i++) {
-            setTimeout(() => playSound('bootProgress'), 600 + i * 200);
-        }
-
-        // Boot complete at ~2.2s (before fade out)
-        setTimeout(() => {
-            playSound('bootComplete');
-            // Start ambient noise after boot
-            setTimeout(() => startAmbientNoise(), 500);
-        }, 2200);
-    } catch (e) {
-        // Audio context creation failed, will try again on first click
-        console.log('Boot sounds unavailable, will initialize on user interaction');
-    }
+    // Boot sounds disabled - audio requires user interaction in most browsers
+    // Sounds will initialize on first click via initAudio()
 }
 
 // ========================================
