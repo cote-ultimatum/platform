@@ -482,8 +482,7 @@ body::before {
     height: 60px;
     border: 2px solid var(--cyan-dim);
     pointer-events: none;
-    opacity: 0;
-    animation: bracketFadeIn 0.8s ease 2.5s forwards;
+    opacity: 0.6; /* Show immediately with lower opacity */
 }
 
 .lock-content::before {
@@ -491,7 +490,6 @@ body::before {
     left: 0;
     border-right: none;
     border-bottom: none;
-    transform-origin: top left;
 }
 
 .lock-content::after {
@@ -499,19 +497,6 @@ body::before {
     right: 0;
     border-left: none;
     border-top: none;
-    transform-origin: bottom right;
-    animation-delay: 2.7s;
-}
-
-@keyframes bracketFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 .lock-time {
@@ -928,6 +913,7 @@ body::before {
     max-width: 600px;
     position: relative;
     padding: 0 2rem;
+    min-height: 120px; /* Prevent layout shift when quote types in */
 }
 
 .school-quote::before,
@@ -1145,6 +1131,7 @@ body::before {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-left: auto; /* Push to right edge */
 }
 
 .header-time {
@@ -2429,19 +2416,13 @@ body::before {
     border-color: rgba(241, 196, 15, 0.3);
 }
 
-.exam-tag.social, .exam-tag.teamwork {
+.exam-tag.cooperativeness {
     background: rgba(52, 152, 219, 0.1);
     color: #3498db;
     border-color: rgba(52, 152, 219, 0.3);
 }
 
-.exam-tag.strategy, .exam-tag.deception {
-    background: rgba(149, 165, 166, 0.1);
-    color: #95a5a6;
-    border-color: rgba(149, 165, 166, 0.3);
-}
-
-.exam-tag.competition {
+.exam-tag.decision {
     background: rgba(230, 126, 34, 0.1);
     color: #e67e22;
     border-color: rgba(230, 126, 34, 0.3);

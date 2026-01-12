@@ -793,6 +793,7 @@ function buildStudentLookup() {
 function showClassView(year, className, addToHistory = true) {
     currentClass = { year, className };
     const students = getStudentsByClass(year, className);
+    const sortedStudents = getSortedStudents(students, currentSort);
 
     // Update badge
     const badge = document.getElementById('class-badge');
@@ -807,10 +808,10 @@ function showClassView(year, className, addToHistory = true) {
     const container = document.getElementById('student-list');
     container.innerHTML = '';
 
-    if (students.length === 0) {
+    if (sortedStudents.length === 0) {
         container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 3rem;">No students enrolled in this class</p>';
     } else {
-        students.forEach(student => {
+        sortedStudents.forEach(student => {
             const card = createStudentCard(student);
             container.appendChild(card);
         });
