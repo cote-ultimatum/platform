@@ -119,37 +119,67 @@ function updateParallax() {
 }
 
 // ========================================
-// TYPING EFFECT
+// TYPING EFFECT WITH ROTATING QUOTES
 // ========================================
 
-let quoteOriginalText = '';
-let quoteHasTyped = false;
+const quotes = [
+    { text: '"Every outcome is the result of the choices you make."', attribution: '- ANHS Student Handbook' },
+    { text: '"Talent is something you bloom, instinct is something you polish."', attribution: '- Sae Chabashira' },
+    { text: '"The weak are destined to lie beneath the boots of the strong."', attribution: '- Kakeru Ryūen' },
+    { text: '"People who cannot find something to live for always seem to be searching for something to die for."', attribution: '- Kiyotaka Ayanokōji' },
+    { text: '"It takes a great talent and skill to conceal one\'s talent and skill."', attribution: '- ANHS Principle' },
+    { text: '"True victory is not winning against others, but winning against yourself."', attribution: '- Manabu Horikita' },
+    { text: '"Those who are willing to defile themselves are the truly strong."', attribution: '- Kiyotaka Ayanokōji' },
+    { text: '"In this world, winning is everything."', attribution: '- ANHS Philosophy' }
+];
+
+let currentTypingTimeout = null;
 
 function initTypingEffect() {
     const quoteText = document.querySelector('.quote-text');
-    if (!quoteText) return;
-
-    quoteOriginalText = quoteText.textContent;
-    quoteText.textContent = '';
+    if (quoteText) {
+        quoteText.textContent = '';
+    }
 }
 
 function triggerQuoteTyping() {
-    if (quoteHasTyped) return;
-
     const quoteText = document.querySelector('.quote-text');
-    if (!quoteText || !quoteOriginalText) return;
+    const quoteAttribution = document.querySelector('.quote-attribution');
+    if (!quoteText) return;
 
-    quoteHasTyped = true;
+    // Clear any ongoing typing
+    if (currentTypingTimeout) {
+        clearTimeout(currentTypingTimeout);
+    }
+
+    // Select random quote
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // Reset and start fresh
+    quoteText.textContent = '';
+    if (quoteAttribution) {
+        quoteAttribution.textContent = quote.attribution;
+        quoteAttribution.style.opacity = '0';
+    }
+
     // Small delay before typing starts
-    setTimeout(() => {
-        typeText(quoteText, quoteOriginalText, 0);
-    }, 300);
+    currentTypingTimeout = setTimeout(() => {
+        typeText(quoteText, quote.text, 0, () => {
+            // Show attribution after typing completes
+            if (quoteAttribution) {
+                quoteAttribution.style.transition = 'opacity 0.5s ease';
+                quoteAttribution.style.opacity = '1';
+            }
+        });
+    }, 400);
 }
 
-function typeText(element, text, index) {
+function typeText(element, text, index, onComplete) {
     if (index < text.length) {
         element.textContent += text.charAt(index);
-        setTimeout(() => typeText(element, text, index + 1), 35);
+        currentTypingTimeout = setTimeout(() => typeText(element, text, index + 1, onComplete), 30);
+    } else if (onComplete) {
+        onComplete();
     }
 }
 
