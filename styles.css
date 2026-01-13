@@ -2099,6 +2099,28 @@ body::before {
     background: var(--bg-secondary);
 }
 
+/* Class-specific profile image glows */
+.profile-image-container.class-a-glow .profile-image,
+.profile-image-container.class-a-glow .profile-image-placeholder {
+    border-color: var(--class-a);
+    box-shadow: 0 0 25px var(--class-a-glow);
+}
+.profile-image-container.class-b-glow .profile-image,
+.profile-image-container.class-b-glow .profile-image-placeholder {
+    border-color: var(--class-b);
+    box-shadow: 0 0 25px var(--class-b-glow);
+}
+.profile-image-container.class-c-glow .profile-image,
+.profile-image-container.class-c-glow .profile-image-placeholder {
+    border-color: var(--class-c);
+    box-shadow: 0 0 25px var(--class-c-glow);
+}
+.profile-image-container.class-d-glow .profile-image,
+.profile-image-container.class-d-glow .profile-image-placeholder {
+    border-color: var(--class-d);
+    box-shadow: 0 0 25px var(--class-d-glow);
+}
+
 .profile-image-placeholder {
     width: 100%;
     aspect-ratio: 1/1;
@@ -2137,17 +2159,17 @@ body::before {
 }
 
 .overall-grade-box {
-    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-light) 100%);
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
     border-radius: var(--border-radius);
     padding: 1.25rem;
     text-align: center;
-    box-shadow: var(--glow-crimson);
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
     animation: gradePulse 3s ease-in-out infinite;
 }
 
 @keyframes gradePulse {
-    0%, 100% { box-shadow: 0 0 20px var(--crimson-glow); }
-    50% { box-shadow: 0 0 35px var(--crimson-glow), 0 0 50px rgba(139, 41, 66, 0.2); }
+    0%, 100% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.3); }
+    50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.4), 0 0 50px rgba(231, 76, 60, 0.2); }
 }
 
 .overall-label {

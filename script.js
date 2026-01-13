@@ -1066,6 +1066,14 @@ function showStudentProfile(student, addToHistory = true) {
 
     const profileImage = document.getElementById('profile-image');
     const profilePlaceholder = document.getElementById('profile-placeholder');
+    const profileImageContainer = document.querySelector('.profile-image-container');
+
+    // Add class-specific glow to profile image
+    if (profileImageContainer) {
+        profileImageContainer.classList.remove('class-a-glow', 'class-b-glow', 'class-c-glow', 'class-d-glow');
+        profileImageContainer.classList.add(`class-${student.class.toLowerCase()}-glow`);
+    }
+
     if (student.image) {
         profileImage.src = student.image;
         profileImage.style.display = 'block';
