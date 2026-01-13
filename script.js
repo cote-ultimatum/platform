@@ -163,6 +163,19 @@ function triggerGlitch(element, duration = 150) {
     setTimeout(() => element.classList.remove('glitching'), duration);
 }
 
+function startContinuousGlitch(element) {
+    if (!element || element.glitchInterval) return;
+    triggerGlitch(element);
+    element.glitchInterval = setInterval(() => triggerGlitch(element), 200);
+}
+
+function stopContinuousGlitch(element) {
+    if (!element || !element.glitchInterval) return;
+    clearInterval(element.glitchInterval);
+    element.glitchInterval = null;
+    element.classList.remove('glitching');
+}
+
 function triggerScreenGlitch() {
     const overlay = document.getElementById('glitch-overlay');
     if (overlay) {
@@ -177,21 +190,24 @@ function triggerScreenFlicker() {
 }
 
 function initGlitchEffects() {
-    // Glitch on hover for app icons
+    // Continuous glitch on hover for app icons
     document.querySelectorAll('.app-icon-image').forEach(icon => {
-        icon.addEventListener('mouseenter', () => triggerGlitch(icon));
+        icon.addEventListener('mouseenter', () => startContinuousGlitch(icon));
+        icon.addEventListener('mouseleave', () => stopContinuousGlitch(icon));
     });
 
-    // Glitch on hover for COTE title
+    // Continuous glitch on hover for COTE title
     const lockTitle = document.querySelector('.lock-title');
     if (lockTitle) {
-        lockTitle.addEventListener('mouseenter', () => triggerGlitch(lockTitle));
+        lockTitle.addEventListener('mouseenter', () => startContinuousGlitch(lockTitle));
+        lockTitle.addEventListener('mouseleave', () => stopContinuousGlitch(lockTitle));
     }
 
-    // Glitch on hover for home brand title
+    // Continuous glitch on hover for home brand title
     const homeBrandTitle = document.querySelector('.home-brand-title');
     if (homeBrandTitle) {
-        homeBrandTitle.addEventListener('mouseenter', () => triggerGlitch(homeBrandTitle));
+        homeBrandTitle.addEventListener('mouseenter', () => startContinuousGlitch(homeBrandTitle));
+        homeBrandTitle.addEventListener('mouseleave', () => stopContinuousGlitch(homeBrandTitle));
     }
 }
 
@@ -1053,7 +1069,7 @@ function showStudentProfile(student, addToHistory = true) {
         setTimeout(() => {
             const fill = row.querySelector('.stat-bar-fill');
             fill.style.width = value + '%';
-            fill.classList.add(value < 40 ? 'stat-low' : value < 70 ? 'stat-medium' : 'stat-high');
+            fill.classList.add(`stat-${key}`);
         }, 100 + i * 80);
     });
 
