@@ -25,12 +25,16 @@
     /* Class Colors */
     --class-a: #d4af37;
     --class-a-glow: rgba(212, 175, 55, 0.3);
+    --class-a-hover: #fecdd3;
     --class-b: #9b59b6;
     --class-b-glow: rgba(155, 89, 182, 0.3);
+    --class-b-hover: #fda4af;
     --class-c: #c0392b;
     --class-c-glow: rgba(192, 57, 43, 0.3);
+    --class-c-hover: #e11d48;
     --class-d: #00c4cc;
     --class-d-glow: rgba(0, 196, 204, 0.3);
+    --class-d-hover: #881337;
 
     /* Text Colors */
     --text-primary: #ffffff;
@@ -1240,9 +1244,9 @@ body::before {
 }
 
 .filter-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--text-secondary);
-    color: var(--text-secondary);
+    background: var(--cyan-subtle);
+    border-color: var(--cyan);
+    color: var(--cyan);
 }
 
 .filter-btn.active {
@@ -1556,7 +1560,8 @@ body::before {
 
 .class-card:hover::before {
     opacity: 1;
-    box-shadow: 0 0 20px var(--class-glow);
+    border-color: var(--class-hover);
+    box-shadow: 0 0 25px var(--class-hover);
 }
 
 .class-card:focus-visible {
@@ -1581,10 +1586,10 @@ body::before {
     }
 }
 
-.class-card.class-a { --class-color: var(--class-a); --class-glow: var(--class-a-glow); }
-.class-card.class-b { --class-color: var(--class-b); --class-glow: var(--class-b-glow); }
-.class-card.class-c { --class-color: var(--class-c); --class-glow: var(--class-c-glow); }
-.class-card.class-d { --class-color: var(--class-d); --class-glow: var(--class-d-glow); }
+.class-card.class-a { --class-color: var(--class-a); --class-glow: var(--class-a-glow); --class-hover: var(--class-a-hover); }
+.class-card.class-b { --class-color: var(--class-b); --class-glow: var(--class-b-glow); --class-hover: var(--class-b-hover); }
+.class-card.class-c { --class-color: var(--class-c); --class-glow: var(--class-c-glow); --class-hover: var(--class-c-hover); }
+.class-card.class-d { --class-color: var(--class-d); --class-glow: var(--class-d-glow); --class-hover: var(--class-d-hover); }
 
 .class-card-header {
     display: flex;

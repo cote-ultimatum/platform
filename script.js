@@ -209,6 +209,12 @@ function initGlitchEffects() {
         homeBrandTitle.addEventListener('mouseenter', () => startContinuousGlitch(homeBrandTitle));
         homeBrandTitle.addEventListener('mouseleave', () => stopContinuousGlitch(homeBrandTitle));
     }
+
+    // Continuous glitch on hover for all app header brand titles
+    document.querySelectorAll('.header-brand .brand-title').forEach(title => {
+        title.addEventListener('mouseenter', () => startContinuousGlitch(title));
+        title.addEventListener('mouseleave', () => stopContinuousGlitch(title));
+    });
 }
 
 // ========================================
@@ -239,17 +245,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initCollapsibleSections() {
     document.querySelectorAll('.events-section.collapsible .events-section-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const section = header.closest('.events-section');
-            const content = section.querySelector('.collapsible-content');
+        const section = header.closest('.events-section');
+        const content = section.querySelector('.collapsible-content');
+        const arrow = header.querySelector('.collapse-icon');
 
+        // Set initial arrow state (collapsed = pointing right)
+        if (content.classList.contains('collapsed') && arrow) {
+            arrow.textContent = '▶';
+        }
+
+        header.addEventListener('click', () => {
             if (content.classList.contains('collapsed')) {
                 content.classList.remove('collapsed');
                 section.classList.add('expanded');
+                if (arrow) arrow.textContent = '▼';
                 playSound('open');
             } else {
                 content.classList.add('collapsed');
                 section.classList.remove('expanded');
+                if (arrow) arrow.textContent = '▶';
                 playSound('back');
             }
         });
@@ -621,6 +635,19 @@ function initNavButtons() {
         btn.addEventListener('mouseenter', () => playSound('hover'));
         btn.addEventListener('click', () => {
             const action = btn.dataset.action;
+
+            // Close compare mode first if active
+            if (state.compareMode) {
+                exitCompareMode();
+            }
+
+            // Close comparison modal if open
+            const modal = document.querySelector('.comparison-modal.active');
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+            }
+
             if (action === 'back') {
                 playSound('back');
                 goBack();
@@ -1154,7 +1181,12 @@ function initCompareMode() {
     document.body.appendChild(compareBar);
 
     compareBar.querySelector('.compare-btn').addEventListener('click', showComparison);
-    compareBar.querySelector('.compare-cancel').addEventListener('click', exitCompareMode);
+    compareBar.querySelector('.compare-btn').addEventListener('mouseenter', () => playSound('hover'));
+    compareBar.querySelector('.compare-cancel').addEventListener('click', () => {
+        playSound('back');
+        exitCompareMode();
+    });
+    compareBar.querySelector('.compare-cancel').addEventListener('mouseenter', () => playSound('hover'));
 }
 
 function toggleCompareMode() {
