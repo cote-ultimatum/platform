@@ -1,7 +1,7 @@
 COTE: ULTIMATUM - Website Session Notes
 =======================================
 
-Last Updated: 2026-01-12
+Last Updated: 2026-01-13
 
 ================================================================================
 PROJECT OVERVIEW
@@ -11,13 +11,95 @@ A phone-style interface website for the COTE: ULTIMATUM roleplay community.
 Live at: https://coteultimatum.github.io/platform/
 
 Features:
-- Boot screen with COTE ULTIMATUM branding
+- Boot screen with COTE: ULTIMATUM branding + glitch effect
 - Lock screen with time/date and aurora background
 - Home screen with app dock and rotating quotes
-- OAA App: Student database with class cards, profiles, stats
+- OAA App: Student database with class cards, profiles, stats, comparison
 - Events App: Special exam tracking (Current/Upcoming/History)
 
 Tech: Vanilla HTML/CSS/JS, hosted on GitHub Pages
+
+================================================================================
+COMPLETED THIS SESSION (2026-01-13)
+================================================================================
+
+1. UI CONSISTENCY & POLISH
+
+   Branding:
+   - Fixed "COTE:" with colon everywhere (boot, lock, home, apps)
+   - Unified brand size (1.2rem/0.7rem) across all screens
+   - Centered COTE: ULTIMATUM title using flex:1 layout
+   - Added glitch effect to all COTE titles on hover
+   - Boot sequence now has brief glitch animation mid-loading
+
+   Class Colors (NEW palette):
+   - A: #fecdd3 (light pink)
+   - B: #fda4af (medium pink)
+   - C: #e11d48 (rose red)
+   - D: #881337 (dark crimson)
+   - Applied to class cards, hover effects, profile pictures, comparison avatars
+
+   Sort Buttons:
+   - Renamed "Overall" to "Overall Grade"
+   - Colored by stat type (academic=purple, intelligence=yellow,
+     decision=orange, physical=green, cooperativeness=blue, overall=red)
+
+   Overall Grade:
+   - Unified red color (#e74c3c) across profile, comparison, sort button
+   - Matches "High Stakes" exam tag color
+
+   Comparison Modal:
+   - Best stat values colored by stat type
+   - Avatar glows match student's class color
+   - Close button has hover sound
+   - Closes on back/home navigation
+
+   Profile View:
+   - Added 2rem top margin to avoid header overlap
+   - Profile picture has class-colored glow/border
+
+   Other Fixes:
+   - Time consistently on right (home and apps)
+   - Favorites filter hover is cyan (not gray)
+   - Favorites empty state shows "No favorites in this class"
+   - Exam Types arrow: right when collapsed, down when expanded
+   - Compare buttons have sounds
+   - Keyboard hints clickable with touch support
+
+2. DISCORD EMBED
+
+   - Using GRVN8MNQY-backdrop_wide.png as preview image
+   - Simplified meta tags (removed redundant site_name)
+   - Fixed theme-color to #050a12 (matches dark background)
+   - Embed shows: "COTE: ULTIMATUM" + description + backdrop image
+
+3. MOBILE
+
+   - Fixed theme-color causing cyan edges on mobile browsers
+   - Touch support for keyboard hints and lock screen
+
+================================================================================
+NEXT SESSION - PLANNED FEATURES
+================================================================================
+
+1. DATABASE INTEGRATION
+   - Move student data from students.js to a database
+   - Move class points to database
+   - Real-time updates across users
+   - Options: Firebase, Supabase, or simple JSON API
+
+2. CLASS POINTS INDICATORS
+   - Show up/down arrows when points change from previous value
+   - Visual feedback: green for increases, red for decreases
+   - Possibly show point change amount (+50, -100, etc.)
+   - Store previous point values to calculate delta
+
+3. ADMIN PANEL
+   - Protected admin interface for moderators
+   - Set/update class points per class
+   - Possibly add/edit/remove students
+   - Authentication system (Discord OAuth recommended for RP server)
+   - Only accessible to authorized users
 
 ================================================================================
 CURRENT STATE
@@ -27,23 +109,26 @@ Visual Features:
 - Custom cyan cursor globally
 - Aurora background effects with blur
 - Scan lines + noise texture overlays
-- Glitch effect on COTE title hover
+- Glitch effect on COTE titles (hover + boot sequence)
 - Staggered card entrance animations
 - Animated border glow on app dock
-- Profile card hover glow
+- Class-colored profile picture borders
+- Stat-colored comparison highlights
 
 Functional Features:
 - Rotating lore-accurate quotes (8 quotes from LN/anime)
 - Class points display with ranking (1st-4th)
 - Overall OAA grade on student cards
-- Search with keyboard shortcut (/ or Ctrl+K)
+- Search with keyboard shortcut (/)
 - Keyboard navigation (ESC back, 1/2 for apps, ENTER to unlock)
+- Student comparison (up to 4 students)
+- Favorites system (stored in localStorage)
 - Time display in all headers
+- Collapsible Exam Types section
 
 Student Data (students.js):
 - 13 students across 4 classes (A: 4, B: 3, C: 3, D: 3)
 - Lore-accurate ID format: S01TXXXXXX (e.g., S01T004801)
-- All stats default to 50 (to be customized per character)
 - Class points all set to 1000 (to be updated as RP progresses)
 
 ================================================================================
@@ -51,64 +136,40 @@ FILES STRUCTURE
 ================================================================================
 
 /website/
-  index.html      - Main HTML structure
-  styles.css      - All styling (~2200 lines)
-  script.js       - All interactivity (~850 lines)
-  students.js     - Student data and class points
-  SESSION_NOTES.txt - This file
+  index.html                    - Main HTML structure
+  styles.css                    - All styling (~3200 lines)
+  script.js                     - All interactivity (~1400 lines)
+  students.js                   - Student data and class points
+  GRVN8MNQY-backdrop_wide.png   - Discord embed image
+  preview.png                   - Generated preview (unused)
+  SESSION_NOTES.txt             - This file
 
 ================================================================================
-QUOTES (Lore-Accurate)
+STYLE REFERENCE
 ================================================================================
 
-1. "All people are nothing but tools. In this world, winning is everything."
-   - Kiyotaka Ayanokoji
+Class Colors (NEW):
+- A: #fecdd3 (light pink)
+- B: #fda4af (medium pink)
+- C: #e11d48 (rose red)
+- D: #881337 (dark crimson)
 
-2. "I've never once thought of you as an ally. Not you. Not Kushida. Not Hirata."
-   - Kiyotaka Ayanokoji
+Stat Colors:
+- Academic: #9b59b6 (purple)
+- Intelligence: #f1c40f (yellow)
+- Decision: #e67e22 (orange)
+- Physical: #2ecc71 (green)
+- Cooperativeness: #3498db (blue)
+- Overall/High Stakes: #e74c3c (red)
 
-3. "Class D is an assemblage of defective products."
-   - Sae Chabashira
+Site Colors:
+- Background: #050a12 (dark navy)
+- Accent: #4dc9e6 (cyan)
+- Crimson: #9a2e48
 
-4. "Violence is the most powerful weapon. True strength means the power to use it."
-   - Kakeru Ryuen
-
-5. "Smiling means letting your guard down in front of another person, even if just a little."
-   - Kiyotaka Ayanokoji
-
-6. "There are two things that define a person: their patience when they have nothing, and their attitude when they have everything."
-   - Arisu Sakayanagi
-
-7. "Those who remember there was someone named Kiyotaka Ayanokoji will never forget."
-   - Manabu Horikita
-
-8. "It doesn't matter what needs to be sacrificed. As long as I win in the end, that's all that matters."
-   - Kiyotaka Ayanokoji
-
-================================================================================
-PENDING IMPROVEMENTS (For Next Session)
-================================================================================
-
-High Priority:
-- [ ] 2nd/3rd Year sections (currently only 1st years shown)
-- [ ] Favicon (COTE-themed icon)
-- [ ] Search results counter ("X students found")
-
-Medium Priority:
-- [ ] Student sorting (by name, ID, or OAA grade)
-- [ ] Class stats summary (average grade, top student)
-- [ ] Profile enhancements (notes field, gender, birthday)
-
-Events Page (when RP has events):
-- [ ] Countdown timer for upcoming exams
-- [ ] Expandable past events with results
-- [ ] Class point changes from each event
-
-Polish:
-- [ ] Loading skeleton placeholders
-- [ ] Sound effects (optional, toggleable)
-- [ ] Mobile responsiveness testing
-- [ ] preview.png for Discord embeds (1200x630px)
+Fonts:
+- Orbitron (titles, tech elements)
+- Inter (body text)
 
 ================================================================================
 HOW TO ADD STUDENTS
@@ -151,32 +212,31 @@ const classPoints = {
 Rankings auto-calculate based on points.
 
 ================================================================================
-GIT COMMITS THIS SESSION
+QUOTES (Lore-Accurate)
 ================================================================================
 
-c782378 - (previous session work)
-a48a75d - Polish UI and fix lore accuracy (IDs, quotes, subtitle)
-45af00b - UI polish and consistency improvements
-f6e34f9 - Update quotes to be lore-accurate
+1. "All people are nothing but tools. In this world, winning is everything."
+   - Kiyotaka Ayanokoji
 
-================================================================================
-STYLE REFERENCE
-================================================================================
+2. "I've never once thought of you as an ally. Not you. Not Kushida. Not Hirata."
+   - Kiyotaka Ayanokoji
 
-Colors:
-- Cyan (primary): #4dc9e6
-- Crimson (accent): #7a2438
-- Background: #050a12 to #0a1220
-- Text: #ffffff, #94a3b8, #64748b
+3. "Class D is an assemblage of defective products."
+   - Sae Chabashira
 
-Class Colors:
-- A: Gold (#d4af37)
-- B: Purple (#9b59b6)
-- C: Red (#c0392b)
-- D: Teal (#00c4cc)
+4. "Violence is the most powerful weapon. True strength means the power to use it."
+   - Kakeru Ryuen
 
-Fonts:
-- Orbitron (titles, tech elements)
-- Inter (body text)
+5. "Smiling means letting your guard down in front of another person, even if just a little."
+   - Kiyotaka Ayanokoji
+
+6. "There are two things that define a person: their patience when they have nothing, and their attitude when they have everything."
+   - Arisu Sakayanagi
+
+7. "Those who remember there was someone named Kiyotaka Ayanokoji will never forget."
+   - Manabu Horikita
+
+8. "It doesn't matter what needs to be sacrificed. As long as I win in the end, that's all that matters."
+   - Kiyotaka Ayanokoji
 
 ================================================================================
