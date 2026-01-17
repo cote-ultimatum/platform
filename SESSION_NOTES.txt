@@ -1,7 +1,7 @@
 COTE: ULTIMATUM - Website Session Notes
 =======================================
 
-Last Updated: 2026-01-13
+Last Updated: 2026-01-17
 
 ================================================================================
 PROJECT OVERVIEW
@@ -16,11 +16,94 @@ Features:
 - Home screen with app dock and rotating quotes
 - OAA App: Student database with class cards, profiles, stats, comparison
 - Events App: Special exam tracking (Current/Upcoming/History)
+- Firebase Realtime Database integration (optional)
+- Class points change indicators (up/down arrows)
+- Admin panel for moderators
 
-Tech: Vanilla HTML/CSS/JS, hosted on GitHub Pages
+Tech: Vanilla HTML/CSS/JS, Firebase Realtime Database, hosted on GitHub Pages
 
 ================================================================================
-COMPLETED THIS SESSION (2026-01-13)
+COMPLETED THIS SESSION (2026-01-17)
+================================================================================
+
+1. ADMIN APP UI POLISH
+
+   Loading States:
+   - Login shows "Verifying..." for 800ms minimum (prevents flash)
+   - Save shows "Saving..." for 600ms minimum with shimmer animation
+   - Both run actual operation in parallel with delay
+
+   Sounds (consistent with OAA):
+   - All buttons have hover sounds
+   - Input focus plays 'select' sound
+   - Typing in credentials/points plays 'type' sound
+   - Success/error plays appropriate sound
+   - Reset plays 'back' sound
+
+   Animations:
+   - Login view fades in with scale effect
+   - Panel view slides in from below
+   - Panel sections stagger in (0.05s, 0.1s, 0.15s delays)
+   - Status messages: success pops in, error shakes
+   - Login error shakes and re-triggers on new error
+
+   Icon Changes:
+   - Home screen: Shield with checkmark (was broken lock)
+   - Login screen: Proper padlock with U-shaped shackle (was weird key)
+   - Login icon glitches on hover (matches lock screen style)
+
+   Text Changes:
+   - "Faculty Login" → "Authentication"
+   - "Sign In" → "Log in"
+
+2. SAVE CONFIRMATION MODAL
+
+   - Shows "Confirm Changes" with list of pending changes
+   - Changes color-coded: green for increases, red for decreases
+   - Cancel/Save buttons with hover sounds
+   - Click outside overlay to dismiss
+   - Prevents accidental saves
+
+3. CHANGELOG IMPROVEMENTS
+
+   - Entries colored by change direction:
+     - Green (#22c55e) for point increases (+)
+     - Red (#ef4444) for point decreases (-)
+
+4. SUCCESS FEEDBACK
+
+   - Checkmark icon (✓) in green circle pops in on save success
+   - Bouncy animation: scale 0 → 1.2 → 1
+   - Appears alongside "Saved X change(s)" text
+
+5. NUMBER FORMATTING
+
+   - Point inputs show commas when not focused (1,000 vs 1000)
+   - Commas removed on focus for editing
+   - Re-formatted on blur
+   - Works with loadAdminPointsFromDB and getAdminPointsFromInputs
+
+6. DELTA DISPLAY FIX
+
+   - Removed +/- signs from delta indicators
+   - Now just shows arrow + number (▲50 or ▼30)
+   - Arrow direction indicates increase/decrease
+
+7. OAA CLASS ORDER
+
+   - Classes now sorted by rank (1st→4th by points)
+   - No longer fixed ABCD order
+   - Updates when points change
+
+8. BOOT GLITCH FIX
+
+   - Only COTE: logo glitches (not individual letters)
+   - Uses same glitchEffect animation as lock screen hover
+   - Triggers twice at 0.9s after boot starts
+   - Removed separate letter glitch animations
+
+================================================================================
+COMPLETED SESSION 2 (2026-01-13) - DATABASE INTEGRATION
 ================================================================================
 
 1. UI CONSISTENCY & POLISH
@@ -79,27 +162,112 @@ COMPLETED THIS SESSION (2026-01-13)
    - Touch support for keyboard hints and lock screen
 
 ================================================================================
+COMPLETED SESSION 2 (2026-01-13) - DATABASE INTEGRATION
+================================================================================
+
+1. FIREBASE REALTIME DATABASE INTEGRATION
+
+   New Files Created:
+   - database.js: Firebase connection module with real-time sync
+   - admin.html: Admin panel for moderators (requires setup)
+
+   database.js Features:
+   - Firebase SDK initialization with config placeholders
+   - Real-time subscription to classPoints data
+   - Delta calculation (compares current to previous values)
+   - Connection status monitoring (connected/disconnected)
+   - Admin authentication framework (Discord OAuth ready)
+   - COTEDB global object with public API
+
+   index.html Updates:
+   - Added Firebase SDK scripts (firebase-app, firebase-database, firebase-auth)
+   - Loads database.js before script.js
+
+2. CLASS POINTS CHANGE INDICATORS
+
+   Visual Features:
+   - Green up arrow (▲) with +N for point increases
+   - Red down arrow (▼) with -N for point decreases
+   - Animated appearance (scale + fade in)
+   - Shown next to CP value on class cards
+
+   CSS Added (styles.css):
+   - .points-delta: Base indicator styling
+   - .points-delta.positive: Green with background
+   - .points-delta.negative: Red with background
+   - .delta-arrow: Arrow icon using ::before pseudo-element
+   - @keyframes deltaAppear: Entrance animation
+
+   Storage:
+   - Previous points stored in localStorage ('cote-previous-points')
+   - Delta calculated on page load and when real-time updates arrive
+   - Points saved on page unload for next session comparison
+
+3. DATABASE STATUS INDICATOR
+
+   - Fixed bottom-left indicator showing connection status
+   - States: "Live" (green), "Local Data" (yellow), "Offline" (red)
+   - Animated status dot with glow effect
+
+4. SCRIPT.JS UPDATES
+
+   New State Properties:
+   - dbConnected: Boolean for connection status
+   - dbClassPoints: Data from Firebase (overrides local)
+   - previousPoints: Stored previous values for delta
+   - pointDeltas: Calculated differences
+
+   New Functions:
+   - initDatabase(): Initialize Firebase connection
+   - handleDatabaseEvent(): Process real-time events
+   - handleClassPointsUpdate(): Update UI on data change
+   - getActiveClassPoints(): Returns Firebase or local data
+   - getPointDelta(): Calculate change for specific class
+   - createDbStatusIndicator(): Create status UI element
+   - updateDbStatus(): Update status indicator
+
+   Updated Functions:
+   - createClassCard(): Now shows delta indicators
+   - getClassRank(): Uses getActiveClassPoints()
+
+5. ADMIN PANEL (admin.html)
+
+   Features:
+   - Discord-themed login button (OAuth placeholder)
+   - Class points input grid (all 3 years, all 4 classes)
+   - Class badge indicators with correct colors
+   - Save/Reset buttons
+   - Status messages (success/error)
+   - User info display when authenticated
+
+   Note: Full Discord OAuth requires:
+   - Discord Developer Application
+   - Backend server (Firebase Functions)
+   - Firebase Custom Auth tokens
+   - Admin user ID list in Firebase
+
+================================================================================
 NEXT SESSION - PLANNED FEATURES
 ================================================================================
 
-1. DATABASE INTEGRATION
-   - Move student data from students.js to a database
-   - Move class points to database
-   - Real-time updates across users
-   - Options: Firebase, Supabase, or simple JSON API
+1. FIREBASE SETUP (User Action Required)
+   - Create Firebase project at console.firebase.google.com
+   - Enable Realtime Database
+   - Copy config to database.js FIREBASE_CONFIG
+   - Set database rules for security
+   - Initialize classPoints data structure
 
-2. CLASS POINTS INDICATORS
-   - Show up/down arrows when points change from previous value
-   - Visual feedback: green for increases, red for decreases
-   - Possibly show point change amount (+50, -100, etc.)
-   - Store previous point values to calculate delta
+2. DISCORD OAUTH (Optional)
+   - Create Discord Application
+   - Set up Firebase Functions for OAuth flow
+   - Implement custom token generation
+   - Add admin user IDs to Firebase
 
-3. ADMIN PANEL
-   - Protected admin interface for moderators
-   - Set/update class points per class
-   - Possibly add/edit/remove students
-   - Authentication system (Discord OAuth recommended for RP server)
-   - Only accessible to authorized users
+3. POTENTIAL ENHANCEMENTS
+   - Student data migration to Firebase
+   - Real-time student profile updates
+   - Event/exam data in database
+   - Push notifications for updates
 
 ================================================================================
 CURRENT STATE
@@ -114,22 +282,41 @@ Visual Features:
 - Animated border glow on app dock
 - Class-colored profile picture borders
 - Stat-colored comparison highlights
+- Class points delta indicators (arrows only, no +/-)
+- OAA classes sorted by rank (not fixed ABCD)
 
 Functional Features:
 - Rotating lore-accurate quotes (8 quotes from LN/anime)
 - Class points display with ranking (1st-4th)
 - Overall OAA grade on student cards
 - Search with keyboard shortcut (/)
-- Keyboard navigation (ESC back, 1/2 for apps, ENTER to unlock)
+- Keyboard navigation (ESC back, 1/2/3 for apps, ENTER to unlock)
 - Student comparison (up to 4 students)
 - Favorites system (stored in localStorage)
 - Time display in all headers
 - Collapsible Exam Types section
+- Firebase Realtime Database integration (optional)
+- Real-time class points updates (when Firebase configured)
+
+Admin Panel Features:
+- Simple username/password authentication
+- Class points editing with number formatting (commas)
+- Save confirmation modal with change preview
+- Changelog with color-coded entries (green +, red -)
+- Success checkmark animation on save
+- Full sound integration (hover, type, select, success, error)
+- Consistent animations with main app
 
 Student Data (students.js):
 - 13 students across 4 classes (A: 4, B: 3, C: 3, D: 3)
 - Lore-accurate ID format: S01TXXXXXX (e.g., S01T004801)
 - Class points all set to 1000 (to be updated as RP progresses)
+
+Database Integration:
+- Firebase Realtime Database configured (cote-ultimatum project)
+- Falls back to local data if Firebase unavailable
+- Stores previous points for delta calculation
+- Admin panel integrated into main app (key "3")
 
 ================================================================================
 FILES STRUCTURE
@@ -137,11 +324,13 @@ FILES STRUCTURE
 
 /website/
   index.html                    - Main HTML structure
-  styles.css                    - All styling (~3200 lines)
-  script.js                     - All interactivity (~1400 lines)
-  students.js                   - Student data and class points
+  styles.css                    - All styling (~4000 lines)
+  script.js                     - All interactivity (~2000 lines)
+  students.js                   - Student data and class points (local fallback)
+  database.js                   - Firebase database module (~200 lines)
+  admin.html                    - Standalone admin panel (deprecated, use main app)
+  firebase-init.json            - Initial database structure reference
   GRVN8MNQY-backdrop_wide.png   - Discord embed image
-  preview.png                   - Generated preview (unused)
   SESSION_NOTES.txt             - This file
 
 ================================================================================
@@ -201,6 +390,8 @@ ID Format: S[year]T[6-digit number]
 HOW TO UPDATE CLASS POINTS
 ================================================================================
 
+Option 1: Local (students.js) - Simple, no database needed
+
 In students.js, modify classPoints object:
 
 const classPoints = {
@@ -210,6 +401,94 @@ const classPoints = {
 };
 
 Rankings auto-calculate based on points.
+
+Option 2: Firebase (Real-time) - For live updates
+
+Use Firebase Console or admin panel to update classPoints in database.
+Changes sync instantly to all connected users.
+
+================================================================================
+HOW TO SET UP FIREBASE (Optional)
+================================================================================
+
+1. Create Firebase Project:
+   - Go to https://console.firebase.google.com/
+   - Click "Add project"
+   - Name it (e.g., "cote-ultimatum")
+   - Disable Google Analytics (optional)
+
+2. Add Web App:
+   - Click gear icon → Project settings
+   - Scroll to "Your apps" → Click web icon (</>)
+   - Register app (e.g., "COTE Platform")
+   - Copy the firebaseConfig object
+
+3. Enable Realtime Database:
+   - Click "Build" → "Realtime Database"
+   - Click "Create Database"
+   - Choose region closest to you
+   - Start in "test mode" (we'll secure it later)
+
+4. Configure database.js:
+   - Open website/database.js
+   - Replace FIREBASE_CONFIG with your config:
+
+   const FIREBASE_CONFIG = {
+       apiKey: "YOUR_API_KEY",
+       authDomain: "YOUR_PROJECT.firebaseapp.com",
+       databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+       projectId: "YOUR_PROJECT",
+       storageBucket: "YOUR_PROJECT.appspot.com",
+       messagingSenderId: "YOUR_SENDER_ID",
+       appId: "YOUR_APP_ID"
+   };
+
+5. Initialize Database Structure:
+   - In Firebase Console, go to Realtime Database
+   - Click on your database URL
+   - Click "+" to add data, create this structure:
+
+   classPoints
+     1
+       A: 1000
+       B: 1000
+       C: 1000
+       D: 1000
+     2
+       A: 1000
+       B: 1000
+       C: 1000
+       D: 1000
+     3
+       A: 1000
+       B: 1000
+       C: 1000
+       D: 1000
+
+6. Set Security Rules (Important!):
+   - Go to Realtime Database → Rules tab
+   - For testing, use:
+
+   {
+     "rules": {
+       ".read": true,
+       ".write": false,
+       "classPoints": {
+         ".write": "auth != null && root.child('admins').child(auth.uid).val() == true"
+       }
+     }
+   }
+
+   This allows everyone to read, but only admins can write.
+
+7. Add Admin Users:
+   - In Firebase Console, add an "admins" node:
+
+   admins
+     DISCORD_USER_ID_1: true
+     DISCORD_USER_ID_2: true
+
+   (Replace with actual Discord user IDs after setting up OAuth)
 
 ================================================================================
 QUOTES (Lore-Accurate)
