@@ -194,64 +194,22 @@ body::before {
     display: flex;
     justify-content: center;
     gap: 0.1em;
+    /* Glitch the whole COTE: logo using same effect as lock screen hover */
+    animation: glitchEffect 0.15s ease 0.9s 2;
 }
 
 .boot-letter {
     opacity: 0;
-    animation: bootLetterIn 0.3s ease forwards, bootGlitch 0.15s ease 0.8s 2;
+    animation: bootLetterIn 0.3s ease forwards;
     color: var(--cyan);
     text-shadow: 0 0 30px var(--cyan-glow);
     text-transform: uppercase;
 }
 
-.boot-c { animation-delay: 0.1s, 0.8s; }
-.boot-o { animation-delay: 0.2s, 0.82s; }
-.boot-t { animation-delay: 0.3s, 0.84s; }
-.boot-e { animation-delay: 0.4s, 0.86s; }
-
-/* Boot glitch matches main glitch effect (RGB chromatic aberration) */
-@keyframes bootGlitch {
-    0% {
-        transform: translate(0);
-        text-shadow:
-            0 0 30px var(--cyan-glow),
-            0 0 60px var(--cyan-glow);
-    }
-    20% {
-        transform: translate(-3px, 2px);
-        text-shadow:
-            3px 0 var(--crimson-light),
-            -3px 0 var(--cyan),
-            0 0 30px var(--cyan-glow);
-    }
-    40% {
-        transform: translate(3px, -2px);
-        text-shadow:
-            -3px 0 var(--crimson-light),
-            3px 0 var(--cyan),
-            0 0 30px var(--cyan-glow);
-    }
-    60% {
-        transform: translate(-2px, 3px);
-        text-shadow:
-            2px 0 var(--crimson-light),
-            -2px 0 var(--cyan),
-            0 0 30px var(--cyan-glow);
-    }
-    80% {
-        transform: translate(2px, -3px);
-        text-shadow:
-            -2px 0 var(--crimson-light),
-            2px 0 var(--cyan),
-            0 0 30px var(--cyan-glow);
-    }
-    100% {
-        transform: translate(0);
-        text-shadow:
-            0 0 30px var(--cyan-glow),
-            0 0 60px var(--cyan-glow);
-    }
-}
+.boot-c { animation-delay: 0.1s; }
+.boot-o { animation-delay: 0.2s; }
+.boot-t { animation-delay: 0.3s; }
+.boot-e { animation-delay: 0.4s; }
 
 .boot-subtitle {
     font-family: 'Orbitron', monospace;
@@ -324,32 +282,11 @@ body::before {
     color: var(--text-muted);
     letter-spacing: 0.3em;
     opacity: 0;
-    animation: bootTextIn 0.5s ease 0.6s forwards, bootTextGlitch 0.1s ease 1.2s 2;
+    animation: bootTextIn 0.5s ease 0.6s forwards;
 }
 
 @keyframes bootTextIn {
     to { opacity: 1; }
-}
-
-@keyframes bootTextGlitch {
-    0%, 100% {
-        transform: translate(0);
-        opacity: 1;
-    }
-    25% {
-        transform: translate(-1px, 0);
-        opacity: 0.8;
-        text-shadow: 1px 0 var(--crimson-light), -1px 0 var(--cyan);
-    }
-    50% {
-        transform: translate(1px, 0);
-        opacity: 0.9;
-        text-shadow: -1px 0 var(--crimson-light), 1px 0 var(--cyan);
-    }
-    75% {
-        transform: translate(0, 1px);
-        opacity: 0.7;
-    }
 }
 
 /* ========================================

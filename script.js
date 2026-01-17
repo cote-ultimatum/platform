@@ -907,7 +907,14 @@ function renderClassCards() {
     let totalStudents = 0;
     let displayedStudents = 0;
 
-    ['A', 'B', 'C', 'D'].forEach(className => {
+    // Sort classes by rank (1st to 4th based on points)
+    const classes = ['A', 'B', 'C', 'D'].sort((a, b) => {
+        const rankA = getClassRank(1, a);
+        const rankB = getClassRank(1, b);
+        return rankA - rankB;
+    });
+
+    classes.forEach(className => {
         let students = getStudentsByClass(1, className);
         totalStudents += students.length;
 
@@ -943,12 +950,11 @@ function createClassCard(year, className, students) {
     const rank = getClassRank(year, className);
     const rankSuffix = ['', 'st', 'nd', 'rd'][rank] || 'th';
 
-    // Build delta indicator HTML
+    // Build delta indicator HTML (arrow indicates direction, no +/- needed)
     let deltaHTML = '';
     if (delta !== 0) {
         const deltaClass = delta > 0 ? 'positive' : 'negative';
-        const deltaSign = delta > 0 ? '+' : '';
-        deltaHTML = `<span class="points-delta ${deltaClass}"><span class="delta-arrow"></span>${deltaSign}${delta}</span>`;
+        deltaHTML = `<span class="points-delta ${deltaClass}"><span class="delta-arrow"></span>${Math.abs(delta)}</span>`;
     }
 
     card.innerHTML = `
@@ -1679,14 +1685,14 @@ async function handleAdminLogin() {
         } else {
             showLoginError(errorEl, 'Invalid credentials');
             loginBtn.disabled = false;
-            loginBtn.textContent = 'Sign In';
+            loginBtn.textContent = 'Log in';
             playSound('error');
         }
     } catch (error) {
         console.error('Login error:', error);
         showLoginError(errorEl, 'Connection error. Try again.');
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Sign In';
+        loginBtn.textContent = 'Log in';
         playSound('error');
     }
 }
@@ -1726,7 +1732,7 @@ function showAdminLogin() {
     // Reset login button state
     if (loginBtn) {
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Sign In';
+        loginBtn.textContent = 'Log in';
     }
 }
 

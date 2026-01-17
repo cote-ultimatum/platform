@@ -504,16 +504,15 @@
         <div class="admin-content" id="admin-login-view">
             <div class="admin-login-container">
                 <div class="admin-login-icon">
-                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
-                        <!-- Key icon -->
-                        <circle cx="20" cy="20" r="10"/>
-                        <circle cx="20" cy="20" r="4"/>
-                        <line x1="28" y1="28" x2="52" y2="52"/>
-                        <line x1="44" y1="52" x2="52" y2="44"/>
-                        <line x1="38" y1="46" x2="46" y2="38"/>
+                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <!-- Padlock with U-shaped shackle -->
+                        <rect x="14" y="28" width="36" height="28" rx="4"/>
+                        <path d="M22 28V20a10 10 0 0 1 20 0v8" stroke-linecap="round"/>
+                        <circle cx="32" cy="42" r="4" fill="currentColor" stroke="none"/>
+                        <line x1="32" y1="46" x2="32" y2="50" stroke-width="3" stroke-linecap="round"/>
                     </svg>
                 </div>
-                <h2 class="admin-login-title">Faculty Login</h2>
+                <h2 class="admin-login-title">Authentication</h2>
                 <p class="admin-login-subtitle">Authorized personnel only</p>
                 <div class="admin-login-form">
                     <div class="admin-input-group">
@@ -525,7 +524,7 @@
                         <input type="password" id="admin-password" placeholder="Enter password">
                     </div>
                     <div class="admin-login-error" id="admin-login-error"></div>
-                    <button class="admin-login-btn" id="admin-login-btn">Sign In</button>
+                    <button class="admin-login-btn" id="admin-login-btn">Log in</button>
                 </div>
             </div>
         </div>
