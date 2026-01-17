@@ -3886,13 +3886,14 @@ body::before {
     80% { transform: translateX(5px); }
 }
 
-/* Admin login icon pulse on hover */
+/* Admin login icon glitch on hover */
 .admin-login-icon {
-    transition: transform 0.2s ease;
+    transition: color 0.2s ease;
 }
 
-.admin-login-container:hover .admin-login-icon {
-    transform: scale(1.05);
+.admin-login-icon:hover {
+    animation: glitchEffect 0.15s ease;
+    cursor: pointer;
 }
 
 /* Input hover states */

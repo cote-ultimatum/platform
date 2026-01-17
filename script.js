@@ -1598,6 +1598,7 @@ function initAdminApp() {
             }
         });
         passwordInput.addEventListener('focus', () => playSound('select'));
+        passwordInput.addEventListener('input', () => playSound('type'));
     }
 
     // Enter key on username field moves to password
@@ -1608,6 +1609,7 @@ function initAdminApp() {
             }
         });
         usernameInput.addEventListener('focus', () => playSound('select'));
+        usernameInput.addEventListener('input', () => playSound('type'));
     }
 
     // Logout button
@@ -1636,6 +1638,7 @@ function initAdminApp() {
     if (adminApp) {
         adminApp.querySelectorAll('.admin-class-input input').forEach(input => {
             input.addEventListener('focus', () => playSound('select'));
+            input.addEventListener('input', () => playSound('type'));
         });
     }
 }
