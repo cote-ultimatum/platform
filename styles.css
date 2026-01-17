@@ -3759,3 +3759,152 @@ body::before {
         flex-direction: column;
     }
 }
+
+/* Admin View Transitions */
+.admin-login-container {
+    animation: adminFadeIn 0.3s ease-out;
+}
+
+.admin-panel-view {
+    animation: adminSlideIn 0.4s ease-out;
+}
+
+@keyframes adminFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes adminSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Admin Panel Entrance Animations */
+.admin-user-bar {
+    animation: adminItemIn 0.3s ease-out;
+    animation-delay: 0.05s;
+    animation-fill-mode: backwards;
+}
+
+.admin-section:nth-child(1) {
+    animation: adminItemIn 0.3s ease-out;
+    animation-delay: 0.1s;
+    animation-fill-mode: backwards;
+}
+
+.admin-section:nth-child(2) {
+    animation: adminItemIn 0.3s ease-out;
+    animation-delay: 0.15s;
+    animation-fill-mode: backwards;
+}
+
+@keyframes adminItemIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Saving button animation */
+.admin-save-btn.saving {
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-save-btn.saving::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: savingShimmer 1s infinite;
+}
+
+@keyframes savingShimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Login button loading state */
+.admin-login-btn:disabled {
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-login-btn:disabled::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: savingShimmer 1s infinite;
+}
+
+/* Status message animations */
+.admin-status.success {
+    animation: statusPop 0.3s ease-out;
+}
+
+.admin-status.error {
+    animation: statusShake 0.4s ease-out;
+}
+
+@keyframes statusPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes statusShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+}
+
+/* Admin login icon pulse on hover */
+.admin-login-icon {
+    transition: transform 0.2s ease;
+}
+
+.admin-login-container:hover .admin-login-icon {
+    transform: scale(1.05);
+}
+
+/* Input hover states */
+.admin-input-group input:hover:not(:focus) {
+    border-color: var(--text-muted);
+}
+
+.admin-class-input input:hover:not(:focus) {
+    border-color: var(--text-muted);
+}

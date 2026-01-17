@@ -1581,6 +1581,7 @@ function initAdminApp() {
     // Login button
     if (loginBtn) {
         loginBtn.addEventListener('click', handleAdminLogin);
+        loginBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
 
     // Enter key on password field
@@ -1590,6 +1591,7 @@ function initAdminApp() {
                 handleAdminLogin();
             }
         });
+        passwordInput.addEventListener('focus', () => playSound('select'));
     }
 
     // Enter key on username field moves to password
@@ -1599,21 +1601,36 @@ function initAdminApp() {
                 passwordInput.focus();
             }
         });
+        usernameInput.addEventListener('focus', () => playSound('select'));
     }
 
     // Logout button
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleAdminLogout);
+        logoutBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
 
     // Save button
     if (saveBtn) {
         saveBtn.addEventListener('click', handleAdminSave);
+        saveBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
 
     // Reset button
     if (resetBtn) {
-        resetBtn.addEventListener('click', loadAdminPointsFromDB);
+        resetBtn.addEventListener('click', () => {
+            loadAdminPointsFromDB();
+            playSound('back');
+        });
+        resetBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    // Add sounds to class point inputs
+    const adminApp = document.getElementById('admin-app');
+    if (adminApp) {
+        adminApp.querySelectorAll('.admin-class-input input').forEach(input => {
+            input.addEventListener('focus', () => playSound('select'));
+        });
     }
 }
 
@@ -1628,17 +1645,25 @@ async function handleAdminLogin() {
 
     if (!username || !password) {
         errorEl.textContent = 'Please enter username and password';
+        playSound('error');
         return;
     }
 
     // Disable button while checking
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Signing in...';
+    loginBtn.textContent = 'Verifying...';
     errorEl.textContent = '';
+    playSound('select');
+
+    // Minimum delay to prevent flash (feels more intentional)
+    const minDelay = new Promise(resolve => setTimeout(resolve, 800));
 
     try {
-        // Check credentials against Firebase
-        const result = await COTEDB.verifyAdmin(username, password);
+        // Check credentials against Firebase (runs in parallel with delay)
+        const [result] = await Promise.all([
+            COTEDB.verifyAdmin(username, password),
+            minDelay
+        ]);
 
         if (result.success) {
             adminState.loggedIn = true;
@@ -1649,19 +1674,21 @@ async function handleAdminLogin() {
             usernameInput.value = '';
             passwordInput.value = '';
 
-            playSound('select');
+            playSound('success');
             showAdminPanel();
         } else {
-            errorEl.textContent = 'Invalid username or password';
-            playSound('back');
+            errorEl.textContent = 'Invalid credentials';
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Sign In';
+            playSound('error');
         }
     } catch (error) {
         console.error('Login error:', error);
-        errorEl.textContent = 'Connection error. Please try again.';
+        errorEl.textContent = 'Connection error. Try again.';
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+        playSound('error');
     }
-
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'Sign In';
 }
 
 function handleAdminLogout() {
@@ -1676,9 +1703,24 @@ function handleAdminLogout() {
 function showAdminLogin() {
     const loginView = document.getElementById('admin-login-view');
     const panelView = document.getElementById('admin-panel-view');
+    const loginBtn = document.getElementById('admin-login-btn');
 
-    if (loginView) loginView.style.display = 'block';
     if (panelView) panelView.style.display = 'none';
+    if (loginView) {
+        loginView.style.display = 'block';
+        // Re-trigger animation
+        const container = loginView.querySelector('.admin-login-container');
+        if (container) {
+            container.style.animation = 'none';
+            container.offsetHeight; // Trigger reflow
+            container.style.animation = '';
+        }
+    }
+    // Reset login button state
+    if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+    }
 }
 
 function showAdminPanel() {
@@ -1687,7 +1729,24 @@ function showAdminPanel() {
     const userName = document.getElementById('admin-user-name');
 
     if (loginView) loginView.style.display = 'none';
-    if (panelView) panelView.style.display = 'block';
+    if (panelView) {
+        panelView.style.display = 'block';
+        // Re-trigger animations
+        panelView.style.animation = 'none';
+        panelView.offsetHeight; // Trigger reflow
+        panelView.style.animation = '';
+
+        // Re-trigger child animations
+        const userBar = panelView.querySelector('.admin-user-bar');
+        const sections = panelView.querySelectorAll('.admin-section');
+        [userBar, ...sections].forEach(el => {
+            if (el) {
+                el.style.animation = 'none';
+                el.offsetHeight;
+                el.style.animation = '';
+            }
+        });
+    }
     if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
 
     // Load current points
@@ -1727,44 +1786,51 @@ async function handleAdminSave() {
     const saveBtn = document.getElementById('admin-save-btn');
     const statusEl = document.getElementById('admin-status');
 
+    const newPoints = getAdminPointsFromInputs();
+    const oldPoints = getActiveClassPoints();
+
+    // Build list of changes for logging
+    const changes = [];
+    for (let year = 1; year <= 3; year++) {
+        ['A', 'B', 'C', 'D'].forEach(cls => {
+            const oldVal = oldPoints?.[year]?.[cls] || 0;
+            const newVal = newPoints[year][cls];
+            if (oldVal !== newVal) {
+                const diff = newVal - oldVal;
+                const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
+                changes.push(`Year ${year} Class ${cls}: ${oldVal} → ${newVal} (${diffStr})`);
+            }
+        });
+    }
+
+    if (changes.length === 0) {
+        statusEl.textContent = 'No changes to save';
+        statusEl.className = 'admin-status error';
+        playSound('error');
+        return;
+    }
+
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
+    saveBtn.classList.add('saving');
     statusEl.className = 'admin-status';
     statusEl.textContent = '';
+    playSound('select');
+
+    // Minimum delay for visual feedback
+    const minDelay = new Promise(resolve => setTimeout(resolve, 600));
 
     try {
-        const newPoints = getAdminPointsFromInputs();
-        const oldPoints = getActiveClassPoints();
-
-        // Build list of changes for logging
-        const changes = [];
-        for (let year = 1; year <= 3; year++) {
-            ['A', 'B', 'C', 'D'].forEach(cls => {
-                const oldVal = oldPoints?.[year]?.[cls] || 0;
-                const newVal = newPoints[year][cls];
-                if (oldVal !== newVal) {
-                    const diff = newVal - oldVal;
-                    const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
-                    changes.push(`Year ${year} Class ${cls}: ${oldVal} → ${newVal} (${diffStr})`);
-                }
-            });
-        }
-
-        if (changes.length === 0) {
-            statusEl.textContent = 'No changes to save';
-            statusEl.className = 'admin-status error';
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save Changes';
-            return;
-        }
-
-        // Save to Firebase
-        const success = await COTEDB.setClassPointsWithLog(newPoints, adminState.displayName || adminState.currentUser, changes);
+        // Save to Firebase (runs in parallel with delay)
+        const [success] = await Promise.all([
+            COTEDB.setClassPointsWithLog(newPoints, adminState.displayName || adminState.currentUser, changes),
+            minDelay
+        ]);
 
         if (success) {
-            statusEl.textContent = `Saved ${changes.length} change(s) successfully!`;
+            statusEl.textContent = `Saved ${changes.length} change(s)`;
             statusEl.className = 'admin-status success';
-            playSound('select');
+            playSound('success');
 
             // Refresh changelog
             loadAdminChangelog();
@@ -1774,17 +1840,20 @@ async function handleAdminSave() {
                 statusEl.className = 'admin-status';
             }, 4000);
         } else {
-            statusEl.textContent = 'Failed to save. Please try again.';
+            statusEl.textContent = 'Failed to save. Try again.';
             statusEl.className = 'admin-status error';
+            playSound('error');
         }
     } catch (error) {
         console.error('Save error:', error);
-        statusEl.textContent = 'Error saving changes: ' + error.message;
+        statusEl.textContent = 'Error: ' + error.message;
         statusEl.className = 'admin-status error';
+        playSound('error');
     }
 
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Changes';
+    saveBtn.classList.remove('saving');
 }
 
 async function loadAdminChangelog() {
