@@ -561,49 +561,6 @@ body::before {
     }
 }
 
-@keyframes glitch {
-    0% {
-        transform: translate(0);
-        text-shadow:
-            0 0 20px var(--cyan-glow),
-            0 0 40px var(--cyan-glow);
-    }
-    20% {
-        transform: translate(-2px, 1px);
-        text-shadow:
-            2px 0 var(--crimson-light),
-            -2px 0 var(--cyan),
-            0 0 20px var(--cyan-glow);
-    }
-    40% {
-        transform: translate(2px, -1px);
-        text-shadow:
-            -2px 0 var(--crimson-light),
-            2px 0 var(--cyan),
-            0 0 20px var(--cyan-glow);
-    }
-    60% {
-        transform: translate(-1px, 2px);
-        text-shadow:
-            1px 0 var(--crimson-light),
-            -1px 0 var(--cyan),
-            0 0 20px var(--cyan-glow);
-    }
-    80% {
-        transform: translate(1px, -2px);
-        text-shadow:
-            -1px 0 var(--crimson-light),
-            1px 0 var(--cyan),
-            0 0 20px var(--cyan-glow);
-    }
-    100% {
-        transform: translate(0);
-        text-shadow:
-            0 0 20px var(--cyan-glow),
-            0 0 40px var(--cyan-glow);
-    }
-}
-
 .lock-subtitle {
     font-family: 'Orbitron', monospace;
     font-size: 1.5rem;
@@ -3431,15 +3388,7 @@ body::before {
 }
 
 .admin-login-error:not(:empty) {
-    animation: loginErrorShake 0.4s ease-out;
-}
-
-@keyframes loginErrorShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-4px); }
-    40% { transform: translateX(4px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
+    animation: statusShake 0.4s ease-out;
 }
 
 .admin-login-btn {
