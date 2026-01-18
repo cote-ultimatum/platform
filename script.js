@@ -1964,14 +1964,15 @@ async function confirmAdminSave() {
         }
     } catch (error) {
         console.error('Save error:', error);
-        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.textContent = 'Error: ' + (error.message || 'Unknown error');
         statusEl.className = 'admin-status error';
         playSound('error');
+    } finally {
+        // Always reset button state
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+        saveBtn.classList.remove('saving');
     }
-
-    saveBtn.disabled = false;
-    saveBtn.textContent = 'Save Changes';
-    saveBtn.classList.remove('saving');
 }
 
 async function loadAdminChangelog() {
@@ -2449,17 +2450,22 @@ function validateCreatorStep(stepId) {
             return false;
         }
         if (!char.image || char.image.trim() === '') {
-            showCreatorError('Please enter a profile image URL');
+            showCreatorError('Please enter an image URL');
             document.getElementById('creator-image')?.focus();
             return false;
         }
     }
 
     if (stepId === 'bio') {
-        // Required: biography
+        // Required: biography and personality
         if (!char.bio || char.bio.trim() === '') {
             showCreatorError('Please enter a biography');
             document.getElementById('creator-bio')?.focus();
+            return false;
+        }
+        if (!char.personality || char.personality.trim() === '') {
+            showCreatorError('Please enter a personality description');
+            document.getElementById('creator-personality')?.focus();
             return false;
         }
     }
