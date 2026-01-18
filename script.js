@@ -2363,39 +2363,35 @@ function initCreatorApp() {
         imageInput.addEventListener('focus', () => playSound('select'));
     }
 
-    // Stats sliders
+    // Stats sliders (new eval layout)
     const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
     statKeys.forEach(stat => {
         const slider = document.getElementById(`creator-stat-${stat}`);
-        const numInput = document.getElementById(`creator-stat-${stat}-num`);
+        const display = document.getElementById(`creator-stat-${stat}-display`);
+        const bar = document.getElementById(`creator-stat-${stat}-bar`);
 
-        if (slider && numInput) {
-            // Initialize slider fill
-            updateSliderFill(slider);
+        if (slider) {
+            // Update function for this stat
+            const updateStat = (value) => {
+                creatorState.character.stats[stat] = value;
+                if (display) display.textContent = value;
+                if (bar) bar.style.width = `${value}%`;
+                updateCreatorOverallGrade();
+            };
+
+            // Initialize
+            updateStat(parseInt(slider.value));
 
             slider.addEventListener('input', () => {
-                numInput.value = slider.value;
-                creatorState.character.stats[stat] = parseInt(slider.value);
-                updateSliderFill(slider);
-                updateCreatorOverallGrade();
+                updateStat(parseInt(slider.value));
             });
 
-            numInput.addEventListener('input', () => {
-                let val = Math.max(0, Math.min(100, parseInt(numInput.value) || 0));
-                numInput.value = val;
-                slider.value = val;
-                creatorState.character.stats[stat] = val;
-                updateSliderFill(slider);
-                updateCreatorOverallGrade();
-                playSound('type');
-            });
-
-            numInput.addEventListener('focus', () => playSound('select'));
+            slider.addEventListener('mousedown', () => playSound('select'));
         }
     });
 
-    // Trait quiz buttons
-    document.querySelectorAll('.trait-quiz-btn').forEach(btn => {
+    // Trait quiz buttons (both old and new selectors for compatibility)
+    document.querySelectorAll('.trait-quiz-btn, .eval-quiz-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             openTraitQuiz(btn.dataset.category);
             playSound('open');
@@ -2702,8 +2698,8 @@ function finishQuiz() {
         resultEl.innerHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${resultTrait}</span>`;
     }
 
-    // Update button
-    const btn = document.querySelector(`.trait-quiz-btn[data-category="${category}"]`);
+    // Update button (both old and new selectors)
+    const btn = document.querySelector(`.trait-quiz-btn[data-category="${category}"], .eval-quiz-btn[data-category="${category}"]`);
     if (btn) {
         btn.classList.add('has-trait');
     }
@@ -3107,13 +3103,15 @@ function resetCreator() {
         btn.classList.remove('active');
     });
 
-    // Reset stat sliders
+    // Reset stat sliders and displays
     const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
     statKeys.forEach(stat => {
         const slider = document.getElementById(`creator-stat-${stat}`);
-        const numInput = document.getElementById(`creator-stat-${stat}-num`);
+        const display = document.getElementById(`creator-stat-${stat}-display`);
+        const bar = document.getElementById(`creator-stat-${stat}-bar`);
         if (slider) slider.value = 50;
-        if (numInput) numInput.value = 50;
+        if (display) display.textContent = '50';
+        if (bar) bar.style.width = '50%';
     });
     updateCreatorOverallGrade();
 
@@ -3123,7 +3121,7 @@ function resetCreator() {
         if (resultEl) {
             resultEl.innerHTML = '';
         }
-        const btn = document.querySelector(`.trait-quiz-btn[data-category="${cat}"]`);
+        const btn = document.querySelector(`.trait-quiz-btn[data-category="${cat}"], .eval-quiz-btn[data-category="${cat}"]`);
         if (btn) btn.classList.remove('has-trait');
     });
 

@@ -4432,87 +4432,273 @@ body::before {
     line-height: 1;
 }
 
-/* Abilities Grid - Compact Horizontal Layout */
-.creator-abilities-grid {
+/* Evaluation Tab - OAA-Inspired Layout */
+.eval-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 1.5rem;
+    min-height: 400px;
+}
+
+/* Grade Card (Left Side) */
+.eval-grade-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 29, 50, 0.95) 100%);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 0 25px var(--cyan-glow);
 }
 
-.abilities-card {
-    padding-bottom: 1.25rem;
-}
-
-.ability-row {
+.eval-grade-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(77, 201, 230, 0.2), rgba(154, 46, 72, 0.2));
+    border: 3px solid var(--cyan);
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background: var(--bg-darker);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+    justify-content: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 30px var(--cyan-glow), inset 0 0 20px rgba(77, 201, 230, 0.1);
 }
 
-.ability-row:hover {
-    border-color: var(--cyan);
-    background: rgba(77, 201, 230, 0.03);
+.eval-grade-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan-glow);
 }
 
-.ability-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 160px;
-}
-
-.ability-name {
+.eval-grade-label {
+    font-family: 'Orbitron', monospace;
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-primary);
-    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
 }
 
-.ability-controls {
+.eval-grade-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Stats Card (Right Side) */
+.eval-stats-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 29, 50, 0.9) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+}
+
+.eval-stats-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.eval-stat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.eval-stat-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.eval-stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eval-stat-name {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.eval-stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.eval-stat-bar {
+    height: 10px;
+    background: var(--stat-bar-bg);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.eval-stat-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.eval-stat-fill.stat-academic {
+    background: linear-gradient(90deg, #8e44ad, #9b59b6);
+    box-shadow: 0 0 10px rgba(155, 89, 182, 0.4);
+}
+
+.eval-stat-fill.stat-intelligence {
+    background: linear-gradient(90deg, #d4a10f, #f1c40f);
+    box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+}
+
+.eval-stat-fill.stat-decision {
+    background: linear-gradient(90deg, #d35400, #e67e22);
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
+}
+
+.eval-stat-fill.stat-physical {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+}
+
+.eval-stat-fill.stat-cooperativeness {
+    background: linear-gradient(90deg, #2980b9, #3498db);
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+}
+
+.eval-stat-controls {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.eval-slider {
     flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
 }
 
-.ability-trait-display {
-    min-width: 100px;
-    display: flex;
-    justify-content: flex-end;
+.eval-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--cyan);
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.ability-trait-display:empty::after {
-    content: '—';
-    color: var(--text-muted);
-    font-size: 0.75rem;
+.eval-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--cyan);
+    cursor: pointer;
 }
 
-.ability-trait-display .trait-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.3rem 0.65rem;
+.eval-quiz-btn {
+    padding: 0.35rem 0.6rem;
+    background: rgba(154, 46, 72, 0.15);
+    border: 1px solid var(--crimson);
     border-radius: 4px;
-    font-size: 0.7rem;
+    color: var(--crimson);
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-.ability-trait-display .trait-badge.positive {
+.eval-quiz-btn::after {
+    content: 'Quiz';
+}
+
+.eval-quiz-btn:hover {
+    background: rgba(154, 46, 72, 0.25);
+    box-shadow: 0 0 8px rgba(154, 46, 72, 0.3);
+}
+
+.eval-quiz-btn.has-trait {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: #22c55e;
+    color: #22c55e;
+}
+
+.eval-quiz-btn.has-trait::after {
+    content: 'Done';
+}
+
+.eval-trait {
+    min-width: 80px;
+}
+
+.eval-trait:empty::after {
+    content: '—';
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+.eval-trait .trait-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.eval-trait .trait-badge.positive {
     background: rgba(34, 197, 94, 0.15);
     border: 1px solid rgba(34, 197, 94, 0.4);
     color: #22c55e;
 }
 
-.ability-trait-display .trait-badge.negative {
+.eval-trait .trait-badge.negative {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .eval-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .eval-grade-card {
+        padding: 1.5rem;
+    }
+
+    .eval-grade-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .eval-grade-value {
+        font-size: 2rem;
+    }
 }
 
 /* Visible Slider Track */
