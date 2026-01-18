@@ -2185,23 +2185,24 @@ const traitDefinitions = {
 };
 
 // Get stat limits based on trait
-// Hierarchy: negative trait (max 60) < no trait (max 80) < positive trait (min 40)
+// Hierarchy: negative (0-50) < no trait (20-80) < positive (50-100)
 function getStatLimitsFromTrait(category) {
     const trait = creatorState.character.traits[category];
 
     // All states have min AND max limits
+    // Hierarchy: negative max (50) = positive min (50) - they meet at midpoint
     if (!trait) {
-        // No trait taken = middle ground
+        // No trait = unproven, middle range
         return { min: 20, max: 80 };
     }
 
     const isPositive = traitDefinitions[category].positive.includes(trait);
     if (isPositive) {
-        // Positive trait = higher range
-        return { min: 40, max: 100 };
+        // Positive trait = at least average, can excel
+        return { min: 50, max: 100 };
     } else {
-        // Negative trait = lower range
-        return { min: 0, max: 60 };
+        // Negative trait = poor to average at best
+        return { min: 0, max: 50 };
     }
 }
 
