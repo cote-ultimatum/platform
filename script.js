@@ -335,6 +335,12 @@ function initKeyboardHintClicks() {
                         openApp('admin');
                     }
                     break;
+                case '4':
+                    if (state.currentScreen === 'home-screen') {
+                        playSound('open');
+                        openApp('creator');
+                    }
+                    break;
                 case 'LOCK':
                     if (state.currentScreen === 'home-screen') {
                         playSound('back');
@@ -519,7 +525,7 @@ function updateTime() {
     const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
     const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-    ['lock-time', 'home-time', 'oaa-time', 'events-time', 'admin-time'].forEach(id => {
+    ['lock-time', 'home-time', 'oaa-time', 'events-time', 'admin-time', 'creator-time'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = timeStr;
     });
@@ -639,6 +645,9 @@ function openApp(appId) {
     } else if (appId === 'admin') {
         showScreen('admin-app');
         initAdminApp();
+    } else if (appId === 'creator') {
+        showScreen('creator-app');
+        initCreatorApp();
     }
 }
 
@@ -740,6 +749,9 @@ function initKeyboardNav() {
             } else if (e.key === '3') {
                 playSound('open');
                 openApp('admin');
+            } else if (e.key === '4') {
+                playSound('open');
+                openApp('creator');
             }
         }
 
@@ -2007,4 +2019,951 @@ async function loadAdminChangelog() {
         console.error('Error loading changelog:', error);
         container.innerHTML = '<div class="admin-changelog-empty">Error loading changes</div>';
     }
+}
+
+// ========================================
+// CREATOR APP
+// ========================================
+
+const creatorState = {
+    initialized: false,
+    currentStep: 'info',
+    character: {
+        name: '',
+        year: 1,
+        class: null,
+        image: '',
+        stats: {
+            academic: 50,
+            intelligence: 50,
+            decision: 50,
+            physical: 50,
+            cooperativeness: 50
+        },
+        traits: {},
+        bio: '',
+        personality: ''
+    },
+    quizState: {
+        category: null,
+        questionIndex: 0,
+        scores: { positive: 0, negative: 0 },
+        positiveType: 0,
+        negativeType: 0
+    }
+};
+
+// Trait definitions
+const traitDefinitions = {
+    academic: {
+        positive: ['Scholar', 'Prodigy'],
+        negative: ['Slacker', 'Scatterbrained'],
+        descriptions: {
+            'Scholar': 'Dedicated to learning, excels through hard work',
+            'Prodigy': 'Natural academic talent, effortless high performance',
+            'Slacker': 'Avoids academic effort, consistently unprepared',
+            'Scatterbrained': 'Can\'t focus, jumps between interests'
+        }
+    },
+    intelligence: {
+        positive: ['Genius', 'Perceptive'],
+        negative: ['Oblivious', 'Trusting'],
+        descriptions: {
+            'Genius': 'Exceptional problem-solving, complex reasoning',
+            'Perceptive': 'Notices details, reads between the lines',
+            'Oblivious': 'Misses obvious information, poor awareness',
+            'Trusting': 'Believes in people, vulnerable to deception'
+        }
+    },
+    decision: {
+        positive: ['Tactician', 'Decisive'],
+        negative: ['Impulsive', 'Cautious'],
+        descriptions: {
+            'Tactician': 'Plans ahead, outmaneuvers opponents',
+            'Decisive': 'Quick confident choices, fully commits',
+            'Impulsive': 'Acts on emotion, doesn\'t think ahead',
+            'Cautious': 'Hesitates, struggles to commit under pressure'
+        }
+    },
+    physical: {
+        positive: ['Athlete', 'Combatant'],
+        negative: ['Frail', 'Sluggish'],
+        descriptions: {
+            'Athlete': 'Peak condition, excels in sports/physical tasks',
+            'Combatant': 'Skilled fighter, dominates confrontations',
+            'Frail': 'Weak constitution, struggles physically',
+            'Sluggish': 'Slow, avoids physical activity'
+        }
+    },
+    cooperativeness: {
+        positive: ['Diplomat', 'Loyal'],
+        negative: ['Lone Wolf', 'Two-Faced'],
+        descriptions: {
+            'Diplomat': 'Mediates conflicts, builds alliances',
+            'Loyal': 'Trustworthy, dedicated teammate',
+            'Lone Wolf': 'Works alone, unreliable in teams',
+            'Two-Faced': 'Hides true intentions, adapts persona'
+        }
+    }
+};
+
+// Quiz questions for each category
+const quizQuestions = {
+    academic: [
+        {
+            question: "When you have a difficult exam coming up, you typically...",
+            options: [
+                { text: "Create a study schedule and stick to it religiously", positive: true, type: 0 },
+                { text: "Already know the material from paying attention in class", positive: true, type: 1 },
+                { text: "Cram the night before and hope for the best", positive: false, type: 0 },
+                { text: "Get distracted by other interests and run out of time", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "Your approach to homework is...",
+            options: [
+                { text: "Complete it thoroughly, often going beyond requirements", positive: true, type: 0 },
+                { text: "Finish quickly because it comes naturally to you", positive: true, type: 1 },
+                { text: "Do the minimum required, if at all", positive: false, type: 0 },
+                { text: "Start multiple assignments but rarely finish any", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "In group study sessions, you're usually...",
+            options: [
+                { text: "The one organizing notes and explaining concepts", positive: true, type: 0 },
+                { text: "Helping others because you already understand", positive: true, type: 1 },
+                { text: "There for the snacks, not really studying", positive: false, type: 0 },
+                { text: "Jumping between topics without focus", positive: false, type: 1 }
+            ]
+        }
+    ],
+    intelligence: [
+        {
+            question: "When someone tells you about an opportunity that sounds too good to be true...",
+            options: [
+                { text: "Analyze every detail and find the hidden catch", positive: true, type: 0 },
+                { text: "Notice subtle red flags others would miss", positive: true, type: 1 },
+                { text: "Take it at face value without much thought", positive: false, type: 0 },
+                { text: "Give them the benefit of the doubt", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "When solving a complex problem, you prefer to...",
+            options: [
+                { text: "Break it into logical steps and solve systematically", positive: true, type: 0 },
+                { text: "Trust your intuition about what feels off", positive: true, type: 1 },
+                { text: "Let others figure it out while you wait", positive: false, type: 0 },
+                { text: "Believe the first reasonable solution offered", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "In conversations, you tend to...",
+            options: [
+                { text: "Analyze what people really mean, not just their words", positive: true, type: 0 },
+                { text: "Pick up on body language and subtle cues", positive: true, type: 1 },
+                { text: "Miss sarcasm or hints others catch easily", positive: false, type: 0 },
+                { text: "Take people's words at face value", positive: false, type: 1 }
+            ]
+        }
+    ],
+    decision: [
+        {
+            question: "When faced with an important choice, you usually...",
+            options: [
+                { text: "Plan out multiple scenarios before deciding", positive: true, type: 0 },
+                { text: "Make a quick decision and commit fully", positive: true, type: 1 },
+                { text: "Go with your gut without thinking it through", positive: false, type: 0 },
+                { text: "Wait as long as possible to avoid deciding", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "Under time pressure, you...",
+            options: [
+                { text: "Fall back on plans you've already prepared", positive: true, type: 0 },
+                { text: "Thrive and make confident calls quickly", positive: true, type: 1 },
+                { text: "Act rashly and often regret it later", positive: false, type: 0 },
+                { text: "Freeze up and struggle to choose", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "When your plan starts failing, you...",
+            options: [
+                { text: "Adapt smoothly because you anticipated this", positive: true, type: 0 },
+                { text: "Pivot immediately to a new approach", positive: true, type: 1 },
+                { text: "Double down emotionally on the original plan", positive: false, type: 0 },
+                { text: "Become paralyzed waiting for more information", positive: false, type: 1 }
+            ]
+        }
+    ],
+    physical: [
+        {
+            question: "Your typical morning routine involves...",
+            options: [
+                { text: "A workout or training session", positive: true, type: 0 },
+                { text: "Physical activities or martial arts practice", positive: true, type: 1 },
+                { text: "Minimal movement, you tire easily", positive: false, type: 0 },
+                { text: "Sleeping in and avoiding exertion", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "In a physical confrontation, you would...",
+            options: [
+                { text: "Rely on your athletic conditioning and stamina", positive: true, type: 0 },
+                { text: "Use combat skills or fighting experience", positive: true, type: 1 },
+                { text: "Struggle due to lack of strength or endurance", positive: false, type: 0 },
+                { text: "Be too slow to react effectively", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "When your class has sports events, you're...",
+            options: [
+                { text: "One of the top performers across events", positive: true, type: 0 },
+                { text: "The go-to person for competitive matches", positive: true, type: 1 },
+                { text: "Sitting out due to poor physical condition", positive: false, type: 0 },
+                { text: "Participating reluctantly and tiring quickly", positive: false, type: 1 }
+            ]
+        }
+    ],
+    cooperativeness: [
+        {
+            question: "When your class has internal conflict, you...",
+            options: [
+                { text: "Work to mediate and find common ground", positive: true, type: 0 },
+                { text: "Stand firmly with your allies no matter what", positive: true, type: 1 },
+                { text: "Handle things yourself, teams slow you down", positive: false, type: 0 },
+                { text: "Adapt your position based on who you're with", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "In team assignments, you prefer to...",
+            options: [
+                { text: "Ensure everyone's voice is heard and valued", positive: true, type: 0 },
+                { text: "Support the team leader reliably", positive: true, type: 1 },
+                { text: "Do your part alone and minimize interaction", positive: false, type: 0 },
+                { text: "Tell different team members what they want to hear", positive: false, type: 1 }
+            ]
+        },
+        {
+            question: "If a classmate needed help that could hurt your own standing, you would...",
+            options: [
+                { text: "Help them and work to find a win-win solution", positive: true, type: 0 },
+                { text: "Help without hesitation, loyalty comes first", positive: true, type: 1 },
+                { text: "Focus on yourself, you can't risk your position", positive: false, type: 0 },
+                { text: "Appear helpful publicly while protecting yourself privately", positive: false, type: 1 }
+            ]
+        }
+    ]
+};
+
+function initCreatorApp() {
+    if (creatorState.initialized) return;
+    creatorState.initialized = true;
+
+    // Step navigation buttons
+    document.querySelectorAll('.creator-btn[data-next]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            playSound('open');
+            goToCreatorStep(btn.dataset.next);
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    document.querySelectorAll('.creator-btn[data-prev]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            playSound('back');
+            goToCreatorStep(btn.dataset.prev);
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    // Year selection
+    document.querySelectorAll('.creator-select-btn[data-year]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.creator-select-btn[data-year]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            creatorState.character.year = parseInt(btn.dataset.year);
+            playSound('select');
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    // Class selection
+    document.querySelectorAll('.creator-select-btn[data-class]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.creator-select-btn[data-class]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            creatorState.character.class = btn.dataset.class;
+            playSound('select');
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    // Name input
+    const nameInput = document.getElementById('creator-name');
+    if (nameInput) {
+        nameInput.addEventListener('input', (e) => {
+            creatorState.character.name = e.target.value;
+            playSound('type');
+        });
+        nameInput.addEventListener('focus', () => playSound('select'));
+    }
+
+    // Image URL input
+    const imageInput = document.getElementById('creator-image');
+    if (imageInput) {
+        imageInput.addEventListener('input', (e) => {
+            creatorState.character.image = e.target.value;
+        });
+        imageInput.addEventListener('focus', () => playSound('select'));
+    }
+
+    // Stats sliders
+    const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
+    statKeys.forEach(stat => {
+        const slider = document.getElementById(`creator-stat-${stat}`);
+        const numInput = document.getElementById(`creator-stat-${stat}-num`);
+
+        if (slider && numInput) {
+            slider.addEventListener('input', () => {
+                numInput.value = slider.value;
+                creatorState.character.stats[stat] = parseInt(slider.value);
+                updateCreatorOverallGrade();
+            });
+
+            numInput.addEventListener('input', () => {
+                let val = Math.max(0, Math.min(100, parseInt(numInput.value) || 0));
+                numInput.value = val;
+                slider.value = val;
+                creatorState.character.stats[stat] = val;
+                updateCreatorOverallGrade();
+                playSound('type');
+            });
+
+            numInput.addEventListener('focus', () => playSound('select'));
+        }
+    });
+
+    // Trait quiz buttons
+    document.querySelectorAll('.trait-quiz-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openTraitQuiz(btn.dataset.category);
+            playSound('open');
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    // Quiz modal close
+    const quizClose = document.getElementById('trait-quiz-close');
+    if (quizClose) {
+        quizClose.addEventListener('click', () => {
+            closeTraitQuiz();
+            playSound('back');
+        });
+        quizClose.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    // Bio character count
+    const bioInput = document.getElementById('creator-bio');
+    const bioCount = document.getElementById('bio-char-count');
+    if (bioInput && bioCount) {
+        bioInput.addEventListener('input', () => {
+            bioCount.textContent = bioInput.value.length;
+            creatorState.character.bio = bioInput.value;
+            playSound('type');
+        });
+        bioInput.addEventListener('focus', () => playSound('select'));
+    }
+
+    // Personality character count
+    const personalityInput = document.getElementById('creator-personality');
+    const personalityCount = document.getElementById('personality-char-count');
+    if (personalityInput && personalityCount) {
+        personalityInput.addEventListener('input', () => {
+            personalityCount.textContent = personalityInput.value.length;
+            creatorState.character.personality = personalityInput.value;
+            playSound('type');
+        });
+        personalityInput.addEventListener('focus', () => playSound('select'));
+    }
+
+    // Export PDF button
+    const exportBtn = document.getElementById('export-pdf-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            exportCharacterPDF();
+            playSound('success');
+        });
+        exportBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    // Reset button
+    const resetBtn = document.getElementById('export-reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resetCreator();
+            playSound('back');
+        });
+        resetBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+}
+
+function goToCreatorStep(stepId) {
+    // Update step visibility
+    document.querySelectorAll('.creator-step').forEach(step => step.classList.remove('active'));
+    const targetStep = document.getElementById(`creator-step-${stepId}`);
+    if (targetStep) {
+        targetStep.classList.add('active');
+        creatorState.currentStep = stepId;
+    }
+
+    // Update progress indicator
+    const steps = ['info', 'stats', 'traits', 'bio', 'export'];
+    const currentIndex = steps.indexOf(stepId);
+    document.querySelectorAll('.progress-step').forEach((step, i) => {
+        step.classList.toggle('active', i <= currentIndex);
+        step.classList.toggle('completed', i < currentIndex);
+    });
+
+    // Update preview on export step
+    if (stepId === 'export') {
+        updateCreatorPreview();
+    }
+}
+
+function updateCreatorOverallGrade() {
+    const stats = creatorState.character.stats;
+    const avg = (stats.academic + stats.intelligence + stats.decision + stats.physical + stats.cooperativeness) / 5;
+    const grade = getGradeFromValue(avg);
+    const gradeEl = document.getElementById('creator-overall-grade');
+    if (gradeEl) gradeEl.textContent = grade;
+}
+
+function openTraitQuiz(category) {
+    creatorState.quizState = {
+        category: category,
+        questionIndex: 0,
+        scores: { positive: 0, negative: 0 },
+        positiveType: 0,
+        negativeType: 0
+    };
+
+    const modal = document.getElementById('trait-quiz-modal');
+    const title = document.getElementById('trait-quiz-title');
+
+    const categoryNames = {
+        academic: 'Academic Ability',
+        intelligence: 'Intelligence',
+        decision: 'Decision Making',
+        physical: 'Physical Ability',
+        cooperativeness: 'Cooperativeness'
+    };
+
+    title.textContent = `${categoryNames[category]} Quiz`;
+    modal.classList.add('active');
+
+    showQuizQuestion();
+}
+
+function closeTraitQuiz() {
+    const modal = document.getElementById('trait-quiz-modal');
+    modal.classList.remove('active');
+}
+
+function showQuizQuestion() {
+    const { category, questionIndex } = creatorState.quizState;
+    const questions = quizQuestions[category];
+    const question = questions[questionIndex];
+
+    const progressText = document.getElementById('trait-quiz-progress-text');
+    const progressFill = document.getElementById('trait-quiz-progress-fill');
+    const questionEl = document.getElementById('trait-quiz-question');
+    const optionsEl = document.getElementById('trait-quiz-options');
+
+    progressText.textContent = `Question ${questionIndex + 1} of ${questions.length}`;
+    progressFill.style.width = `${((questionIndex + 1) / questions.length) * 100}%`;
+
+    questionEl.textContent = question.question;
+
+    // Shuffle options
+    const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+
+    optionsEl.innerHTML = shuffledOptions.map((opt, i) => `
+        <button class="trait-quiz-option" data-index="${i}" data-positive="${opt.positive}" data-type="${opt.type}">
+            ${opt.text}
+        </button>
+    `).join('');
+
+    optionsEl.querySelectorAll('.trait-quiz-option').forEach(btn => {
+        btn.addEventListener('click', () => selectQuizOption(btn));
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+}
+
+function selectQuizOption(btn) {
+    playSound('click');
+
+    const isPositive = btn.dataset.positive === 'true';
+    const type = parseInt(btn.dataset.type);
+
+    if (isPositive) {
+        creatorState.quizState.scores.positive++;
+        creatorState.quizState.positiveType += type;
+    } else {
+        creatorState.quizState.scores.negative++;
+        creatorState.quizState.negativeType += type;
+    }
+
+    creatorState.quizState.questionIndex++;
+
+    const { category, questionIndex } = creatorState.quizState;
+    const questions = quizQuestions[category];
+
+    if (questionIndex >= questions.length) {
+        finishQuiz();
+    } else {
+        showQuizQuestion();
+    }
+}
+
+function finishQuiz() {
+    const { category, scores, positiveType, negativeType } = creatorState.quizState;
+    const traits = traitDefinitions[category];
+
+    let resultTrait;
+    if (scores.positive > scores.negative) {
+        // More positive answers - pick positive trait based on type
+        const typeIndex = positiveType >= 1.5 ? 1 : 0;
+        resultTrait = traits.positive[typeIndex];
+    } else if (scores.negative > scores.positive) {
+        // More negative answers - pick negative trait based on type
+        const typeIndex = negativeType >= 1.5 ? 1 : 0;
+        resultTrait = traits.negative[typeIndex];
+    } else {
+        // Tie - use types to decide
+        if (positiveType > negativeType) {
+            resultTrait = traits.positive[1];
+        } else {
+            resultTrait = traits.negative[1];
+        }
+    }
+
+    creatorState.character.traits[category] = resultTrait;
+
+    // Update UI
+    const resultEl = document.getElementById(`trait-result-${category}`);
+    if (resultEl) {
+        const isPositive = traits.positive.includes(resultTrait);
+        resultEl.textContent = resultTrait;
+        resultEl.className = `trait-result ${isPositive ? 'positive' : 'negative'}`;
+    }
+
+    // Update button
+    const btn = document.querySelector(`.trait-quiz-btn[data-category="${category}"]`);
+    if (btn) {
+        btn.textContent = 'Retake Quiz';
+    }
+
+    closeTraitQuiz();
+    playSound('success');
+}
+
+function updateCreatorPreview() {
+    const preview = document.getElementById('creator-preview');
+    const char = creatorState.character;
+
+    const yearSuffix = ['', 'st', 'nd', 'rd'][char.year] || 'th';
+    const overallGrade = getGradeFromValue(
+        (char.stats.academic + char.stats.intelligence + char.stats.decision +
+         char.stats.physical + char.stats.cooperativeness) / 5
+    );
+
+    const traitsHTML = Object.entries(char.traits).map(([cat, trait]) => {
+        const isPositive = traitDefinitions[cat].positive.includes(trait);
+        return `<span class="preview-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+    }).join('') || '<span class="preview-no-traits">No traits selected</span>';
+
+    preview.innerHTML = `
+        <div class="preview-header">
+            <div class="preview-avatar ${char.class ? `class-${char.class.toLowerCase()}-glow` : ''}">
+                ${char.image
+                    ? `<img src="${char.image}" alt="${char.name || 'Character'}">`
+                    : `<div class="preview-avatar-placeholder">${getInitials(char.name || '??')}</div>`}
+            </div>
+            <div class="preview-info">
+                <h3 class="preview-name">${char.name || 'Unnamed Character'}</h3>
+                <p class="preview-class">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
+                <div class="preview-overall">
+                    <span class="preview-overall-label">OAA Grade</span>
+                    <span class="preview-overall-value">${overallGrade}</span>
+                </div>
+            </div>
+        </div>
+        <div class="preview-stats">
+            <div class="preview-stat-row">
+                <span class="preview-stat-name">Academic</span>
+                <div class="preview-stat-bar"><div class="preview-stat-fill stat-academic" style="width: ${char.stats.academic}%"></div></div>
+                <span class="preview-stat-value">${char.stats.academic}</span>
+            </div>
+            <div class="preview-stat-row">
+                <span class="preview-stat-name">Intelligence</span>
+                <div class="preview-stat-bar"><div class="preview-stat-fill stat-intelligence" style="width: ${char.stats.intelligence}%"></div></div>
+                <span class="preview-stat-value">${char.stats.intelligence}</span>
+            </div>
+            <div class="preview-stat-row">
+                <span class="preview-stat-name">Decision</span>
+                <div class="preview-stat-bar"><div class="preview-stat-fill stat-decision" style="width: ${char.stats.decision}%"></div></div>
+                <span class="preview-stat-value">${char.stats.decision}</span>
+            </div>
+            <div class="preview-stat-row">
+                <span class="preview-stat-name">Physical</span>
+                <div class="preview-stat-bar"><div class="preview-stat-fill stat-physical" style="width: ${char.stats.physical}%"></div></div>
+                <span class="preview-stat-value">${char.stats.physical}</span>
+            </div>
+            <div class="preview-stat-row">
+                <span class="preview-stat-name">Cooperativeness</span>
+                <div class="preview-stat-bar"><div class="preview-stat-fill stat-cooperativeness" style="width: ${char.stats.cooperativeness}%"></div></div>
+                <span class="preview-stat-value">${char.stats.cooperativeness}</span>
+            </div>
+        </div>
+        <div class="preview-traits">
+            <h4>Traits</h4>
+            <div class="preview-traits-list">${traitsHTML}</div>
+        </div>
+        ${char.bio ? `
+            <div class="preview-bio">
+                <h4>Biography</h4>
+                <p>${char.bio}</p>
+            </div>
+        ` : ''}
+        ${char.personality ? `
+            <div class="preview-personality">
+                <h4>Personality</h4>
+                <p>${char.personality}</p>
+            </div>
+        ` : ''}
+    `;
+}
+
+function exportCharacterPDF() {
+    const char = creatorState.character;
+    const yearSuffix = ['', 'st', 'nd', 'rd'][char.year] || 'th';
+    const overallGrade = getGradeFromValue(
+        (char.stats.academic + char.stats.intelligence + char.stats.decision +
+         char.stats.physical + char.stats.cooperativeness) / 5
+    );
+
+    // Build traits list
+    const traitsList = Object.entries(char.traits)
+        .map(([cat, trait]) => {
+            const isPositive = traitDefinitions[cat].positive.includes(trait);
+            return `${trait} (${isPositive ? '+' : '-'})`;
+        })
+        .join(', ') || 'None';
+
+    // Create printable HTML
+    const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>ANHS Admission Form - ${char.name || 'Character'}</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    background: #fff;
+                    color: #1a1a2e;
+                    padding: 40px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                .header {
+                    text-align: center;
+                    border-bottom: 3px solid #9a2e48;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
+                }
+                .header h1 {
+                    font-size: 28px;
+                    color: #9a2e48;
+                    margin-bottom: 5px;
+                }
+                .header h2 {
+                    font-size: 18px;
+                    color: #666;
+                    font-weight: normal;
+                }
+                .section {
+                    margin-bottom: 25px;
+                }
+                .section-title {
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    color: #9a2e48;
+                    border-bottom: 1px solid #ddd;
+                    padding-bottom: 5px;
+                    margin-bottom: 15px;
+                }
+                .info-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                }
+                .info-item {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .info-label {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    color: #888;
+                }
+                .info-value {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+                .stats-grid {
+                    display: grid;
+                    gap: 10px;
+                }
+                .stat-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .stat-name {
+                    width: 140px;
+                    font-size: 13px;
+                }
+                .stat-bar {
+                    flex: 1;
+                    height: 16px;
+                    background: #f0f0f0;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                .stat-fill {
+                    height: 100%;
+                    border-radius: 8px;
+                }
+                .stat-fill.academic { background: #9b59b6; }
+                .stat-fill.intelligence { background: #f1c40f; }
+                .stat-fill.decision { background: #e67e22; }
+                .stat-fill.physical { background: #2ecc71; }
+                .stat-fill.cooperativeness { background: #3498db; }
+                .stat-value {
+                    width: 40px;
+                    text-align: right;
+                    font-weight: 600;
+                }
+                .overall-box {
+                    text-align: center;
+                    padding: 15px;
+                    background: #f8f8f8;
+                    border-radius: 8px;
+                    margin-top: 15px;
+                }
+                .overall-label {
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    color: #888;
+                }
+                .overall-value {
+                    font-size: 36px;
+                    font-weight: bold;
+                    color: #e74c3c;
+                }
+                .traits-list {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                }
+                .trait {
+                    padding: 4px 12px;
+                    border-radius: 12px;
+                    font-size: 13px;
+                }
+                .trait.positive {
+                    background: #d4edda;
+                    color: #155724;
+                }
+                .trait.negative {
+                    background: #f8d7da;
+                    color: #721c24;
+                }
+                .bio-text {
+                    font-size: 14px;
+                    line-height: 1.6;
+                    color: #444;
+                }
+                .footer {
+                    margin-top: 40px;
+                    padding-top: 20px;
+                    border-top: 1px solid #ddd;
+                    text-align: center;
+                    font-size: 11px;
+                    color: #999;
+                }
+                @media print {
+                    body { padding: 20px; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Advanced Nurturing High School</h1>
+                <h2>Student Admission Form</h2>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Basic Information</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value">${char.name || 'Not specified'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Year / Class</span>
+                        <span class="info-value">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">OAA Evaluation</div>
+                <div class="stats-grid">
+                    <div class="stat-row">
+                        <span class="stat-name">Academic Ability</span>
+                        <div class="stat-bar"><div class="stat-fill academic" style="width: ${char.stats.academic}%"></div></div>
+                        <span class="stat-value">${char.stats.academic}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">Intelligence</span>
+                        <div class="stat-bar"><div class="stat-fill intelligence" style="width: ${char.stats.intelligence}%"></div></div>
+                        <span class="stat-value">${char.stats.intelligence}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">Decision Making</span>
+                        <div class="stat-bar"><div class="stat-fill decision" style="width: ${char.stats.decision}%"></div></div>
+                        <span class="stat-value">${char.stats.decision}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">Physical Ability</span>
+                        <div class="stat-bar"><div class="stat-fill physical" style="width: ${char.stats.physical}%"></div></div>
+                        <span class="stat-value">${char.stats.physical}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">Cooperativeness</span>
+                        <div class="stat-bar"><div class="stat-fill cooperativeness" style="width: ${char.stats.cooperativeness}%"></div></div>
+                        <span class="stat-value">${char.stats.cooperativeness}</span>
+                    </div>
+                </div>
+                <div class="overall-box">
+                    <div class="overall-label">Overall Grade</div>
+                    <div class="overall-value">${overallGrade}</div>
+                </div>
+            </div>
+
+            ${Object.keys(char.traits).length > 0 ? `
+                <div class="section">
+                    <div class="section-title">Personality Traits</div>
+                    <div class="traits-list">
+                        ${Object.entries(char.traits).map(([cat, trait]) => {
+                            const isPositive = traitDefinitions[cat].positive.includes(trait);
+                            return `<span class="trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+                        }).join('')}
+                    </div>
+                </div>
+            ` : ''}
+
+            ${char.bio ? `
+                <div class="section">
+                    <div class="section-title">Biography</div>
+                    <p class="bio-text">${char.bio}</p>
+                </div>
+            ` : ''}
+
+            ${char.personality ? `
+                <div class="section">
+                    <div class="section-title">Personality Notes</div>
+                    <p class="bio-text">${char.personality}</p>
+                </div>
+            ` : ''}
+
+            <div class="footer">
+                Generated via COTE: ULTIMATUM Platform<br>
+                ${new Date().toLocaleDateString()}
+            </div>
+        </body>
+        </html>
+    `;
+
+    // Open in new window and trigger print
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+}
+
+function resetCreator() {
+    // Reset state
+    creatorState.character = {
+        name: '',
+        year: 1,
+        class: null,
+        image: '',
+        stats: {
+            academic: 50,
+            intelligence: 50,
+            decision: 50,
+            physical: 50,
+            cooperativeness: 50
+        },
+        traits: {},
+        bio: '',
+        personality: ''
+    };
+
+    // Reset form fields
+    document.getElementById('creator-name').value = '';
+    document.getElementById('creator-image').value = '';
+    document.getElementById('creator-bio').value = '';
+    document.getElementById('creator-personality').value = '';
+    document.getElementById('bio-char-count').textContent = '0';
+    document.getElementById('personality-char-count').textContent = '0';
+
+    // Reset year buttons
+    document.querySelectorAll('.creator-select-btn[data-year]').forEach((btn, i) => {
+        btn.classList.toggle('active', i === 0);
+    });
+
+    // Reset class buttons
+    document.querySelectorAll('.creator-select-btn[data-class]').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Reset stat sliders
+    const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
+    statKeys.forEach(stat => {
+        const slider = document.getElementById(`creator-stat-${stat}`);
+        const numInput = document.getElementById(`creator-stat-${stat}-num`);
+        if (slider) slider.value = 50;
+        if (numInput) numInput.value = 50;
+    });
+    updateCreatorOverallGrade();
+
+    // Reset trait results
+    Object.keys(traitDefinitions).forEach(cat => {
+        const resultEl = document.getElementById(`trait-result-${cat}`);
+        if (resultEl) {
+            resultEl.textContent = 'Not taken';
+            resultEl.className = 'trait-result';
+        }
+        const btn = document.querySelector(`.trait-quiz-btn[data-category="${cat}"]`);
+        if (btn) btn.textContent = 'Take Quiz';
+    });
+
+    // Go to first step
+    goToCreatorStep('info');
 }
