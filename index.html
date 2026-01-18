@@ -949,107 +949,179 @@
 
             <!-- Step 3: Evaluation -->
             <div class="creator-step" id="creator-step-abilities">
-                <!-- Evaluation Section -->
-                <div class="eval-container">
-                    <!-- Grade Display -->
-                    <div class="eval-grade">
+                <!-- Overall Grade Header -->
+                <div class="eval-header">
+                    <div class="eval-grade-display">
                         <div class="eval-grade-ring">
                             <span class="eval-grade-letter" id="creator-overall-grade">C</span>
                         </div>
-                        <span class="eval-grade-label">Overall</span>
+                        <div class="eval-grade-info">
+                            <span class="eval-grade-title">Overall Evaluation</span>
+                            <span class="eval-grade-subtitle">Adjust your abilities below</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Stats List -->
-                    <div class="eval-stats">
-                        <!-- Academic -->
-                        <div class="eval-row" data-category="academic">
-                            <div class="eval-row-header">
-                                <span class="eval-row-name">Academic Ability</span>
-                                <div class="eval-row-trait" id="trait-result-academic"></div>
-                                <button class="eval-row-discover" data-category="academic" title="Discover trait">?</button>
-                            </div>
-                            <div class="eval-row-bar">
+                <!-- Stat Cards -->
+                <div class="eval-cards">
+                    <!-- Academic -->
+                    <div class="eval-card" data-category="academic">
+                        <div class="eval-card-header">
+                            <span class="eval-card-name">Academic Ability</span>
+                            <div class="eval-card-trait" id="trait-result-academic"></div>
+                        </div>
+                        <div class="eval-card-bar-container">
+                            <div class="eval-card-bar">
                                 <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-academic"></div>
                                 <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-academic"></div>
                                 <div class="eval-bar-fill stat-academic" id="creator-stat-academic-bar" style="width: 50%"></div>
                             </div>
-                            <div class="eval-row-controls">
-                                <input type="range" class="eval-row-slider" id="creator-stat-academic" min="40" max="60" value="50">
-                                <span class="eval-row-value" id="creator-stat-academic-display">50</span>
+                            <div class="eval-bar-labels">
+                                <span>0</span>
+                                <span>50</span>
+                                <span>100</span>
                             </div>
                         </div>
+                        <div class="eval-card-controls">
+                            <input type="range" class="eval-card-slider" id="creator-stat-academic" min="40" max="60" value="50">
+                            <span class="eval-card-value" id="creator-stat-academic-display">50</span>
+                        </div>
+                        <button class="eval-card-discover" data-category="academic">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Discover Trait
+                        </button>
+                    </div>
 
-                        <!-- Intelligence -->
-                        <div class="eval-row" data-category="intelligence">
-                            <div class="eval-row-header">
-                                <span class="eval-row-name">Intelligence</span>
-                                <div class="eval-row-trait" id="trait-result-intelligence"></div>
-                                <button class="eval-row-discover" data-category="intelligence" title="Discover trait">?</button>
-                            </div>
-                            <div class="eval-row-bar">
+                    <!-- Intelligence -->
+                    <div class="eval-card" data-category="intelligence">
+                        <div class="eval-card-header">
+                            <span class="eval-card-name">Intelligence</span>
+                            <div class="eval-card-trait" id="trait-result-intelligence"></div>
+                        </div>
+                        <div class="eval-card-bar-container">
+                            <div class="eval-card-bar">
                                 <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-intelligence"></div>
                                 <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-intelligence"></div>
                                 <div class="eval-bar-fill stat-intelligence" id="creator-stat-intelligence-bar" style="width: 50%"></div>
                             </div>
-                            <div class="eval-row-controls">
-                                <input type="range" class="eval-row-slider" id="creator-stat-intelligence" min="40" max="60" value="50">
-                                <span class="eval-row-value" id="creator-stat-intelligence-display">50</span>
+                            <div class="eval-bar-labels">
+                                <span>0</span>
+                                <span>50</span>
+                                <span>100</span>
                             </div>
                         </div>
+                        <div class="eval-card-controls">
+                            <input type="range" class="eval-card-slider" id="creator-stat-intelligence" min="40" max="60" value="50">
+                            <span class="eval-card-value" id="creator-stat-intelligence-display">50</span>
+                        </div>
+                        <button class="eval-card-discover" data-category="intelligence">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Discover Trait
+                        </button>
+                    </div>
 
-                        <!-- Decision Making -->
-                        <div class="eval-row" data-category="decision">
-                            <div class="eval-row-header">
-                                <span class="eval-row-name">Decision Making</span>
-                                <div class="eval-row-trait" id="trait-result-decision"></div>
-                                <button class="eval-row-discover" data-category="decision" title="Discover trait">?</button>
-                            </div>
-                            <div class="eval-row-bar">
+                    <!-- Decision Making -->
+                    <div class="eval-card" data-category="decision">
+                        <div class="eval-card-header">
+                            <span class="eval-card-name">Decision Making</span>
+                            <div class="eval-card-trait" id="trait-result-decision"></div>
+                        </div>
+                        <div class="eval-card-bar-container">
+                            <div class="eval-card-bar">
                                 <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-decision"></div>
                                 <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-decision"></div>
                                 <div class="eval-bar-fill stat-decision" id="creator-stat-decision-bar" style="width: 50%"></div>
                             </div>
-                            <div class="eval-row-controls">
-                                <input type="range" class="eval-row-slider" id="creator-stat-decision" min="40" max="60" value="50">
-                                <span class="eval-row-value" id="creator-stat-decision-display">50</span>
+                            <div class="eval-bar-labels">
+                                <span>0</span>
+                                <span>50</span>
+                                <span>100</span>
                             </div>
                         </div>
+                        <div class="eval-card-controls">
+                            <input type="range" class="eval-card-slider" id="creator-stat-decision" min="40" max="60" value="50">
+                            <span class="eval-card-value" id="creator-stat-decision-display">50</span>
+                        </div>
+                        <button class="eval-card-discover" data-category="decision">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Discover Trait
+                        </button>
+                    </div>
 
-                        <!-- Physical -->
-                        <div class="eval-row" data-category="physical">
-                            <div class="eval-row-header">
-                                <span class="eval-row-name">Physical Ability</span>
-                                <div class="eval-row-trait" id="trait-result-physical"></div>
-                                <button class="eval-row-discover" data-category="physical" title="Discover trait">?</button>
-                            </div>
-                            <div class="eval-row-bar">
+                    <!-- Physical -->
+                    <div class="eval-card" data-category="physical">
+                        <div class="eval-card-header">
+                            <span class="eval-card-name">Physical Ability</span>
+                            <div class="eval-card-trait" id="trait-result-physical"></div>
+                        </div>
+                        <div class="eval-card-bar-container">
+                            <div class="eval-card-bar">
                                 <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-physical"></div>
                                 <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-physical"></div>
                                 <div class="eval-bar-fill stat-physical" id="creator-stat-physical-bar" style="width: 50%"></div>
                             </div>
-                            <div class="eval-row-controls">
-                                <input type="range" class="eval-row-slider" id="creator-stat-physical" min="40" max="60" value="50">
-                                <span class="eval-row-value" id="creator-stat-physical-display">50</span>
+                            <div class="eval-bar-labels">
+                                <span>0</span>
+                                <span>50</span>
+                                <span>100</span>
                             </div>
                         </div>
+                        <div class="eval-card-controls">
+                            <input type="range" class="eval-card-slider" id="creator-stat-physical" min="40" max="60" value="50">
+                            <span class="eval-card-value" id="creator-stat-physical-display">50</span>
+                        </div>
+                        <button class="eval-card-discover" data-category="physical">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Discover Trait
+                        </button>
+                    </div>
 
-                        <!-- Cooperativeness -->
-                        <div class="eval-row" data-category="cooperativeness">
-                            <div class="eval-row-header">
-                                <span class="eval-row-name">Cooperativeness</span>
-                                <div class="eval-row-trait" id="trait-result-cooperativeness"></div>
-                                <button class="eval-row-discover" data-category="cooperativeness" title="Discover trait">?</button>
-                            </div>
-                            <div class="eval-row-bar">
+                    <!-- Cooperativeness -->
+                    <div class="eval-card" data-category="cooperativeness">
+                        <div class="eval-card-header">
+                            <span class="eval-card-name">Cooperativeness</span>
+                            <div class="eval-card-trait" id="trait-result-cooperativeness"></div>
+                        </div>
+                        <div class="eval-card-bar-container">
+                            <div class="eval-card-bar">
                                 <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-cooperativeness"></div>
                                 <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-cooperativeness"></div>
                                 <div class="eval-bar-fill stat-cooperativeness" id="creator-stat-cooperativeness-bar" style="width: 50%"></div>
                             </div>
-                            <div class="eval-row-controls">
-                                <input type="range" class="eval-row-slider" id="creator-stat-cooperativeness" min="40" max="60" value="50">
-                                <span class="eval-row-value" id="creator-stat-cooperativeness-display">50</span>
+                            <div class="eval-bar-labels">
+                                <span>0</span>
+                                <span>50</span>
+                                <span>100</span>
                             </div>
                         </div>
+                        <div class="eval-card-controls">
+                            <input type="range" class="eval-card-slider" id="creator-stat-cooperativeness" min="40" max="60" value="50">
+                            <span class="eval-card-value" id="creator-stat-cooperativeness-display">50</span>
+                        </div>
+                        <button class="eval-card-discover" data-category="cooperativeness">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Discover Trait
+                        </button>
                     </div>
                 </div>
 

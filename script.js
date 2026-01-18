@@ -2600,8 +2600,8 @@ function applyTraitLimits(category) {
     const bar = document.getElementById(`creator-stat-${category}-bar`);
     const lockedLeft = document.getElementById(`locked-left-${category}`);
     const lockedRight = document.getElementById(`locked-right-${category}`);
-    const row = document.querySelector(`.eval-row[data-category="${category}"]`);
-    const discoverBtn = document.querySelector(`.eval-row-discover[data-category="${category}"]`);
+    const card = document.querySelector(`.eval-card[data-category="${category}"]`);
+    const discoverBtn = document.querySelector(`.eval-card-discover[data-category="${category}"]`);
 
     if (!slider) return;
 
@@ -2633,15 +2633,15 @@ function applyTraitLimits(category) {
         lockedRight.style.width = `${100 - limits.max}%`;
     }
 
-    // Update row state
-    if (row) {
+    // Update card state
+    if (card) {
         if (trait) {
-            row.classList.add('has-trait');
+            card.classList.add('has-trait');
             const isPositive = traitDefinitions[category]?.positive.includes(trait);
-            row.classList.remove('trait-positive', 'trait-negative');
-            row.classList.add(isPositive ? 'trait-positive' : 'trait-negative');
+            card.classList.remove('trait-positive', 'trait-negative');
+            card.classList.add(isPositive ? 'trait-positive' : 'trait-negative');
         } else {
-            row.classList.remove('has-trait', 'trait-positive', 'trait-negative');
+            card.classList.remove('has-trait', 'trait-positive', 'trait-negative');
         }
     }
 
@@ -2670,7 +2670,7 @@ function clearTrait(category) {
     }
 
     // Show discover button again
-    const discoverBtn = document.querySelector(`.eval-row-discover[data-category="${category}"]`);
+    const discoverBtn = document.querySelector(`.eval-card-discover[data-category="${category}"]`);
     if (discoverBtn) {
         discoverBtn.style.display = '';
     }
@@ -2940,7 +2940,7 @@ function initCreatorApp() {
     });
 
     // Trait quiz buttons (all selectors for compatibility)
-    document.querySelectorAll('.trait-quiz-btn, .eval-quiz-btn, .eval-discover-btn, .eval-row-discover, .trait-quiz-card').forEach(btn => {
+    document.querySelectorAll('.trait-quiz-btn, .eval-quiz-btn, .eval-discover-btn, .eval-card-discover, .trait-quiz-card').forEach(btn => {
         btn.addEventListener('click', () => {
             openTraitQuiz(btn.dataset.category);
             playSound('open');
@@ -3807,8 +3807,8 @@ function resetCreator() {
         const bar = document.getElementById(`creator-stat-${stat}-bar`);
         const lockedLeft = document.getElementById(`locked-left-${stat}`);
         const lockedRight = document.getElementById(`locked-right-${stat}`);
-        const row = document.querySelector(`.eval-row[data-category="${stat}"]`);
-        const discoverBtn = document.querySelector(`.eval-row-discover[data-category="${stat}"]`);
+        const card = document.querySelector(`.eval-card[data-category="${stat}"]`);
+        const discoverBtn = document.querySelector(`.eval-card-discover[data-category="${stat}"]`);
 
         if (slider) {
             slider.min = 40;
@@ -3820,8 +3820,8 @@ function resetCreator() {
         // Reset locked areas to default (40% on each side)
         if (lockedLeft) lockedLeft.style.width = '40%';
         if (lockedRight) lockedRight.style.width = '40%';
-        // Reset row state
-        if (row) row.classList.remove('has-trait', 'trait-positive', 'trait-negative');
+        // Reset card state
+        if (card) card.classList.remove('has-trait', 'trait-positive', 'trait-negative');
         // Show discover button
         if (discoverBtn) discoverBtn.style.display = '';
     });
