@@ -2189,15 +2189,18 @@ const traitDefinitions = {
 function getStatLimitsFromTrait(category) {
     const trait = creatorState.character.traits[category];
 
-    // No trait taken = capped at 80 (can't claim max without proving it)
-    if (!trait) return { min: 0, max: 80 };
+    // All states have min AND max limits
+    if (!trait) {
+        // No trait taken = middle ground
+        return { min: 20, max: 80 };
+    }
 
     const isPositive = traitDefinitions[category].positive.includes(trait);
     if (isPositive) {
-        // Positive trait = at least 40, can go to 100
+        // Positive trait = higher range
         return { min: 40, max: 100 };
     } else {
-        // Negative trait = capped at 60
+        // Negative trait = lower range
         return { min: 0, max: 60 };
     }
 }
@@ -2228,6 +2231,37 @@ function applyTraitLimits(category) {
     if (bar) bar.style.width = `${currentValue}%`;
 
     updateCreatorOverallGrade();
+}
+
+// Clear a trait and reset to "no trait" limits
+function clearTrait(category) {
+    creatorState.character.traits[category] = null;
+
+    // Update UI - remove badge
+    const resultEl = document.getElementById(`trait-result-${category}`);
+    if (resultEl) {
+        resultEl.innerHTML = '';
+    }
+
+    // Update quiz card - remove completed state
+    const card = document.querySelector(`.trait-quiz-card[data-category="${category}"]`);
+    if (card) {
+        card.classList.remove('completed');
+    }
+
+    // Update button
+    const btn = document.querySelector(`.trait-quiz-btn[data-category="${category}"], .eval-quiz-btn[data-category="${category}"]`);
+    if (btn) {
+        btn.classList.remove('has-trait');
+    }
+
+    // Update counter
+    updateTraitCounter();
+
+    // Apply "no trait" limits
+    applyTraitLimits(category);
+
+    playSound('click');
 }
 
 // Quiz questions for each category
@@ -2831,11 +2865,15 @@ function finishQuiz() {
 
     creatorState.character.traits[category] = resultTrait;
 
-    // Update UI with badge
+    // Update UI with badge and clear button
     const resultEl = document.getElementById(`trait-result-${category}`);
     if (resultEl) {
         const isPositive = traits.positive.includes(resultTrait);
-        resultEl.innerHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${resultTrait}</span>`;
+        resultEl.innerHTML = `
+            <span class="trait-badge ${isPositive ? 'positive' : 'negative'}">
+                ${resultTrait}
+                <button class="trait-clear-btn" onclick="clearTrait('${category}')" title="Remove trait">×</button>
+            </span>`;
     }
 
     // Update button (both old and new selectors)

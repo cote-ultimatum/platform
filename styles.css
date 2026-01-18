@@ -4874,13 +4874,13 @@ body::before {
     letter-spacing: 0.1em;
     color: var(--crimson-light);
     position: absolute;
-    bottom: 8px;
+    bottom: 6px;
     left: 0;
     right: 0;
     text-align: center;
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.25s ease;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
 }
 
 .trait-quiz-card:hover {
@@ -4924,7 +4924,7 @@ body::before {
 }
 
 .trait-quiz-card:hover .trait-quiz-card-icon {
-    transform: translateY(-6px);
+    transform: translateY(-10px);
 }
 
 .trait-quiz-card-icon svg {
@@ -5003,6 +5003,24 @@ body::before {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #ef4444;
+}
+
+.trait-clear-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.5;
+    margin-left: 0.25rem;
+    padding: 0 0.15rem;
+    transition: opacity 0.2s ease;
+    vertical-align: middle;
+}
+
+.trait-clear-btn:hover {
+    opacity: 1;
 }
 
 /* Responsive */
