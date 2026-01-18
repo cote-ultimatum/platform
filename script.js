@@ -720,6 +720,25 @@ function initKeyboardNav() {
             } else if (state.compareMode) {
                 exitCompareMode();
                 playSound('back');
+            } else if (state.currentScreen === 'creator-app') {
+                // In Creator app: close quiz modal if open, otherwise go to previous step
+                const quizModal = document.getElementById('trait-quiz-modal');
+                if (quizModal && quizModal.classList.contains('active')) {
+                    quizModal.classList.remove('active');
+                    playSound('back');
+                } else {
+                    const steps = ['info', 'bio', 'abilities', 'export'];
+                    const currentIndex = steps.indexOf(creatorState.currentStep);
+                    if (currentIndex > 0) {
+                        // Go to previous step
+                        goToCreatorStep(steps[currentIndex - 1], true);
+                        playSound('back');
+                    } else {
+                        // On first step, exit to home
+                        playSound('back');
+                        goBack();
+                    }
+                }
             } else {
                 playSound('back');
                 goBack();
@@ -1741,14 +1760,14 @@ async function handleAdminLogin() {
         } else {
             showLoginError(errorEl, 'Invalid credentials');
             loginBtn.disabled = false;
-            loginBtn.textContent = 'Log in';
+            loginBtn.textContent = 'Log In';
             playSound('error');
         }
     } catch (error) {
         console.error('Login error:', error);
         showLoginError(errorEl, 'Connection error. Try again.');
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Log in';
+        loginBtn.textContent = 'Log In';
         playSound('error');
     }
 }
@@ -1788,7 +1807,7 @@ function showAdminLogin() {
     // Reset login button state
     if (loginBtn) {
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Log in';
+        loginBtn.textContent = 'Log In';
     }
 }
 
@@ -1938,10 +1957,18 @@ async function confirmAdminSave() {
     // Convert changes to string format for logging
     const changeStrings = pendingChanges.map(c => c.text);
 
+    // Timeout wrapper to prevent hanging forever
+    const withTimeout = (promise, ms) => {
+        const timeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Save timed out. Check your connection.')), ms)
+        );
+        return Promise.race([promise, timeout]);
+    };
+
     try {
-        // Save to Firebase (runs in parallel with delay)
+        // Save to Firebase (runs in parallel with delay, with 10s timeout)
         const [success] = await Promise.all([
-            COTEDB.setClassPointsWithLog(pendingNewPoints, adminState.displayName || adminState.currentUser, changeStrings),
+            withTimeout(COTEDB.setClassPointsWithLog(pendingNewPoints, adminState.displayName || adminState.currentUser, changeStrings), 10000),
             minDelay
         ]);
 
@@ -2653,18 +2680,17 @@ function finishQuiz() {
 
     creatorState.character.traits[category] = resultTrait;
 
-    // Update UI
+    // Update UI with badge
     const resultEl = document.getElementById(`trait-result-${category}`);
     if (resultEl) {
         const isPositive = traits.positive.includes(resultTrait);
-        resultEl.textContent = resultTrait;
-        resultEl.className = `trait-result ${isPositive ? 'positive' : 'negative'}`;
+        resultEl.innerHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${resultTrait}</span>`;
     }
 
     // Update button
     const btn = document.querySelector(`.trait-quiz-btn[data-category="${category}"]`);
     if (btn) {
-        btn.textContent = 'Retake Quiz';
+        btn.classList.add('has-trait');
     }
 
     closeTraitQuiz();
@@ -2695,21 +2721,19 @@ function updateCreatorPreview() {
         const trait = char.traits[key];
         const traitHTML = trait ? (() => {
             const isPositive = traitDefinitions[key].positive.includes(trait);
-            return `<span class="preview-stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+            return `<div class="preview-stat-trait-row"><span class="preview-stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span></div>`;
         })() : '';
 
         return `
             <div class="preview-stat-row">
                 <div class="preview-stat-header">
                     <span class="preview-stat-name">${label}</span>
-                    ${traitHTML}
-                </div>
-                <div class="preview-stat-bar-container">
-                    <div class="preview-stat-bar">
-                        <div class="preview-stat-fill stat-${key}" style="width: ${value}%"></div>
-                    </div>
                     <span class="preview-stat-value">${value}</span>
                 </div>
+                <div class="preview-stat-bar">
+                    <div class="preview-stat-fill stat-${key}" style="width: ${value}%"></div>
+                </div>
+                ${traitHTML}
             </div>
         `;
     }).join('');
@@ -3082,11 +3106,10 @@ function resetCreator() {
     Object.keys(traitDefinitions).forEach(cat => {
         const resultEl = document.getElementById(`trait-result-${cat}`);
         if (resultEl) {
-            resultEl.textContent = 'Not taken';
-            resultEl.className = 'trait-result';
+            resultEl.innerHTML = '';
         }
         const btn = document.querySelector(`.trait-quiz-btn[data-category="${cat}"]`);
-        if (btn) btn.textContent = 'Take Quiz';
+        if (btn) btn.classList.remove('has-trait');
     });
 
     // Go to first step
