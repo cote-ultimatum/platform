@@ -4579,7 +4579,8 @@ body::before {
 
 .creator-content {
     padding: 1rem 1.5rem;
-    overflow-y: auto;
+    padding-bottom: 4rem; /* Space for keyboard hints */
+    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
     max-height: calc(100vh - 120px);
     scrollbar-width: thin;
     scrollbar-color: var(--cyan-dim) transparent;
@@ -5193,13 +5194,16 @@ body::before {
     position: absolute;
     top: 0;
     height: 100%;
-    background: repeating-linear-gradient(
-        -45deg,
-        rgba(100, 100, 100, 0.4),
-        rgba(100, 100, 100, 0.4) 3px,
-        rgba(50, 50, 50, 0.3) 3px,
-        rgba(50, 50, 50, 0.3) 6px
-    );
+    background:
+        repeating-linear-gradient(
+            -45deg,
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5) 2px,
+            rgba(60, 60, 60, 0.4) 2px,
+            rgba(60, 60, 60, 0.4) 4px
+        ),
+        rgba(30, 30, 30, 0.6);
+    z-index: 2; /* Above fill bar so locked areas are always visible */
     transition: width 0.4s ease;
 }
 
@@ -5593,9 +5597,9 @@ body::before {
     transform: none !important;
 }
 
-/* Hide keyboard hints in creator - they overlap with navigation */
+/* Position keyboard hints in creator */
 .creator-hints {
-    display: none;
+    bottom: 1rem;
 }
 
 /* Export Section */
