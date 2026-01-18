@@ -15,6 +15,12 @@
 //     - decision: Decision Making
 //     - physical: Physical Ability
 //     - cooperativeness: Cooperativeness
+//   traits: (Optional) Object with trait names for each stat
+//     - academic: "Studious" / "Lazy" / etc.
+//     - intelligence: "Genius" / "Slow Learner" / etc.
+//     - decision: "Decisive" / "Indecisive" / etc.
+//     - physical: "Athletic" / "Frail" / etc.
+//     - cooperativeness: "Team Player" / "Lone Wolf" / etc.
 // ========================================
 
 // Class Points - update these as the RP progresses

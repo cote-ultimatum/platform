@@ -1167,6 +1167,12 @@ function showStudentProfile(student, addToHistory = true) {
 
     statKeys.forEach((key, i) => {
         const value = student.stats[key] || 50;
+        const trait = student.traits?.[key];
+        let traitHTML = '';
+        if (trait) {
+            const isPositive = traitDefinitions[key]?.positive?.includes(trait);
+            traitHTML = `<span class="stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+        }
         const row = document.createElement('div');
         row.className = 'stat-row';
         row.innerHTML = `
@@ -1175,6 +1181,7 @@ function showStudentProfile(student, addToHistory = true) {
                 <span class="stat-value">${value}/100 <span class="stat-grade">${getGradeFromValue(value)}</span></span>
             </div>
             <div class="stat-bar"><div class="stat-bar-fill" style="width: 0%"></div></div>
+            ${traitHTML}
         `;
         statList.appendChild(row);
         setTimeout(() => {

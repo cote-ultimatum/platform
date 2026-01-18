@@ -2392,6 +2392,30 @@ body::before {
     box-shadow: 0 0 15px rgba(52, 152, 219, 0.4);
 }
 
+/* Stat traits in profile */
+.stat-trait {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+.stat-trait.positive {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #22c55e;
+}
+
+.stat-trait.negative {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+}
+
 /* ========================================
    EVENTS APP
    ======================================== */
