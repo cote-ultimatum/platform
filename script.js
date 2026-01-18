@@ -2326,9 +2326,13 @@ function initCreatorApp() {
         const numInput = document.getElementById(`creator-stat-${stat}-num`);
 
         if (slider && numInput) {
+            // Initialize slider fill
+            updateSliderFill(slider);
+
             slider.addEventListener('input', () => {
                 numInput.value = slider.value;
                 creatorState.character.stats[stat] = parseInt(slider.value);
+                updateSliderFill(slider);
                 updateCreatorOverallGrade();
             });
 
@@ -2337,6 +2341,7 @@ function initCreatorApp() {
                 numInput.value = val;
                 slider.value = val;
                 creatorState.character.stats[stat] = val;
+                updateSliderFill(slider);
                 updateCreatorOverallGrade();
                 playSound('type');
             });
@@ -2423,7 +2428,59 @@ function updateAvatarPreview(url) {
     }
 }
 
-function goToCreatorStep(stepId) {
+function updateSliderFill(slider) {
+    const value = slider.value;
+    slider.style.setProperty('--value', `${value}%`);
+}
+
+function validateCreatorStep(stepId) {
+    const char = creatorState.character;
+
+    if (stepId === 'info') {
+        // Required: name and class
+        if (!char.name || char.name.trim() === '') {
+            showCreatorError('Please enter a character name');
+            document.getElementById('creator-name')?.focus();
+            return false;
+        }
+        if (!char.class) {
+            showCreatorError('Please select a class');
+            return false;
+        }
+    }
+    return true;
+}
+
+function showCreatorError(message) {
+    // Find or create error element
+    let errorEl = document.querySelector('.creator-error-toast');
+    if (!errorEl) {
+        errorEl = document.createElement('div');
+        errorEl.className = 'creator-error-toast';
+        document.querySelector('.creator-content')?.appendChild(errorEl);
+    }
+
+    errorEl.textContent = message;
+    errorEl.classList.add('visible');
+    playSound('error');
+
+    setTimeout(() => {
+        errorEl.classList.remove('visible');
+    }, 3000);
+}
+
+function goToCreatorStep(stepId, skipValidation = false) {
+    const steps = ['info', 'bio', 'abilities', 'export'];
+    const currentIndex = steps.indexOf(creatorState.currentStep);
+    const targetIndex = steps.indexOf(stepId);
+
+    // Validate current step before moving forward
+    if (!skipValidation && targetIndex > currentIndex) {
+        if (!validateCreatorStep(creatorState.currentStep)) {
+            return;
+        }
+    }
+
     // Update step visibility
     document.querySelectorAll('.creator-step').forEach(step => step.classList.remove('active'));
     const targetStep = document.getElementById(`creator-step-${stepId}`);
@@ -2433,17 +2490,26 @@ function goToCreatorStep(stepId) {
     }
 
     // Update progress indicator
-    const steps = ['info', 'bio', 'abilities', 'export'];
-    const currentIndex = steps.indexOf(stepId);
     document.querySelectorAll('.progress-step').forEach((step, i) => {
-        step.classList.toggle('active', i <= currentIndex);
-        step.classList.toggle('completed', i < currentIndex);
+        step.classList.remove('active', 'completed');
+        if (i === targetIndex) {
+            step.classList.add('active');
+        } else if (i < targetIndex) {
+            step.classList.add('completed');
+        }
+    });
+
+    // Update progress lines
+    document.querySelectorAll('.progress-line').forEach((line, i) => {
+        line.classList.toggle('completed', i < targetIndex);
     });
 
     // Update preview on export step
     if (stepId === 'export') {
         updateCreatorPreview();
     }
+
+    playSound('select');
 }
 
 function updateCreatorOverallGrade() {
