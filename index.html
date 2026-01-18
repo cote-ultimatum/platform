@@ -971,117 +971,172 @@
 
                         <div class="eval-stat-list">
                             <!-- Academic -->
-                            <div class="eval-stat-row" data-category="academic">
-                                <div class="eval-stat-header">
-                                    <span class="eval-stat-name">Academic Ability</span>
-                                    <span class="eval-stat-value" id="creator-stat-academic-display">50</span>
+                            <div class="eval-stat-card" data-category="academic">
+                                <div class="eval-stat-main">
+                                    <div class="eval-stat-info">
+                                        <span class="eval-stat-name">Academic Ability</span>
+                                        <span class="eval-stat-value" id="creator-stat-academic-display">50</span>
+                                    </div>
+                                    <div class="eval-stat-bar-wrap">
+                                        <div class="eval-stat-bar">
+                                            <div class="eval-stat-zone" id="stat-zone-academic"></div>
+                                            <div class="eval-stat-fill stat-academic" id="creator-stat-academic-bar" style="width: 50%"></div>
+                                        </div>
+                                        <input type="range" class="eval-slider" id="creator-stat-academic" min="25" max="75" value="50">
+                                        <div class="eval-stat-ticks">
+                                            <span style="left: 0%">0</span>
+                                            <span style="left: 25%">25</span>
+                                            <span style="left: 50%">50</span>
+                                            <span style="left: 75%">75</span>
+                                            <span style="left: 100%">100</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="eval-stat-bar">
-                                    <div class="eval-stat-fill stat-academic" id="creator-stat-academic-bar" style="width: 50%"></div>
-                                </div>
-                                <input type="range" class="eval-slider" id="creator-stat-academic" min="25" max="75" value="50">
-                                <div class="eval-stat-footer">
-                                    <button class="eval-quiz-btn" data-category="academic">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
-                                        </svg>
-                                        Take Quiz
+                                <div class="eval-stat-trait-area">
+                                    <button class="eval-discover-btn" data-category="academic">
+                                        <div class="discover-icon">?</div>
+                                        <div class="discover-content">
+                                            <span class="discover-label">Discover Trait</span>
+                                            <span class="discover-hint">Take a quiz to unlock different stat ranges</span>
+                                        </div>
                                     </button>
                                     <div class="eval-trait-result" id="trait-result-academic"></div>
-                                    <span class="eval-stat-range" id="stat-range-academic">Range: 25-75</span>
                                 </div>
                             </div>
 
                             <!-- Intelligence -->
-                            <div class="eval-stat-row" data-category="intelligence">
-                                <div class="eval-stat-header">
-                                    <span class="eval-stat-name">Intelligence</span>
-                                    <span class="eval-stat-value" id="creator-stat-intelligence-display">50</span>
+                            <div class="eval-stat-card" data-category="intelligence">
+                                <div class="eval-stat-main">
+                                    <div class="eval-stat-info">
+                                        <span class="eval-stat-name">Intelligence</span>
+                                        <span class="eval-stat-value" id="creator-stat-intelligence-display">50</span>
+                                    </div>
+                                    <div class="eval-stat-bar-wrap">
+                                        <div class="eval-stat-bar">
+                                            <div class="eval-stat-zone" id="stat-zone-intelligence"></div>
+                                            <div class="eval-stat-fill stat-intelligence" id="creator-stat-intelligence-bar" style="width: 50%"></div>
+                                        </div>
+                                        <input type="range" class="eval-slider" id="creator-stat-intelligence" min="25" max="75" value="50">
+                                        <div class="eval-stat-ticks">
+                                            <span style="left: 0%">0</span>
+                                            <span style="left: 25%">25</span>
+                                            <span style="left: 50%">50</span>
+                                            <span style="left: 75%">75</span>
+                                            <span style="left: 100%">100</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="eval-stat-bar">
-                                    <div class="eval-stat-fill stat-intelligence" id="creator-stat-intelligence-bar" style="width: 50%"></div>
-                                </div>
-                                <input type="range" class="eval-slider" id="creator-stat-intelligence" min="25" max="75" value="50">
-                                <div class="eval-stat-footer">
-                                    <button class="eval-quiz-btn" data-category="intelligence">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
-                                        </svg>
-                                        Take Quiz
+                                <div class="eval-stat-trait-area">
+                                    <button class="eval-discover-btn" data-category="intelligence">
+                                        <div class="discover-icon">?</div>
+                                        <div class="discover-content">
+                                            <span class="discover-label">Discover Trait</span>
+                                            <span class="discover-hint">Take a quiz to unlock different stat ranges</span>
+                                        </div>
                                     </button>
                                     <div class="eval-trait-result" id="trait-result-intelligence"></div>
-                                    <span class="eval-stat-range" id="stat-range-intelligence">Range: 25-75</span>
                                 </div>
                             </div>
 
                             <!-- Decision Making -->
-                            <div class="eval-stat-row" data-category="decision">
-                                <div class="eval-stat-header">
-                                    <span class="eval-stat-name">Decision Making</span>
-                                    <span class="eval-stat-value" id="creator-stat-decision-display">50</span>
+                            <div class="eval-stat-card" data-category="decision">
+                                <div class="eval-stat-main">
+                                    <div class="eval-stat-info">
+                                        <span class="eval-stat-name">Decision Making</span>
+                                        <span class="eval-stat-value" id="creator-stat-decision-display">50</span>
+                                    </div>
+                                    <div class="eval-stat-bar-wrap">
+                                        <div class="eval-stat-bar">
+                                            <div class="eval-stat-zone" id="stat-zone-decision"></div>
+                                            <div class="eval-stat-fill stat-decision" id="creator-stat-decision-bar" style="width: 50%"></div>
+                                        </div>
+                                        <input type="range" class="eval-slider" id="creator-stat-decision" min="25" max="75" value="50">
+                                        <div class="eval-stat-ticks">
+                                            <span style="left: 0%">0</span>
+                                            <span style="left: 25%">25</span>
+                                            <span style="left: 50%">50</span>
+                                            <span style="left: 75%">75</span>
+                                            <span style="left: 100%">100</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="eval-stat-bar">
-                                    <div class="eval-stat-fill stat-decision" id="creator-stat-decision-bar" style="width: 50%"></div>
-                                </div>
-                                <input type="range" class="eval-slider" id="creator-stat-decision" min="25" max="75" value="50">
-                                <div class="eval-stat-footer">
-                                    <button class="eval-quiz-btn" data-category="decision">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
-                                        </svg>
-                                        Take Quiz
+                                <div class="eval-stat-trait-area">
+                                    <button class="eval-discover-btn" data-category="decision">
+                                        <div class="discover-icon">?</div>
+                                        <div class="discover-content">
+                                            <span class="discover-label">Discover Trait</span>
+                                            <span class="discover-hint">Take a quiz to unlock different stat ranges</span>
+                                        </div>
                                     </button>
                                     <div class="eval-trait-result" id="trait-result-decision"></div>
-                                    <span class="eval-stat-range" id="stat-range-decision">Range: 25-75</span>
                                 </div>
                             </div>
 
                             <!-- Physical -->
-                            <div class="eval-stat-row" data-category="physical">
-                                <div class="eval-stat-header">
-                                    <span class="eval-stat-name">Physical Ability</span>
-                                    <span class="eval-stat-value" id="creator-stat-physical-display">50</span>
+                            <div class="eval-stat-card" data-category="physical">
+                                <div class="eval-stat-main">
+                                    <div class="eval-stat-info">
+                                        <span class="eval-stat-name">Physical Ability</span>
+                                        <span class="eval-stat-value" id="creator-stat-physical-display">50</span>
+                                    </div>
+                                    <div class="eval-stat-bar-wrap">
+                                        <div class="eval-stat-bar">
+                                            <div class="eval-stat-zone" id="stat-zone-physical"></div>
+                                            <div class="eval-stat-fill stat-physical" id="creator-stat-physical-bar" style="width: 50%"></div>
+                                        </div>
+                                        <input type="range" class="eval-slider" id="creator-stat-physical" min="25" max="75" value="50">
+                                        <div class="eval-stat-ticks">
+                                            <span style="left: 0%">0</span>
+                                            <span style="left: 25%">25</span>
+                                            <span style="left: 50%">50</span>
+                                            <span style="left: 75%">75</span>
+                                            <span style="left: 100%">100</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="eval-stat-bar">
-                                    <div class="eval-stat-fill stat-physical" id="creator-stat-physical-bar" style="width: 50%"></div>
-                                </div>
-                                <input type="range" class="eval-slider" id="creator-stat-physical" min="25" max="75" value="50">
-                                <div class="eval-stat-footer">
-                                    <button class="eval-quiz-btn" data-category="physical">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
-                                        </svg>
-                                        Take Quiz
+                                <div class="eval-stat-trait-area">
+                                    <button class="eval-discover-btn" data-category="physical">
+                                        <div class="discover-icon">?</div>
+                                        <div class="discover-content">
+                                            <span class="discover-label">Discover Trait</span>
+                                            <span class="discover-hint">Take a quiz to unlock different stat ranges</span>
+                                        </div>
                                     </button>
                                     <div class="eval-trait-result" id="trait-result-physical"></div>
-                                    <span class="eval-stat-range" id="stat-range-physical">Range: 25-75</span>
                                 </div>
                             </div>
 
                             <!-- Cooperativeness -->
-                            <div class="eval-stat-row" data-category="cooperativeness">
-                                <div class="eval-stat-header">
-                                    <span class="eval-stat-name">Cooperativeness</span>
-                                    <span class="eval-stat-value" id="creator-stat-cooperativeness-display">50</span>
+                            <div class="eval-stat-card" data-category="cooperativeness">
+                                <div class="eval-stat-main">
+                                    <div class="eval-stat-info">
+                                        <span class="eval-stat-name">Cooperativeness</span>
+                                        <span class="eval-stat-value" id="creator-stat-cooperativeness-display">50</span>
+                                    </div>
+                                    <div class="eval-stat-bar-wrap">
+                                        <div class="eval-stat-bar">
+                                            <div class="eval-stat-zone" id="stat-zone-cooperativeness"></div>
+                                            <div class="eval-stat-fill stat-cooperativeness" id="creator-stat-cooperativeness-bar" style="width: 50%"></div>
+                                        </div>
+                                        <input type="range" class="eval-slider" id="creator-stat-cooperativeness" min="25" max="75" value="50">
+                                        <div class="eval-stat-ticks">
+                                            <span style="left: 0%">0</span>
+                                            <span style="left: 25%">25</span>
+                                            <span style="left: 50%">50</span>
+                                            <span style="left: 75%">75</span>
+                                            <span style="left: 100%">100</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="eval-stat-bar">
-                                    <div class="eval-stat-fill stat-cooperativeness" id="creator-stat-cooperativeness-bar" style="width: 50%"></div>
-                                </div>
-                                <input type="range" class="eval-slider" id="creator-stat-cooperativeness" min="25" max="75" value="50">
-                                <div class="eval-stat-footer">
-                                    <button class="eval-quiz-btn" data-category="cooperativeness">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
-                                        </svg>
-                                        Take Quiz
+                                <div class="eval-stat-trait-area">
+                                    <button class="eval-discover-btn" data-category="cooperativeness">
+                                        <div class="discover-icon">?</div>
+                                        <div class="discover-content">
+                                            <span class="discover-label">Discover Trait</span>
+                                            <span class="discover-hint">Take a quiz to unlock different stat ranges</span>
+                                        </div>
                                     </button>
                                     <div class="eval-trait-result" id="trait-result-cooperativeness"></div>
-                                    <span class="eval-stat-range" id="stat-range-cooperativeness">Range: 25-75</span>
                                 </div>
                             </div>
                         </div>

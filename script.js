@@ -2600,7 +2600,8 @@ function applyTraitLimits(category) {
     const slider = document.getElementById(`creator-stat-${category}`);
     const display = document.getElementById(`creator-stat-${category}-display`);
     const bar = document.getElementById(`creator-stat-${category}-bar`);
-    const rangeText = document.getElementById(`stat-range-${category}`);
+    const zone = document.getElementById(`stat-zone-${category}`);
+    const card = document.querySelector(`.eval-stat-card[data-category="${category}"]`);
 
     if (!slider) return;
 
@@ -2622,13 +2623,23 @@ function applyTraitLimits(category) {
     if (display) display.textContent = currentValue;
     if (bar) bar.style.width = `${currentValue}%`;
 
-    // Update range text display
-    if (rangeText) {
-        rangeText.textContent = `Range: ${limits.min}-${limits.max}`;
-        rangeText.classList.remove('positive', 'negative');
+    // Update zone indicator
+    if (zone) {
+        zone.style.left = `${limits.min}%`;
+        zone.style.width = `${limits.max - limits.min}%`;
+        zone.classList.remove('positive', 'negative');
         if (trait) {
             const isPositive = traitDefinitions[category]?.positive.includes(trait);
-            rangeText.classList.add(isPositive ? 'positive' : 'negative');
+            zone.classList.add(isPositive ? 'positive' : 'negative');
+        }
+    }
+
+    // Update card state
+    if (card) {
+        if (trait) {
+            card.classList.add('has-trait');
+        } else {
+            card.classList.remove('has-trait');
         }
     }
 
@@ -2924,8 +2935,8 @@ function initCreatorApp() {
         }
     });
 
-    // Trait quiz buttons (both old and new selectors for compatibility)
-    document.querySelectorAll('.trait-quiz-btn, .eval-quiz-btn, .trait-quiz-card').forEach(btn => {
+    // Trait quiz buttons (all selectors for compatibility)
+    document.querySelectorAll('.trait-quiz-btn, .eval-quiz-btn, .eval-discover-btn, .trait-quiz-card').forEach(btn => {
         btn.addEventListener('click', () => {
             openTraitQuiz(btn.dataset.category);
             playSound('open');
@@ -3267,33 +3278,25 @@ function finishQuiz() {
 
     creatorState.character.traits[category] = resultTrait;
 
-    // Update UI with badge and clear button
+    // Get limits for display
+    const isPositive = traits.positive.includes(resultTrait);
+    const limits = isPositive ? { min: 50, max: 100 } : { min: 0, max: 50 };
+
+    // Update UI with badge, range, and clear button
     const resultEl = document.getElementById(`trait-result-${category}`);
     if (resultEl) {
-        const isPositive = traits.positive.includes(resultTrait);
         resultEl.innerHTML = `
             <span class="trait-badge ${isPositive ? 'positive' : 'negative'}">
                 ${resultTrait}
-                <button class="trait-clear-btn" onclick="clearTrait('${category}')" title="Remove trait">×</button>
-            </span>`;
-    }
-
-    // Update button (both old and new selectors)
-    const btn = document.querySelector(`.trait-quiz-btn[data-category="${category}"], .eval-quiz-btn[data-category="${category}"]`);
-    if (btn) {
-        btn.classList.add('has-trait');
-    }
-
-    // Update quiz card
-    const card = document.querySelector(`.trait-quiz-card[data-category="${category}"]`);
-    if (card) {
-        card.classList.add('completed');
+            </span>
+            <span class="trait-range ${isPositive ? 'positive' : 'negative'}">Range: ${limits.min}-${limits.max}</span>
+            <button class="trait-clear-btn" onclick="clearTrait('${category}')" title="Remove trait">×</button>`;
     }
 
     // Update completion counter
     updateTraitCounter();
 
-    // Apply trait limits to the stat slider
+    // Apply trait limits to the stat slider (this also updates card state)
     applyTraitLimits(category);
 
     closeTraitQuiz();
