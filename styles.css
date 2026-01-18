@@ -4140,6 +4140,289 @@ body::before {
     border-color: var(--text-muted);
 }
 
+/* Student Management */
+.admin-student-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-add-student-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--cyan-subtle);
+    border: 1px solid var(--cyan);
+    border-radius: var(--border-radius-sm);
+    color: var(--cyan);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-add-student-btn:hover {
+    background: var(--cyan);
+    color: var(--bg-primary);
+}
+
+.admin-add-student-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.admin-student-filter {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-student-filter select {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.admin-student-filter select:hover {
+    border-color: var(--text-muted);
+}
+
+.admin-student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.admin-student-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-student-item:hover {
+    border-color: var(--cyan);
+    background: rgba(77, 201, 230, 0.05);
+}
+
+.admin-student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid var(--bg-tertiary);
+}
+
+.admin-student-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin-student-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-student-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-student-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.admin-student-grade {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cyan);
+}
+
+.admin-student-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Student Modal */
+.admin-student-modal {
+    max-width: 500px;
+}
+
+.admin-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.admin-modal-close:hover {
+    color: var(--text-primary);
+}
+
+.admin-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-form-row {
+    margin-bottom: 1rem;
+}
+
+.admin-form-row label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+}
+
+.admin-form-row input,
+.admin-form-row select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.admin-form-row input:focus,
+.admin-form-row select:focus {
+    outline: none;
+    border-color: var(--cyan);
+}
+
+.admin-form-row-half {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.admin-form-section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin: 1.25rem 0 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--bg-tertiary);
+    letter-spacing: 0.1em;
+}
+
+.admin-form-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+}
+
+.admin-stat-input {
+    text-align: center;
+}
+
+.admin-stat-input label {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+
+.admin-stat-input input {
+    width: 100%;
+    padding: 0.5rem;
+    text-align: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.admin-stat-input input:focus {
+    outline: none;
+    border-color: var(--cyan);
+}
+
+.admin-modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-modal-actions-right {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-modal-delete {
+    padding: 0.6rem 1rem;
+    background: rgba(231, 76, 60, 0.15);
+    border: 1px solid #e74c3c;
+    border-radius: var(--border-radius-sm);
+    color: #e74c3c;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-modal-delete:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+@media (max-width: 480px) {
+    .admin-form-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .admin-student-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-student-filter {
+        justify-content: stretch;
+    }
+
+    .admin-student-filter select {
+        flex: 1;
+    }
+}
+
 /* ========================================
    CREATOR APP
    ======================================== */
@@ -5910,5 +6193,139 @@ body::before {
     .export-btn {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* ========================================
+   MOBILE - SMALL SCREENS
+   ======================================== */
+
+@media (max-width: 600px) {
+    /* App dock - wrap icons into 2x2 grid */
+    .app-dock {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        max-width: 280px;
+    }
+
+    .app-icon-image {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+    }
+
+    .app-icon-image svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .app-name {
+        font-size: 0.75rem;
+    }
+
+    .app-icon {
+        gap: 0.5rem;
+    }
+
+    /* Lock screen - smaller text */
+    .lock-time {
+        font-size: 3rem;
+    }
+
+    .lock-title {
+        font-size: 2rem;
+        letter-spacing: 0.2em;
+    }
+
+    .lock-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .lock-date {
+        font-size: 0.9rem;
+        margin-bottom: 3rem;
+    }
+
+    .lock-branding {
+        margin-bottom: 3rem;
+    }
+
+    .enter-hint {
+        font-size: 0.85rem;
+    }
+
+    /* Hide keyboard hints on mobile */
+    .keyboard-hint {
+        display: none;
+    }
+
+    /* Home header adjustments */
+    .home-header {
+        padding: 1rem;
+    }
+
+    .home-brand-title {
+        font-size: 1rem;
+    }
+
+    .home-brand-subtitle {
+        font-size: 0.6rem;
+    }
+
+    /* Quote section */
+    .school-quote {
+        margin-top: 2rem;
+        min-height: 100px;
+    }
+
+    .quote-text {
+        font-size: 0.95rem;
+    }
+
+    /* App headers */
+    .app-header {
+        padding: 1rem;
+    }
+
+    .app-title {
+        font-size: 1.25rem;
+    }
+
+    .header-brand {
+        display: none;
+    }
+
+    .nav-btn {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 400px) {
+    /* Very small screens */
+    .lock-time {
+        font-size: 2.5rem;
+    }
+
+    .lock-title {
+        font-size: 1.75rem;
+    }
+
+    .app-dock {
+        max-width: 240px;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .app-icon-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .app-icon-image svg {
+        width: 28px;
+        height: 28px;
     }
 }

@@ -214,6 +214,26 @@
                     <!-- Classes populated by JS -->
                 </div>
             </div>
+
+            <div class="year-section">
+                <div class="year-header">
+                    <h2 class="year-title">2nd Year Students</h2>
+                    <span class="year-count" id="second-year-count">0 total</span>
+                </div>
+                <div class="class-grid" id="second-year-classes">
+                    <!-- Classes populated by JS -->
+                </div>
+            </div>
+
+            <div class="year-section">
+                <div class="year-header">
+                    <h2 class="year-title">3rd Year Students</h2>
+                    <span class="year-count" id="third-year-count">0 total</span>
+                </div>
+                <div class="class-grid" id="third-year-classes">
+                    <!-- Classes populated by JS -->
+                </div>
+            </div>
         </div>
 
         <!-- OAA Class View -->
@@ -642,6 +662,106 @@
                     <div class="admin-changelog-empty">No changes recorded</div>
                 </div>
             </div>
+
+            <!-- Student Management -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">Student Management</h3>
+                <div class="admin-student-controls">
+                    <button class="admin-add-student-btn" id="admin-add-student-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Add Student
+                    </button>
+                    <div class="admin-student-filter">
+                        <select id="admin-student-year-filter">
+                            <option value="">All Years</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                        </select>
+                        <select id="admin-student-class-filter">
+                            <option value="">All Classes</option>
+                            <option value="A">Class A</option>
+                            <option value="B">Class B</option>
+                            <option value="C">Class C</option>
+                            <option value="D">Class D</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="admin-student-list" id="admin-student-list">
+                    <!-- Students populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Edit Modal -->
+        <div class="admin-modal-overlay" id="admin-student-modal" style="display: none;">
+            <div class="admin-modal admin-student-modal">
+                <div class="admin-modal-header">
+                    <span id="admin-student-modal-title">Add Student</span>
+                    <button class="admin-modal-close" id="admin-student-modal-close">&times;</button>
+                </div>
+                <div class="admin-modal-body">
+                    <div class="admin-form-row">
+                        <label>Name</label>
+                        <input type="text" id="admin-student-name" placeholder="Full name">
+                    </div>
+                    <div class="admin-form-row admin-form-row-half">
+                        <div>
+                            <label>Year</label>
+                            <select id="admin-student-year">
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Class</label>
+                            <select id="admin-student-class">
+                                <option value="A">Class A</option>
+                                <option value="B">Class B</option>
+                                <option value="C">Class C</option>
+                                <option value="D">Class D</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-form-row">
+                        <label>Image URL</label>
+                        <input type="text" id="admin-student-image" placeholder="https://...">
+                    </div>
+                    <div class="admin-form-section-title">OAA Stats</div>
+                    <div class="admin-form-stats">
+                        <div class="admin-stat-input">
+                            <label>Academic</label>
+                            <input type="number" id="admin-student-academic" min="0" max="100" value="50">
+                        </div>
+                        <div class="admin-stat-input">
+                            <label>Intelligence</label>
+                            <input type="number" id="admin-student-intelligence" min="0" max="100" value="50">
+                        </div>
+                        <div class="admin-stat-input">
+                            <label>Decision</label>
+                            <input type="number" id="admin-student-decision" min="0" max="100" value="50">
+                        </div>
+                        <div class="admin-stat-input">
+                            <label>Physical</label>
+                            <input type="number" id="admin-student-physical" min="0" max="100" value="50">
+                        </div>
+                        <div class="admin-stat-input">
+                            <label>Cooperativeness</label>
+                            <input type="number" id="admin-student-cooperativeness" min="0" max="100" value="50">
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-modal-actions">
+                    <button class="admin-modal-delete" id="admin-student-delete" style="display: none;">Delete</button>
+                    <div class="admin-modal-actions-right">
+                        <button class="admin-modal-cancel" id="admin-student-cancel">Cancel</button>
+                        <button class="admin-modal-confirm" id="admin-student-save">Save</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Save Confirmation Modal -->
@@ -1062,6 +1182,9 @@
             <div class="key-hint"><span class="key">ESC</span> BACK</div>
         </div>
     </div>
+
+    <!-- PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- Firebase SDK (modular) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>

@@ -365,6 +365,177 @@ async function getChangelog(limit = 10) {
 }
 
 // ========================================
+// STUDENT MANAGEMENT
+// ========================================
+
+// Get all students from Firebase
+async function getStudents() {
+    if (!dbState.initialized) {
+        console.warn('Database not initialized, using local studentData');
+        return typeof studentData !== 'undefined' ? studentData : [];
+    }
+
+    try {
+        const snapshot = await firebase.database().ref('students').once('value');
+        const data = snapshot.val();
+
+        if (data) {
+            // Convert object to array
+            return Object.keys(data).map(key => ({
+                ...data[key],
+                _firebaseKey: key
+            }));
+        }
+
+        // If no Firebase data, return local data (migration scenario)
+        return typeof studentData !== 'undefined' ? studentData : [];
+    } catch (error) {
+        console.error('Error getting students:', error);
+        return typeof studentData !== 'undefined' ? studentData : [];
+    }
+}
+
+// Add a new student
+async function addStudent(student) {
+    if (!dbState.initialized) {
+        console.error('Database not initialized');
+        return { success: false };
+    }
+
+    if (!dbState.adminAuthenticated) {
+        console.error('Admin authentication required');
+        return { success: false };
+    }
+
+    try {
+        // Generate student ID if not provided
+        if (!student.id) {
+            const yearNum = student.year || 1;
+            const classLetter = student.class || 'D';
+            const random = Math.floor(Math.random() * 9000) + 1000;
+            student.id = `S${yearNum}${classLetter}${random}`;
+        }
+
+        const newRef = await firebase.database().ref('students').push(student);
+        console.log('Added student:', student.name);
+
+        return {
+            success: true,
+            key: newRef.key,
+            student: { ...student, _firebaseKey: newRef.key }
+        };
+    } catch (error) {
+        console.error('Error adding student:', error);
+        return { success: false };
+    }
+}
+
+// Update an existing student
+async function updateStudent(firebaseKey, updates) {
+    if (!dbState.initialized) {
+        console.error('Database not initialized');
+        return false;
+    }
+
+    if (!dbState.adminAuthenticated) {
+        console.error('Admin authentication required');
+        return false;
+    }
+
+    try {
+        await firebase.database().ref(`students/${firebaseKey}`).update(updates);
+        console.log('Updated student:', firebaseKey);
+        return true;
+    } catch (error) {
+        console.error('Error updating student:', error);
+        return false;
+    }
+}
+
+// Delete a student
+async function deleteStudent(firebaseKey) {
+    if (!dbState.initialized) {
+        console.error('Database not initialized');
+        return false;
+    }
+
+    if (!dbState.adminAuthenticated) {
+        console.error('Admin authentication required');
+        return false;
+    }
+
+    try {
+        await firebase.database().ref(`students/${firebaseKey}`).remove();
+        console.log('Deleted student:', firebaseKey);
+        return true;
+    } catch (error) {
+        console.error('Error deleting student:', error);
+        return false;
+    }
+}
+
+// Subscribe to student updates (real-time)
+function subscribeToStudents(callback) {
+    if (!dbState.initialized) {
+        console.warn('Database not initialized');
+        return () => {};
+    }
+
+    const studentsRef = firebase.database().ref('students');
+
+    const listener = studentsRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const students = Object.keys(data).map(key => ({
+                ...data[key],
+                _firebaseKey: key
+            }));
+            callback(students);
+        } else {
+            callback([]);
+        }
+    });
+
+    // Return unsubscribe function
+    return () => studentsRef.off('value', listener);
+}
+
+// Migrate local students to Firebase (one-time operation)
+async function migrateStudentsToFirebase() {
+    if (!dbState.initialized || !dbState.adminAuthenticated) {
+        console.error('Cannot migrate: not initialized or not admin');
+        return false;
+    }
+
+    if (typeof studentData === 'undefined' || !studentData.length) {
+        console.log('No local students to migrate');
+        return true;
+    }
+
+    try {
+        // Check if students already exist in Firebase
+        const existing = await firebase.database().ref('students').once('value');
+        if (existing.val()) {
+            console.log('Students already exist in Firebase, skipping migration');
+            return true;
+        }
+
+        // Add each student
+        const batch = {};
+        studentData.forEach((student, index) => {
+            batch[`student_${index}`] = student;
+        });
+
+        await firebase.database().ref('students').set(batch);
+        console.log(`Migrated ${studentData.length} students to Firebase`);
+        return true;
+    } catch (error) {
+        console.error('Error migrating students:', error);
+        return false;
+    }
+}
+
+// ========================================
 // EXPORT FOR GLOBAL ACCESS
 // ========================================
 
@@ -381,8 +552,15 @@ window.COTEDB = {
     isAdmin: isAdminAuthenticated,
     addListener: addDatabaseListener,
     removeListener: removeDatabaseListener,
-    // New admin functions
+    // Admin functions
     verifyAdmin: verifyAdmin,
     setClassPointsWithLog: setClassPointsWithLog,
-    getChangelog: getChangelog
+    getChangelog: getChangelog,
+    // Student functions
+    getStudents: getStudents,
+    addStudent: addStudent,
+    updateStudent: updateStudent,
+    deleteStudent: deleteStudent,
+    subscribeToStudents: subscribeToStudents,
+    migrateStudentsToFirebase: migrateStudentsToFirebase
 };

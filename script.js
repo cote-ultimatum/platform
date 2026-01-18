@@ -931,43 +931,51 @@ function filterStudents(query) {
 // ========================================
 
 function renderClassCards() {
-    const container = document.getElementById('first-year-classes');
-    if (!container) return;
+    const yearConfigs = [
+        { year: 1, containerId: 'first-year-classes', countId: 'first-year-count' },
+        { year: 2, containerId: 'second-year-classes', countId: 'second-year-count' },
+        { year: 3, containerId: 'third-year-classes', countId: 'third-year-count' }
+    ];
 
-    container.innerHTML = '';
-    let totalStudents = 0;
-    let displayedStudents = 0;
+    yearConfigs.forEach(({ year, containerId, countId }) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-    // Sort classes by rank (1st to 4th based on points)
-    const classes = ['A', 'B', 'C', 'D'].sort((a, b) => {
-        const rankA = getClassRank(1, a);
-        const rankB = getClassRank(1, b);
-        return rankA - rankB;
-    });
+        container.innerHTML = '';
+        let totalStudents = 0;
+        let displayedStudents = 0;
 
-    classes.forEach(className => {
-        let students = getStudentsByClass(1, className);
-        totalStudents += students.length;
+        // Sort classes by rank (1st to 4th based on points)
+        const classes = ['A', 'B', 'C', 'D'].sort((a, b) => {
+            const rankA = getClassRank(year, a);
+            const rankB = getClassRank(year, b);
+            return rankA - rankB;
+        });
 
-        // Filter by favorites if enabled
-        if (state.showFavoritesOnly) {
-            students = students.filter(s => state.favorites.includes(s.id));
+        classes.forEach(className => {
+            let students = getStudentsByClass(year, className);
+            totalStudents += students.length;
+
+            // Filter by favorites if enabled
+            if (state.showFavoritesOnly) {
+                students = students.filter(s => state.favorites.includes(s.id));
+            }
+            displayedStudents += students.length;
+
+            const card = createClassCard(year, className, getSortedStudents(students, state.currentSort));
+            container.appendChild(card);
+        });
+
+        const countEl = document.getElementById(countId);
+        if (countEl) {
+            countEl.textContent = state.showFavoritesOnly
+                ? `${displayedStudents} favorites`
+                : `${totalStudents} total`;
         }
-        displayedStudents += students.length;
 
-        const card = createClassCard(1, className, getSortedStudents(students, state.currentSort));
-        container.appendChild(card);
+        // Reattach hover sounds to new elements
+        attachHoverSounds(container);
     });
-
-    const countEl = document.getElementById('first-year-count');
-    if (countEl) {
-        countEl.textContent = state.showFavoritesOnly
-            ? `${displayedStudents} favorites`
-            : `${totalStudents} total`;
-    }
-
-    // Reattach hover sounds to new elements
-    attachHoverSounds(container);
 }
 
 function createClassCard(year, className, students) {
@@ -1610,7 +1618,12 @@ const adminState = {
     currentUser: null,
     displayName: null,
     initialized: false,
-    originalPoints: {} // Track original values for change detection
+    originalPoints: {}, // Track original values for change detection
+    // Student management
+    students: [],
+    editingStudent: null,
+    yearFilter: '',
+    classFilter: ''
 };
 
 function initAdminApp() {
@@ -1743,6 +1756,9 @@ function initAdminApp() {
             }
         });
     }
+
+    // Student management initialization
+    initStudentManagement();
 }
 
 async function handleAdminLogin() {
@@ -1872,6 +1888,9 @@ function showAdminPanel() {
 
     // Load changelog
     loadAdminChangelog();
+
+    // Load students
+    loadAdminStudents();
 }
 
 function loadAdminPointsFromDB() {
@@ -2102,6 +2121,284 @@ async function loadAdminChangelog() {
     } catch (error) {
         console.error('Error loading changelog:', error);
         container.innerHTML = '<div class="admin-changelog-empty">Error loading changes</div>';
+    }
+}
+
+// ========================================
+// STUDENT MANAGEMENT
+// ========================================
+
+function initStudentManagement() {
+    // Add student button
+    const addBtn = document.getElementById('admin-add-student-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            openStudentModal(null);
+            playSound('open');
+        });
+        addBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    // Filters
+    const yearFilter = document.getElementById('admin-student-year-filter');
+    const classFilter = document.getElementById('admin-student-class-filter');
+
+    if (yearFilter) {
+        yearFilter.addEventListener('change', () => {
+            adminState.yearFilter = yearFilter.value;
+            renderAdminStudentList();
+            playSound('select');
+        });
+    }
+
+    if (classFilter) {
+        classFilter.addEventListener('change', () => {
+            adminState.classFilter = classFilter.value;
+            renderAdminStudentList();
+            playSound('select');
+        });
+    }
+
+    // Modal buttons
+    const modalClose = document.getElementById('admin-student-modal-close');
+    const modalCancel = document.getElementById('admin-student-cancel');
+    const modalSave = document.getElementById('admin-student-save');
+    const modalDelete = document.getElementById('admin-student-delete');
+    const modalOverlay = document.getElementById('admin-student-modal');
+
+    if (modalClose) {
+        modalClose.addEventListener('click', () => {
+            closeStudentModal();
+            playSound('back');
+        });
+    }
+
+    if (modalCancel) {
+        modalCancel.addEventListener('click', () => {
+            closeStudentModal();
+            playSound('back');
+        });
+        modalCancel.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (modalSave) {
+        modalSave.addEventListener('click', saveStudent);
+        modalSave.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (modalDelete) {
+        modalDelete.addEventListener('click', deleteCurrentStudent);
+        modalDelete.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeStudentModal();
+                playSound('back');
+            }
+        });
+    }
+}
+
+async function loadAdminStudents() {
+    // Try to load from Firebase first, fall back to local
+    try {
+        adminState.students = await COTEDB.getStudents();
+    } catch (error) {
+        console.warn('Using local student data:', error);
+        adminState.students = typeof studentData !== 'undefined' ? [...studentData] : [];
+    }
+
+    renderAdminStudentList();
+}
+
+function renderAdminStudentList() {
+    const container = document.getElementById('admin-student-list');
+    if (!container) return;
+
+    // Filter students
+    let filtered = adminState.students;
+
+    if (adminState.yearFilter) {
+        filtered = filtered.filter(s => s.year === parseInt(adminState.yearFilter));
+    }
+
+    if (adminState.classFilter) {
+        filtered = filtered.filter(s => s.class === adminState.classFilter);
+    }
+
+    // Sort by name
+    filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="admin-student-empty">No students found</div>';
+        return;
+    }
+
+    container.innerHTML = filtered.map(student => {
+        const initials = getInitials(student.name || 'Unknown');
+        const yearSuffix = ['', 'st', 'nd', 'rd'][student.year] || 'th';
+        const overallGrade = calculateOverallGrade(student.stats || {});
+
+        return `
+            <div class="admin-student-item" data-student-key="${student._firebaseKey || student.id}">
+                ${student.image
+                    ? `<img class="admin-student-avatar" src="${student.image}" alt="${student.name}">`
+                    : `<div class="admin-student-avatar-placeholder">${initials}</div>`
+                }
+                <div class="admin-student-info">
+                    <div class="admin-student-name">${student.name || 'Unknown'}</div>
+                    <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
+                </div>
+                <div class="admin-student-grade">${overallGrade}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Add click handlers
+    container.querySelectorAll('.admin-student-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const key = item.dataset.studentKey;
+            const student = adminState.students.find(s => (s._firebaseKey || s.id) === key);
+            if (student) {
+                openStudentModal(student);
+                playSound('click');
+            }
+        });
+        item.addEventListener('mouseenter', () => playSound('hover'));
+    });
+}
+
+function openStudentModal(student) {
+    const modal = document.getElementById('admin-student-modal');
+    const title = document.getElementById('admin-student-modal-title');
+    const deleteBtn = document.getElementById('admin-student-delete');
+
+    adminState.editingStudent = student;
+
+    // Set title
+    title.textContent = student ? 'Edit Student' : 'Add Student';
+
+    // Show/hide delete button
+    deleteBtn.style.display = student ? 'block' : 'none';
+
+    // Fill form
+    document.getElementById('admin-student-name').value = student?.name || '';
+    document.getElementById('admin-student-year').value = student?.year || 1;
+    document.getElementById('admin-student-class').value = student?.class || 'D';
+    document.getElementById('admin-student-image').value = student?.image || '';
+    document.getElementById('admin-student-academic').value = student?.stats?.academic || 50;
+    document.getElementById('admin-student-intelligence').value = student?.stats?.intelligence || 50;
+    document.getElementById('admin-student-decision').value = student?.stats?.decision || 50;
+    document.getElementById('admin-student-physical').value = student?.stats?.physical || 50;
+    document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
+
+    // Show modal
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeStudentModal() {
+    const modal = document.getElementById('admin-student-modal');
+    modal.classList.remove('active');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        adminState.editingStudent = null;
+    }, 200);
+}
+
+async function saveStudent() {
+    const name = document.getElementById('admin-student-name').value.trim();
+    const year = parseInt(document.getElementById('admin-student-year').value);
+    const studentClass = document.getElementById('admin-student-class').value;
+    const image = document.getElementById('admin-student-image').value.trim();
+
+    if (!name) {
+        playSound('error');
+        return;
+    }
+
+    const studentData = {
+        name: name,
+        year: year,
+        class: studentClass,
+        image: image,
+        stats: {
+            academic: parseInt(document.getElementById('admin-student-academic').value) || 50,
+            intelligence: parseInt(document.getElementById('admin-student-intelligence').value) || 50,
+            decision: parseInt(document.getElementById('admin-student-decision').value) || 50,
+            physical: parseInt(document.getElementById('admin-student-physical').value) || 50,
+            cooperativeness: parseInt(document.getElementById('admin-student-cooperativeness').value) || 50
+        }
+    };
+
+    // Clamp stats to 0-100
+    Object.keys(studentData.stats).forEach(key => {
+        studentData.stats[key] = Math.max(0, Math.min(100, studentData.stats[key]));
+    });
+
+    try {
+        if (adminState.editingStudent) {
+            // Update existing student
+            const key = adminState.editingStudent._firebaseKey;
+            if (key) {
+                const success = await COTEDB.updateStudent(key, studentData);
+                if (success) {
+                    playSound('success');
+                    closeStudentModal();
+                    await loadAdminStudents();
+                    // Refresh OAA view if visible
+                    renderClassCards();
+                } else {
+                    playSound('error');
+                }
+            }
+        } else {
+            // Add new student
+            const result = await COTEDB.addStudent(studentData);
+            if (result.success) {
+                playSound('success');
+                closeStudentModal();
+                await loadAdminStudents();
+                renderClassCards();
+            } else {
+                playSound('error');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving student:', error);
+        playSound('error');
+    }
+}
+
+async function deleteCurrentStudent() {
+    if (!adminState.editingStudent) return;
+
+    const key = adminState.editingStudent._firebaseKey;
+    if (!key) {
+        playSound('error');
+        return;
+    }
+
+    // Confirm deletion
+    if (!confirm(`Delete ${adminState.editingStudent.name}? This cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const success = await COTEDB.deleteStudent(key);
+        if (success) {
+            playSound('success');
+            closeStudentModal();
+            await loadAdminStudents();
+            renderClassCards();
+        } else {
+            playSound('error');
+        }
+    } catch (error) {
+        console.error('Error deleting student:', error);
+        playSound('error');
     }
 }
 
@@ -3019,15 +3316,16 @@ function exportCharacterPDF() {
          char.stats.physical + char.stats.cooperativeness) / 5
     );
 
-    // Build traits list
-    const traitsList = Object.entries(char.traits)
-        .map(([cat, trait]) => {
-            const isPositive = traitDefinitions[cat].positive.includes(trait);
-            return `${trait} (${isPositive ? '+' : '-'})`;
-        })
-        .join(', ') || 'None';
+    // Class color mapping
+    const classColors = {
+        'A': '#fecdd3',
+        'B': '#fda4af',
+        'C': '#e11d48',
+        'D': '#881337'
+    };
+    const classColor = classColors[char.class] || '#9a2e48';
 
-    // Create printable HTML
+    // Create printable HTML with improved styling
     const printContent = `
         <!DOCTYPE html>
         <html>
@@ -3039,58 +3337,110 @@ function exportCharacterPDF() {
                     font-family: 'Segoe UI', Arial, sans-serif;
                     background: #fff;
                     color: #1a1a2e;
-                    padding: 40px;
+                    padding: 30px;
                     max-width: 800px;
                     margin: 0 auto;
                 }
                 .header {
-                    text-align: center;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
                     border-bottom: 3px solid #9a2e48;
-                    padding-bottom: 20px;
-                    margin-bottom: 30px;
+                    padding-bottom: 15px;
+                    margin-bottom: 25px;
                 }
-                .header h1 {
-                    font-size: 28px;
+                .header-text h1 {
+                    font-size: 22px;
                     color: #9a2e48;
-                    margin-bottom: 5px;
+                    margin-bottom: 3px;
                 }
-                .header h2 {
-                    font-size: 18px;
+                .header-text h2 {
+                    font-size: 14px;
                     color: #666;
                     font-weight: normal;
                 }
-                .section {
-                    margin-bottom: 25px;
+                .header-id {
+                    text-align: right;
+                    padding: 8px 15px;
+                    background: #f8f8f8;
+                    border-radius: 6px;
+                    border-left: 3px solid ${classColor};
                 }
-                .section-title {
-                    font-size: 14px;
-                    text-transform: uppercase;
-                    color: #9a2e48;
-                    border-bottom: 1px solid #ddd;
-                    padding-bottom: 5px;
-                    margin-bottom: 15px;
-                }
-                .info-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 15px;
-                }
-                .info-item {
-                    display: flex;
-                    flex-direction: column;
-                }
-                .info-label {
-                    font-size: 11px;
+                .header-id .label {
+                    font-size: 10px;
                     text-transform: uppercase;
                     color: #888;
                 }
-                .info-value {
-                    font-size: 16px;
+                .header-id .value {
+                    font-size: 14px;
                     font-weight: 600;
+                    color: #333;
+                }
+                .main-layout {
+                    display: flex;
+                    gap: 25px;
+                    margin-bottom: 20px;
+                }
+                .left-column {
+                    width: 160px;
+                    flex-shrink: 0;
+                }
+                .right-column {
+                    flex: 1;
+                }
+                .photo-box {
+                    width: 160px;
+                    height: 160px;
+                    border: 2px solid ${classColor};
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: #f8f8f8;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .photo-box img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .photo-placeholder {
+                    color: #ccc;
+                    font-size: 12px;
+                    text-align: center;
+                }
+                .class-badge {
+                    margin-top: 10px;
+                    text-align: center;
+                    padding: 8px;
+                    background: ${classColor};
+                    color: ${['A', 'B'].includes(char.class) ? '#1a1a2e' : '#fff'};
+                    border-radius: 6px;
+                    font-weight: 600;
+                    font-size: 14px;
+                }
+                .info-section {
+                    margin-bottom: 15px;
+                }
+                .info-section h3 {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    color: #9a2e48;
+                    letter-spacing: 1px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 5px;
+                    margin-bottom: 10px;
+                }
+                .name-display {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #1a1a2e;
+                    margin-bottom: 15px;
                 }
                 .stats-grid {
-                    display: grid;
-                    gap: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
                 }
                 .stat-row {
                     display: flex;
@@ -3098,56 +3448,74 @@ function exportCharacterPDF() {
                     gap: 10px;
                 }
                 .stat-name {
-                    width: 140px;
-                    font-size: 13px;
+                    width: 130px;
+                    font-size: 12px;
+                    color: #555;
                 }
                 .stat-bar {
                     flex: 1;
-                    height: 16px;
+                    height: 14px;
                     background: #f0f0f0;
-                    border-radius: 8px;
+                    border-radius: 7px;
                     overflow: hidden;
                 }
                 .stat-fill {
                     height: 100%;
-                    border-radius: 8px;
+                    border-radius: 7px;
                 }
-                .stat-fill.academic { background: #9b59b6; }
-                .stat-fill.intelligence { background: #f1c40f; }
-                .stat-fill.decision { background: #e67e22; }
-                .stat-fill.physical { background: #2ecc71; }
-                .stat-fill.cooperativeness { background: #3498db; }
+                .stat-fill.academic { background: linear-gradient(90deg, #8e44ad, #9b59b6); }
+                .stat-fill.intelligence { background: linear-gradient(90deg, #d4a10f, #f1c40f); }
+                .stat-fill.decision { background: linear-gradient(90deg, #d35400, #e67e22); }
+                .stat-fill.physical { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+                .stat-fill.cooperativeness { background: linear-gradient(90deg, #2980b9, #3498db); }
                 .stat-value {
-                    width: 40px;
+                    width: 35px;
                     text-align: right;
                     font-weight: 600;
+                    font-size: 13px;
+                    color: #333;
                 }
                 .overall-box {
+                    display: inline-block;
                     text-align: center;
-                    padding: 15px;
-                    background: #f8f8f8;
+                    padding: 12px 25px;
+                    background: linear-gradient(135deg, #c0392b, #e74c3c);
                     border-radius: 8px;
-                    margin-top: 15px;
+                    margin-top: 12px;
                 }
                 .overall-label {
-                    font-size: 12px;
+                    font-size: 10px;
                     text-transform: uppercase;
-                    color: #888;
+                    color: rgba(255,255,255,0.8);
+                    letter-spacing: 1px;
                 }
                 .overall-value {
-                    font-size: 36px;
+                    font-size: 32px;
                     font-weight: bold;
-                    color: #e74c3c;
+                    color: #fff;
+                }
+                .section {
+                    margin-bottom: 18px;
+                }
+                .section-title {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    color: #9a2e48;
+                    letter-spacing: 1px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 5px;
+                    margin-bottom: 10px;
                 }
                 .traits-list {
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 8px;
+                    gap: 6px;
                 }
                 .trait {
-                    padding: 4px 12px;
-                    border-radius: 12px;
-                    font-size: 13px;
+                    padding: 4px 10px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    font-weight: 500;
                 }
                 .trait.positive {
                     background: #d4edda;
@@ -3158,81 +3526,88 @@ function exportCharacterPDF() {
                     color: #721c24;
                 }
                 .bio-text {
-                    font-size: 14px;
+                    font-size: 12px;
                     line-height: 1.6;
                     color: #444;
                 }
                 .footer {
-                    margin-top: 40px;
-                    padding-top: 20px;
-                    border-top: 1px solid #ddd;
-                    text-align: center;
-                    font-size: 11px;
+                    margin-top: 25px;
+                    padding-top: 15px;
+                    border-top: 1px solid #eee;
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
                     color: #999;
-                }
-                @media print {
-                    body { padding: 20px; }
                 }
             </style>
         </head>
         <body>
             <div class="header">
-                <h1>Advanced Nurturing High School</h1>
-                <h2>Student Admission Form</h2>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Basic Information</div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Full Name</span>
-                        <span class="info-value">${char.name || 'Not specified'}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Year / Class</span>
-                        <span class="info-value">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</span>
-                    </div>
+                <div class="header-text">
+                    <h1>Advanced Nurturing High School</h1>
+                    <h2>Student Admission Form</h2>
+                </div>
+                <div class="header-id">
+                    <div class="label">Application Date</div>
+                    <div class="value">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">OAA Evaluation</div>
-                <div class="stats-grid">
-                    <div class="stat-row">
-                        <span class="stat-name">Academic Ability</span>
-                        <div class="stat-bar"><div class="stat-fill academic" style="width: ${char.stats.academic}%"></div></div>
-                        <span class="stat-value">${char.stats.academic}</span>
+            <div class="main-layout">
+                <div class="left-column">
+                    <div class="photo-box">
+                        ${char.image
+                            ? `<img src="${char.image}" alt="Student Photo">`
+                            : `<div class="photo-placeholder">No Photo<br>Provided</div>`
+                        }
                     </div>
-                    <div class="stat-row">
-                        <span class="stat-name">Intelligence</span>
-                        <div class="stat-bar"><div class="stat-fill intelligence" style="width: ${char.stats.intelligence}%"></div></div>
-                        <span class="stat-value">${char.stats.intelligence}</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-name">Decision Making</span>
-                        <div class="stat-bar"><div class="stat-fill decision" style="width: ${char.stats.decision}%"></div></div>
-                        <span class="stat-value">${char.stats.decision}</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-name">Physical Ability</span>
-                        <div class="stat-bar"><div class="stat-fill physical" style="width: ${char.stats.physical}%"></div></div>
-                        <span class="stat-value">${char.stats.physical}</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-name">Cooperativeness</span>
-                        <div class="stat-bar"><div class="stat-fill cooperativeness" style="width: ${char.stats.cooperativeness}%"></div></div>
-                        <span class="stat-value">${char.stats.cooperativeness}</span>
+                    <div class="class-badge">
+                        ${char.year}${yearSuffix} Year - Class ${char.class || '?'}
                     </div>
                 </div>
-                <div class="overall-box">
-                    <div class="overall-label">Overall Grade</div>
-                    <div class="overall-value">${overallGrade}</div>
+                <div class="right-column">
+                    <div class="name-display">${char.name || 'Name Not Specified'}</div>
+
+                    <div class="info-section">
+                        <h3>OAA Evaluation</h3>
+                        <div class="stats-grid">
+                            <div class="stat-row">
+                                <span class="stat-name">Academic Ability</span>
+                                <div class="stat-bar"><div class="stat-fill academic" style="width: ${char.stats.academic}%"></div></div>
+                                <span class="stat-value">${char.stats.academic}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Intelligence</span>
+                                <div class="stat-bar"><div class="stat-fill intelligence" style="width: ${char.stats.intelligence}%"></div></div>
+                                <span class="stat-value">${char.stats.intelligence}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Decision Making</span>
+                                <div class="stat-bar"><div class="stat-fill decision" style="width: ${char.stats.decision}%"></div></div>
+                                <span class="stat-value">${char.stats.decision}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Physical Ability</span>
+                                <div class="stat-bar"><div class="stat-fill physical" style="width: ${char.stats.physical}%"></div></div>
+                                <span class="stat-value">${char.stats.physical}</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-name">Cooperativeness</span>
+                                <div class="stat-bar"><div class="stat-fill cooperativeness" style="width: ${char.stats.cooperativeness}%"></div></div>
+                                <span class="stat-value">${char.stats.cooperativeness}</span>
+                            </div>
+                        </div>
+                        <div class="overall-box">
+                            <div class="overall-label">Overall Grade</div>
+                            <div class="overall-value">${overallGrade}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             ${Object.keys(char.traits).length > 0 ? `
                 <div class="section">
-                    <div class="section-title">Personality Traits</div>
+                    <div class="section-title">Discovered Traits</div>
                     <div class="traits-list">
                         ${Object.entries(char.traits).map(([cat, trait]) => {
                             const isPositive = traitDefinitions[cat].positive.includes(trait);
@@ -3244,32 +3619,48 @@ function exportCharacterPDF() {
 
             ${char.bio ? `
                 <div class="section">
-                    <div class="section-title">Biography</div>
+                    <div class="section-title">Background</div>
                     <p class="bio-text">${char.bio}</p>
                 </div>
             ` : ''}
 
             ${char.personality ? `
                 <div class="section">
-                    <div class="section-title">Personality Notes</div>
+                    <div class="section-title">Personality</div>
                     <p class="bio-text">${char.personality}</p>
                 </div>
             ` : ''}
 
             <div class="footer">
-                Generated via COTE: ULTIMATUM Platform<br>
-                ${new Date().toLocaleDateString()}
+                <span>Generated via COTE: ULTIMATUM Platform</span>
+                <span>Document ID: ${Math.random().toString(36).substring(2, 8).toUpperCase()}</span>
             </div>
         </body>
         </html>
     `;
 
-    // Open in new window and trigger print
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    // Create temporary container for PDF generation
+    const container = document.createElement('div');
+    container.innerHTML = printContent;
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
+
+    // Get the body content from the generated HTML
+    const bodyContent = container.querySelector('body');
+
+    // Generate and download PDF
+    const opt = {
+        margin: 10,
+        filename: `ANHS_${(char.name || 'Character').replace(/\s+/g, '_')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(bodyContent).save().then(() => {
+        document.body.removeChild(container);
+    });
 }
 
 function resetCreator() {
