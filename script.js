@@ -3340,13 +3340,10 @@ function exportCharacterPDF() {
 
     // Create printable HTML with improved styling
     const printContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>ANHS Admission Form - ${char.name || 'Character'}</title>
+        <div class="pdf-content">
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
+                .pdf-content {
                     font-family: 'Segoe UI', Arial, sans-serif;
                     background: #fff;
                     color: #1a1a2e;
@@ -3553,8 +3550,6 @@ function exportCharacterPDF() {
                     color: #999;
                 }
             </style>
-        </head>
-        <body>
             <div class="header">
                 <div class="header-text">
                     <h1>Advanced Nurturing High School</h1>
@@ -3648,8 +3643,7 @@ function exportCharacterPDF() {
                 <span>Generated via COTE: ULTIMATUM Platform</span>
                 <span>Document ID: ${Math.random().toString(36).substring(2, 8).toUpperCase()}</span>
             </div>
-        </body>
-        </html>
+        </div>
     `;
 
     // Create temporary container for PDF generation
@@ -3659,8 +3653,8 @@ function exportCharacterPDF() {
     container.style.left = '-9999px';
     document.body.appendChild(container);
 
-    // Get the body content from the generated HTML
-    const bodyContent = container.querySelector('body');
+    // Get the PDF content element
+    const pdfContent = container.querySelector('.pdf-content');
 
     // Generate and download PDF
     const opt = {
@@ -3671,7 +3665,10 @@ function exportCharacterPDF() {
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(bodyContent).save().then(() => {
+    html2pdf().set(opt).from(pdfContent).save().then(() => {
+        document.body.removeChild(container);
+    }).catch(err => {
+        console.error('PDF generation failed:', err);
         document.body.removeChild(container);
     });
 }
