@@ -3917,12 +3917,14 @@ body::before {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    animation: modalFadeIn 0.2s ease-out;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-@keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.admin-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .admin-modal {

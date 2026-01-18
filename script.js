@@ -1998,7 +1998,7 @@ function showSaveConfirmModal(changes) {
         return `<div class="admin-modal-change ${colorClass}">${c.text}</div>`;
     }).join('');
 
-    modal.style.display = 'flex';
+    modal.classList.add('active');
     playSound('select');
 
     // Focus confirm button
@@ -2007,7 +2007,7 @@ function showSaveConfirmModal(changes) {
 
 function hideSaveConfirmModal() {
     const modal = document.getElementById('admin-confirm-modal');
-    modal.style.display = 'none';
+    modal.classList.remove('active');
     pendingChanges = null;
     pendingNewPoints = null;
 }
@@ -2312,17 +2312,13 @@ function openStudentModal(student) {
     document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
 
     // Show modal
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('active'), 10);
+    modal.classList.add('active');
 }
 
 function closeStudentModal() {
     const modal = document.getElementById('admin-student-modal');
     modal.classList.remove('active');
-    setTimeout(() => {
-        modal.style.display = 'none';
-        adminState.editingStudent = null;
-    }, 200);
+    adminState.editingStudent = null;
 }
 
 async function saveStudent() {
