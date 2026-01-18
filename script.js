@@ -2601,7 +2601,6 @@ function applyTraitLimits(category) {
     const display = document.getElementById(`creator-stat-${category}-display`);
     const bar = document.getElementById(`creator-stat-${category}-bar`);
     const rangeText = document.getElementById(`stat-range-${category}`);
-    const rangeIndicator = document.getElementById(`range-indicator-${category}`);
 
     if (!slider) return;
 
@@ -2625,22 +2624,11 @@ function applyTraitLimits(category) {
 
     // Update range text display
     if (rangeText) {
-        rangeText.textContent = `${limits.min}-${limits.max}`;
+        rangeText.textContent = `Range: ${limits.min}-${limits.max}`;
         rangeText.classList.remove('positive', 'negative');
         if (trait) {
             const isPositive = traitDefinitions[category]?.positive.includes(trait);
             rangeText.classList.add(isPositive ? 'positive' : 'negative');
-        }
-    }
-
-    // Update visual range indicator
-    if (rangeIndicator) {
-        rangeIndicator.style.left = `${limits.min}%`;
-        rangeIndicator.style.width = `${limits.max - limits.min}%`;
-        rangeIndicator.classList.remove('positive', 'negative');
-        if (trait) {
-            const isPositive = traitDefinitions[category]?.positive.includes(trait);
-            rangeIndicator.classList.add(isPositive ? 'positive' : 'negative');
         }
     }
 

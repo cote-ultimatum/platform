@@ -949,64 +949,6 @@
 
             <!-- Step 3: Evaluation -->
             <div class="creator-step" id="creator-step-abilities">
-                <!-- Trait Discovery Section - Prominent Quiz CTA -->
-                <div class="trait-discovery-section">
-                    <div class="trait-discovery-header">
-                        <div class="trait-discovery-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                            </svg>
-                        </div>
-                        <div class="trait-discovery-text">
-                            <h3>Discover Your Traits</h3>
-                            <p>Quizzes unlock different stat ranges — positive traits raise limits, negative traits lower them</p>
-                        </div>
-                        <div class="trait-discovery-progress">
-                            <span class="trait-progress-count" id="traits-completed">0</span>
-                            <span class="trait-progress-divider">/</span>
-                            <span class="trait-progress-total">5</span>
-                        </div>
-                    </div>
-                    <div class="trait-quiz-grid">
-                        <button class="trait-quiz-card" data-category="academic">
-                            <div class="trait-quiz-card-icon stat-academic-bg">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 14l9-5-9-5-9 5 9 5z"/>
-                                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
-                                </svg>
-                            </div>
-                        </button>
-                        <button class="trait-quiz-card" data-category="intelligence">
-                            <div class="trait-quiz-card-icon stat-intelligence-bg">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                                </svg>
-                            </div>
-                        </button>
-                        <button class="trait-quiz-card" data-category="decision">
-                            <div class="trait-quiz-card-icon stat-decision-bg">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                            </div>
-                        </button>
-                        <button class="trait-quiz-card" data-category="physical">
-                            <div class="trait-quiz-card-icon stat-physical-bg">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                </svg>
-                            </div>
-                        </button>
-                        <button class="trait-quiz-card" data-category="cooperativeness">
-                            <div class="trait-quiz-card-icon stat-cooperativeness-bg">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Stats Section -->
                 <div class="eval-layout">
                     <!-- Left: Grade Card -->
@@ -1020,25 +962,34 @@
 
                     <!-- Right: Stats -->
                     <div class="eval-stats-card">
-                        <h3 class="eval-stats-title">Evaluation</h3>
-                        <p class="eval-stats-subtitle">Click <span class="eval-quiz-hint">?</span> to take a quiz and adjust your range</p>
+                        <div class="eval-stats-header">
+                            <h3 class="eval-stats-title">Evaluation</h3>
+                            <div class="eval-traits-counter">
+                                <span id="traits-completed">0</span>/<span>5</span> traits
+                            </div>
+                        </div>
 
                         <div class="eval-stat-list">
                             <!-- Academic -->
                             <div class="eval-stat-row" data-category="academic">
                                 <div class="eval-stat-header">
                                     <span class="eval-stat-name">Academic Ability</span>
-                                    <button class="eval-quiz-btn" data-category="academic" title="Take quiz to discover trait">?</button>
-                                    <span class="eval-stat-range" id="stat-range-academic">25-75</span>
                                     <span class="eval-stat-value" id="creator-stat-academic-display">50</span>
                                 </div>
                                 <div class="eval-stat-bar">
-                                    <div class="eval-stat-range-indicator" id="range-indicator-academic" style="left: 25%; width: 50%"></div>
                                     <div class="eval-stat-fill stat-academic" id="creator-stat-academic-bar" style="width: 50%"></div>
                                 </div>
-                                <div class="eval-stat-controls">
-                                    <input type="range" class="eval-slider" id="creator-stat-academic" min="0" max="100" value="50">
-                                    <div class="eval-trait" id="trait-result-academic"></div>
+                                <input type="range" class="eval-slider" id="creator-stat-academic" min="25" max="75" value="50">
+                                <div class="eval-stat-footer">
+                                    <button class="eval-quiz-btn" data-category="academic">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+                                        </svg>
+                                        Take Quiz
+                                    </button>
+                                    <div class="eval-trait-result" id="trait-result-academic"></div>
+                                    <span class="eval-stat-range" id="stat-range-academic">Range: 25-75</span>
                                 </div>
                             </div>
 
@@ -1046,17 +997,22 @@
                             <div class="eval-stat-row" data-category="intelligence">
                                 <div class="eval-stat-header">
                                     <span class="eval-stat-name">Intelligence</span>
-                                    <button class="eval-quiz-btn" data-category="intelligence" title="Take quiz to discover trait">?</button>
-                                    <span class="eval-stat-range" id="stat-range-intelligence">25-75</span>
                                     <span class="eval-stat-value" id="creator-stat-intelligence-display">50</span>
                                 </div>
                                 <div class="eval-stat-bar">
-                                    <div class="eval-stat-range-indicator" id="range-indicator-intelligence" style="left: 25%; width: 50%"></div>
                                     <div class="eval-stat-fill stat-intelligence" id="creator-stat-intelligence-bar" style="width: 50%"></div>
                                 </div>
-                                <div class="eval-stat-controls">
-                                    <input type="range" class="eval-slider" id="creator-stat-intelligence" min="0" max="100" value="50">
-                                    <div class="eval-trait" id="trait-result-intelligence"></div>
+                                <input type="range" class="eval-slider" id="creator-stat-intelligence" min="25" max="75" value="50">
+                                <div class="eval-stat-footer">
+                                    <button class="eval-quiz-btn" data-category="intelligence">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+                                        </svg>
+                                        Take Quiz
+                                    </button>
+                                    <div class="eval-trait-result" id="trait-result-intelligence"></div>
+                                    <span class="eval-stat-range" id="stat-range-intelligence">Range: 25-75</span>
                                 </div>
                             </div>
 
@@ -1064,17 +1020,22 @@
                             <div class="eval-stat-row" data-category="decision">
                                 <div class="eval-stat-header">
                                     <span class="eval-stat-name">Decision Making</span>
-                                    <button class="eval-quiz-btn" data-category="decision" title="Take quiz to discover trait">?</button>
-                                    <span class="eval-stat-range" id="stat-range-decision">25-75</span>
                                     <span class="eval-stat-value" id="creator-stat-decision-display">50</span>
                                 </div>
                                 <div class="eval-stat-bar">
-                                    <div class="eval-stat-range-indicator" id="range-indicator-decision" style="left: 25%; width: 50%"></div>
                                     <div class="eval-stat-fill stat-decision" id="creator-stat-decision-bar" style="width: 50%"></div>
                                 </div>
-                                <div class="eval-stat-controls">
-                                    <input type="range" class="eval-slider" id="creator-stat-decision" min="0" max="100" value="50">
-                                    <div class="eval-trait" id="trait-result-decision"></div>
+                                <input type="range" class="eval-slider" id="creator-stat-decision" min="25" max="75" value="50">
+                                <div class="eval-stat-footer">
+                                    <button class="eval-quiz-btn" data-category="decision">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+                                        </svg>
+                                        Take Quiz
+                                    </button>
+                                    <div class="eval-trait-result" id="trait-result-decision"></div>
+                                    <span class="eval-stat-range" id="stat-range-decision">Range: 25-75</span>
                                 </div>
                             </div>
 
@@ -1082,17 +1043,22 @@
                             <div class="eval-stat-row" data-category="physical">
                                 <div class="eval-stat-header">
                                     <span class="eval-stat-name">Physical Ability</span>
-                                    <button class="eval-quiz-btn" data-category="physical" title="Take quiz to discover trait">?</button>
-                                    <span class="eval-stat-range" id="stat-range-physical">25-75</span>
                                     <span class="eval-stat-value" id="creator-stat-physical-display">50</span>
                                 </div>
                                 <div class="eval-stat-bar">
-                                    <div class="eval-stat-range-indicator" id="range-indicator-physical" style="left: 25%; width: 50%"></div>
                                     <div class="eval-stat-fill stat-physical" id="creator-stat-physical-bar" style="width: 50%"></div>
                                 </div>
-                                <div class="eval-stat-controls">
-                                    <input type="range" class="eval-slider" id="creator-stat-physical" min="0" max="100" value="50">
-                                    <div class="eval-trait" id="trait-result-physical"></div>
+                                <input type="range" class="eval-slider" id="creator-stat-physical" min="25" max="75" value="50">
+                                <div class="eval-stat-footer">
+                                    <button class="eval-quiz-btn" data-category="physical">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+                                        </svg>
+                                        Take Quiz
+                                    </button>
+                                    <div class="eval-trait-result" id="trait-result-physical"></div>
+                                    <span class="eval-stat-range" id="stat-range-physical">Range: 25-75</span>
                                 </div>
                             </div>
 
@@ -1100,17 +1066,22 @@
                             <div class="eval-stat-row" data-category="cooperativeness">
                                 <div class="eval-stat-header">
                                     <span class="eval-stat-name">Cooperativeness</span>
-                                    <button class="eval-quiz-btn" data-category="cooperativeness" title="Take quiz to discover trait">?</button>
-                                    <span class="eval-stat-range" id="stat-range-cooperativeness">25-75</span>
                                     <span class="eval-stat-value" id="creator-stat-cooperativeness-display">50</span>
                                 </div>
                                 <div class="eval-stat-bar">
-                                    <div class="eval-stat-range-indicator" id="range-indicator-cooperativeness" style="left: 25%; width: 50%"></div>
                                     <div class="eval-stat-fill stat-cooperativeness" id="creator-stat-cooperativeness-bar" style="width: 50%"></div>
                                 </div>
-                                <div class="eval-stat-controls">
-                                    <input type="range" class="eval-slider" id="creator-stat-cooperativeness" min="0" max="100" value="50">
-                                    <div class="eval-trait" id="trait-result-cooperativeness"></div>
+                                <input type="range" class="eval-slider" id="creator-stat-cooperativeness" min="25" max="75" value="50">
+                                <div class="eval-stat-footer">
+                                    <button class="eval-quiz-btn" data-category="cooperativeness">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+                                        </svg>
+                                        Take Quiz
+                                    </button>
+                                    <div class="eval-trait-result" id="trait-result-cooperativeness"></div>
+                                    <span class="eval-stat-range" id="stat-range-cooperativeness">Range: 25-75</span>
                                 </div>
                             </div>
                         </div>
