@@ -1406,6 +1406,21 @@ body::before {
     scrollbar-gutter: stable;
     position: relative;
     z-index: 10;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-dim) transparent;
+}
+
+.app-view::-webkit-scrollbar {
+    width: 4px;
+}
+
+.app-view::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.app-view::-webkit-scrollbar-thumb {
+    background: var(--cyan-dim);
+    border-radius: 2px;
 }
 
 .app-view.active {
@@ -3153,6 +3168,21 @@ body::before {
     transform: scale(0.9) translateY(20px);
     transition: transform 0.3s ease;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7), 0 0 40px var(--cyan-glow);
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-dim) transparent;
+}
+
+.comparison-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.comparison-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.comparison-content::-webkit-scrollbar-thumb {
+    background: var(--cyan-dim);
+    border-radius: 2px;
 }
 
 .comparison-modal.active .comparison-content {
@@ -3397,6 +3427,21 @@ body::before {
     flex: 1;
     overflow-y: auto;
     padding: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-dim) transparent;
+}
+
+.admin-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.admin-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admin-content::-webkit-scrollbar-thumb {
+    background: var(--cyan-dim);
+    border-radius: 2px;
 }
 
 /* Login View */
@@ -3921,6 +3966,21 @@ body::before {
     max-height: 150px;
     overflow-y: auto;
     font-size: 0.85rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-dim) transparent;
+}
+
+.admin-modal-changes::-webkit-scrollbar {
+    width: 4px;
+}
+
+.admin-modal-changes::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admin-modal-changes::-webkit-scrollbar-thumb {
+    background: var(--cyan-dim);
+    border-radius: 2px;
 }
 
 .admin-modal-change {
@@ -4219,6 +4279,11 @@ body::before {
     overflow-y: auto;
 }
 
+.admin-student-list {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-dim) transparent;
+}
+
 .admin-student-list::-webkit-scrollbar {
     width: 4px;
 }
@@ -4307,17 +4372,24 @@ body::before {
 }
 
 .admin-modal-close {
-    background: none;
-    border: none;
-    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--text-secondary);
     font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    padding: 0;
-    line-height: 1;
+    transition: all 0.2s ease;
 }
 
 .admin-modal-close:hover {
-    color: var(--text-primary);
+    background: rgba(154, 46, 72, 0.2);
+    border-color: var(--crimson-light);
+    color: var(--crimson-light);
 }
 
 .admin-modal-header {
@@ -4434,26 +4506,6 @@ body::before {
     color: white;
 }
 
-.modal-keyboard-hint {
-    margin-top: 1rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--bg-tertiary);
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    opacity: 0.7;
-}
-
-.modal-keyboard-hint .key {
-    display: inline-block;
-    padding: 0.2rem 0.5rem;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--text-muted);
-    border-radius: 4px;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.65rem;
-    margin-right: 0.3rem;
-}
 
 @media (max-width: 480px) {
     .admin-form-stats {
@@ -4482,6 +4534,21 @@ body::before {
     padding: 1rem 1.5rem;
     overflow-y: auto;
     max-height: calc(100vh - 120px);
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-dim) transparent;
+}
+
+.creator-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.creator-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.creator-content::-webkit-scrollbar-thumb {
+    background: var(--cyan-dim);
+    border-radius: 2px;
 }
 
 /* Progress Indicator */

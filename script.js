@@ -93,7 +93,7 @@ function playSound(type) {
             // Falling tone
             oscillator.frequency.setValueAtTime(600, now);
             oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.08);
-            gainNode.gain.setValueAtTime(0.06, now);
+            gainNode.gain.setValueAtTime(0.08, now);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
             oscillator.start(now);
             oscillator.stop(now + 0.08);
@@ -102,7 +102,7 @@ function playSound(type) {
         case 'select':
             // Quick high blip
             oscillator.frequency.setValueAtTime(1000, now);
-            gainNode.gain.setValueAtTime(0.05, now);
+            gainNode.gain.setValueAtTime(0.06, now);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
             oscillator.start(now);
             oscillator.stop(now + 0.03);
@@ -150,7 +150,7 @@ function playSound(type) {
             // Low buzz
             oscillator.frequency.setValueAtTime(200, now);
             oscillator.type = 'square';
-            gainNode.gain.setValueAtTime(0.05, now);
+            gainNode.gain.setValueAtTime(0.06, now);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
             oscillator.start(now);
             oscillator.stop(now + 0.15);
