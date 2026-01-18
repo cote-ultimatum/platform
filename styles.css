@@ -4583,21 +4583,24 @@ body::before {
     overflow-y: auto;
     scrollbar-gutter: stable; /* Prevent layout shift */
     max-height: calc(100vh - 120px);
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
 }
 
+/* Scrollbar matches global style (dark with hover highlight) */
 .creator-content::-webkit-scrollbar {
-    width: 4px;
+    width: 8px;
 }
 
 .creator-content::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--bg-primary);
 }
 
 .creator-content::-webkit-scrollbar-thumb {
+    background: var(--bg-card);
+    border-radius: 4px;
+}
+
+.creator-content::-webkit-scrollbar-thumb:hover {
     background: var(--cyan-dim);
-    border-radius: 2px;
 }
 
 /* Progress Indicator */
@@ -6038,18 +6041,6 @@ body::before {
     color: white;
 }
 
-/* Quiz result icon coloring */
-.trait-quiz-category-icon.result-positive {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-    transition: all 0.3s ease;
-}
-
-.trait-quiz-category-icon.result-negative {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
-    transition: all 0.3s ease;
-}
 
 .trait-quiz-header-text {
     flex: 1;
