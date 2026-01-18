@@ -3285,6 +3285,13 @@ function finishQuiz() {
     // Determine trait polarity
     const isPositive = traits.positive.includes(resultTrait);
 
+    // Color the quiz icon based on result
+    const iconEl = document.getElementById('trait-quiz-icon');
+    if (iconEl) {
+        iconEl.classList.remove('stat-academic-bg', 'stat-intelligence-bg', 'stat-decision-bg', 'stat-physical-bg', 'stat-cooperativeness-bg');
+        iconEl.classList.add(isPositive ? 'result-positive' : 'result-negative');
+    }
+
     // Update UI with compact badge (with icon) and clear button
     const resultEl = document.getElementById(`trait-result-${category}`);
     if (resultEl) {
@@ -3304,7 +3311,14 @@ function finishQuiz() {
     // Apply trait limits to the stat slider (this also updates card state)
     applyTraitLimits(category);
 
-    closeTraitQuiz();
+    // Brief delay to show colored icon, then close
+    setTimeout(() => {
+        closeTraitQuiz();
+        // Reset icon class for next quiz
+        if (iconEl) {
+            iconEl.classList.remove('result-positive', 'result-negative');
+        }
+    }, 400);
     playSound('success');
 }
 
