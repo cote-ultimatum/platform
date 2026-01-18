@@ -114,16 +114,6 @@
                     </div>
                     <span class="app-name">EXAMS</span>
                 </div>
-                <div class="app-icon admin-app-icon" data-app="admin">
-                    <div class="app-icon-image">
-                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Shield with checkmark -->
-                            <path d="M32 6L10 16v16c0 14 9.4 27 22 30 12.6-3 22-16 22-30V16L32 6z" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="22,32 29,40 42,24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <span class="app-name">ADMIN</span>
-                </div>
                 <div class="app-icon" data-app="creator">
                     <div class="app-icon-image">
                         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -137,6 +127,16 @@
                     </div>
                     <span class="app-name">CREATOR</span>
                 </div>
+                <div class="app-icon admin-app-icon" data-app="admin">
+                    <div class="app-icon-image">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Shield with checkmark -->
+                            <path d="M32 6L10 16v16c0 14 9.4 27 22 30 12.6-3 22-16 22-30V16L32 6z" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="22,32 29,40 42,24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="app-name">ADMIN</span>
+                </div>
             </div>
             <div class="school-quote">
                 <p class="quote-text">"Every outcome is the result of the choices you make."</p>
@@ -147,8 +147,8 @@
             <div class="key-hint"><span class="key">ESC</span> LOCK</div>
             <div class="key-hint"><span class="key">1</span> OAA</div>
             <div class="key-hint"><span class="key">2</span> EXAMS</div>
-            <div class="key-hint"><span class="key">3</span> ADMIN</div>
-            <div class="key-hint"><span class="key">4</span> CREATOR</div>
+            <div class="key-hint"><span class="key">3</span> CREATOR</div>
+            <div class="key-hint"><span class="key">4</span> ADMIN</div>
         </div>
     </div>
 
@@ -567,19 +567,19 @@
                         <div class="admin-class-grid">
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-a">A</span>
-                                <input type="number" id="admin-points-1-A" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-1-A" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-b">B</span>
-                                <input type="number" id="admin-points-1-B" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-1-B" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-c">C</span>
-                                <input type="number" id="admin-points-1-C" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-1-C" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-d">D</span>
-                                <input type="number" id="admin-points-1-D" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-1-D" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                         </div>
                     </div>
@@ -589,19 +589,19 @@
                         <div class="admin-class-grid">
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-a">A</span>
-                                <input type="number" id="admin-points-2-A" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-2-A" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-b">B</span>
-                                <input type="number" id="admin-points-2-B" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-2-B" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-c">C</span>
-                                <input type="number" id="admin-points-2-C" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-2-C" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-d">D</span>
-                                <input type="number" id="admin-points-2-D" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-2-D" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                         </div>
                     </div>
@@ -611,19 +611,19 @@
                         <div class="admin-class-grid">
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-a">A</span>
-                                <input type="number" id="admin-points-3-A" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-3-A" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-b">B</span>
-                                <input type="number" id="admin-points-3-B" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-3-B" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-c">C</span>
-                                <input type="number" id="admin-points-3-C" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-3-C" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                             <div class="admin-class-input">
                                 <span class="admin-class-badge class-d">D</span>
-                                <input type="number" id="admin-points-3-D" min="0" max="99999" value="1000">
+                                <input type="text" id="admin-points-3-D" inputmode="numeric" pattern="[0-9,]*" value="1,000">
                             </div>
                         </div>
                     </div>

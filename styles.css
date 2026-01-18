@@ -4749,6 +4749,30 @@ body::before {
     font-size: 1rem;
 }
 
+.preview-status-box {
+    text-align: center;
+    padding: 0.6rem 1.25rem;
+    border: 1px solid #f59e0b;
+    border-radius: var(--border-radius-sm);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.preview-status-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.1em;
+}
+
+.preview-status-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #f59e0b;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
 /* Preview Card Body */
 .preview-card-body {
     display: grid;

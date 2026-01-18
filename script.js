@@ -332,13 +332,13 @@ function initKeyboardHintClicks() {
                 case '3':
                     if (state.currentScreen === 'home-screen') {
                         playSound('open');
-                        openApp('admin');
+                        openApp('creator');
                     }
                     break;
                 case '4':
                     if (state.currentScreen === 'home-screen') {
                         playSound('open');
-                        openApp('creator');
+                        openApp('admin');
                     }
                     break;
                 case 'LOCK':
@@ -2438,7 +2438,7 @@ function validateCreatorStep(stepId) {
     const char = creatorState.character;
 
     if (stepId === 'info') {
-        // Required: name and class
+        // Required: name, class, and image
         if (!char.name || char.name.trim() === '') {
             showCreatorError('Please enter a character name');
             document.getElementById('creator-name')?.focus();
@@ -2448,7 +2448,22 @@ function validateCreatorStep(stepId) {
             showCreatorError('Please select a class');
             return false;
         }
+        if (!char.image || char.image.trim() === '') {
+            showCreatorError('Please enter a profile image URL');
+            document.getElementById('creator-image')?.focus();
+            return false;
+        }
     }
+
+    if (stepId === 'bio') {
+        // Required: biography
+        if (!char.bio || char.bio.trim() === '') {
+            showCreatorError('Please enter a biography');
+            document.getElementById('creator-bio')?.focus();
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -2702,6 +2717,10 @@ function updateCreatorPreview() {
             <div class="preview-header-info">
                 <h2 class="preview-name">${char.name || 'Unnamed Character'}</h2>
                 <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
+            </div>
+            <div class="preview-status-box">
+                <span class="preview-status-label">STATUS</span>
+                <span class="preview-status-value">PENDING</span>
             </div>
         </div>
         <div class="preview-card-body">
