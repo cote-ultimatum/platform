@@ -5213,8 +5213,9 @@ body::before {
     font-weight: 700;
     color: var(--text-primary);
     width: 35px;
-    text-align: left;
+    text-align: center;
     flex-shrink: 0;
+    margin-left: calc(-35px / 2 - 1rem);
 }
 
 /* Discover Button */
