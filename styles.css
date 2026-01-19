@@ -5058,14 +5058,21 @@ body::before {
     opacity: 1;
 }
 
-/* Bar Container */
+/* Bar Container - mirrors .eval-card-controls layout */
 .eval-card-bar-container {
+    display: flex;
+    gap: 1rem;
     margin-bottom: 0.75rem;
-    /* Match slider width: account for value display (35px) + gap (1rem) */
-    margin-right: calc(35px + 1rem);
+}
+
+/* Spacer to match value display width */
+.eval-card-bar-container::after {
+    content: '';
+    min-width: 35px;
 }
 
 .eval-card-bar {
+    flex: 1;
     height: 16px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 8px;
