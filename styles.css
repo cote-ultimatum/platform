@@ -91,7 +91,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
-    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    overflow-y: auto;
 }
 
 /* Subtle vignette overlay */
@@ -928,7 +928,7 @@ body::before {
     align-items: center;
     gap: 1.5rem;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     z-index: 100;
 }
 
@@ -1359,7 +1359,7 @@ body::before {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
     transition: all 0.3s ease;
     min-width: 250px;
 }
@@ -1403,24 +1403,8 @@ body::before {
     padding: 0 3rem 3rem;
     flex: 1;
     overflow-y: auto;
-    scrollbar-gutter: stable;
     position: relative;
     z-index: 10;
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
-}
-
-.app-view::-webkit-scrollbar {
-    width: 4px;
-}
-
-.app-view::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.app-view::-webkit-scrollbar-thumb {
-    background: var(--cyan-dim);
-    border-radius: 2px;
 }
 
 .app-view.active {
@@ -1762,7 +1746,7 @@ body::before {
     justify-content: center;
     color: var(--class-color);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
 }
 
 .student-preview-info {
@@ -1841,7 +1825,7 @@ body::before {
     background: none;
     border: none;
     color: var(--cyan);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
     margin-bottom: 2rem;
     padding: 0.5rem 0;
@@ -1887,7 +1871,7 @@ body::before {
     justify-content: center;
     width: 60px;
     height: 60px;
-    border-radius: 14px;
+    border-radius: var(--border-radius);
     font-family: 'Orbitron', monospace;
     font-size: 1.75rem;
     font-weight: 700;
@@ -2001,7 +1985,7 @@ body::before {
 
 .student-card-name {
     font-weight: 600;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     margin-bottom: 0.25rem;
 }
 
@@ -2346,7 +2330,7 @@ body::before {
 }
 
 .stat-label {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
 }
 
@@ -2365,7 +2349,7 @@ body::before {
 .stat-bar {
     height: 10px;
     background: var(--stat-bar-bg);
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
     position: relative;
 }
@@ -2390,7 +2374,7 @@ body::before {
 .stat-bar-fill {
     height: 100%;
     background: var(--stat-bar-fill);
-    border-radius: 5px;
+    border-radius: 4px;
     transition: width 0.8s ease, background 0.3s ease;
     position: relative;
     box-shadow: 0 0 15px var(--cyan-glow);
@@ -2646,7 +2630,7 @@ body::before {
 
 .past-event-date {
     font-family: 'Orbitron', monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     min-width: 80px;
 }
@@ -2657,11 +2641,11 @@ body::before {
 
 .past-event-name {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .past-event-result {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     margin-left: 0.5rem;
 }
@@ -2757,7 +2741,7 @@ body::before {
 
 .exam-type-info h4 {
     font-family: 'Orbitron', monospace;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-primary);
     margin-bottom: 0.4rem;
 }
@@ -2836,24 +2820,15 @@ body::before {
 }
 
 /* ========================================
-   SCROLLBAR
+   SCROLLBAR - Hidden but functional
    ======================================== */
 
+* {
+    scrollbar-width: none; /* Firefox */
+}
+
 ::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-primary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--bg-card);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--cyan-dim);
+    display: none; /* Chrome, Safari, Edge */
 }
 
 /* Selection */
@@ -3095,7 +3070,7 @@ body::before {
 }
 
 .compare-btn {
-    padding: 0.6rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     background: linear-gradient(135deg, var(--cyan-dim), var(--cyan));
     border: none;
     border-radius: var(--border-radius-sm);
@@ -3116,7 +3091,7 @@ body::before {
 }
 
 .compare-cancel {
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius-sm);
@@ -3168,21 +3143,6 @@ body::before {
     transform: scale(0.9) translateY(20px);
     transition: transform 0.3s ease;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7), 0 0 40px var(--cyan-glow);
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
-}
-
-.comparison-content::-webkit-scrollbar {
-    width: 4px;
-}
-
-.comparison-content::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.comparison-content::-webkit-scrollbar-thumb {
-    background: var(--cyan-dim);
-    border-radius: 2px;
 }
 
 .comparison-modal.active .comparison-content {
@@ -3415,7 +3375,7 @@ body::before {
     }
 
     .stat-val {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -3427,21 +3387,6 @@ body::before {
     flex: 1;
     overflow-y: auto;
     padding: 2rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
-}
-
-.admin-content::-webkit-scrollbar {
-    width: 4px;
-}
-
-.admin-content::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.admin-content::-webkit-scrollbar-thumb {
-    background: var(--cyan-dim);
-    border-radius: 2px;
 }
 
 /* Login View */
@@ -3488,7 +3433,7 @@ body::before {
 
 .admin-input-group label {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
@@ -3500,7 +3445,7 @@ body::before {
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
     border-radius: 8px;
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
     color: var(--text-primary);
     font-size: 1rem;
     transition: all 0.2s ease;
@@ -3530,7 +3475,7 @@ body::before {
     background: var(--cyan);
     color: var(--bg-primary);
     border: none;
-    padding: 0.875rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
@@ -3680,7 +3625,7 @@ body::before {
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
     border-radius: 8px;
-    padding: 0.625rem;
+    padding: 0.75rem;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
     font-size: 0.9rem;
@@ -3820,21 +3765,6 @@ body::before {
 .admin-changelog {
     max-height: 250px;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
-}
-
-.admin-changelog::-webkit-scrollbar {
-    width: 4px;
-}
-
-.admin-changelog::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.admin-changelog::-webkit-scrollbar-thumb {
-    background: var(--cyan-dim);
-    border-radius: 2px;
 }
 
 .admin-changelog-empty {
@@ -3849,7 +3779,7 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
     border-left: 2px solid transparent;
     margin-bottom: 0.25rem;
     background: rgba(255, 255, 255, 0.02);
@@ -3873,7 +3803,7 @@ body::before {
 
 .admin-changelog-action {
     color: var(--text-primary);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
     line-height: 1.4;
 }
 
@@ -3882,7 +3812,7 @@ body::before {
     font-size: 0.75rem;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.25rem;
 }
 
 .admin-changelog-user::before {
@@ -3968,21 +3898,6 @@ body::before {
     max-height: 150px;
     overflow-y: auto;
     font-size: 0.85rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
-}
-
-.admin-modal-changes::-webkit-scrollbar {
-    width: 4px;
-}
-
-.admin-modal-changes::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.admin-modal-changes::-webkit-scrollbar-thumb {
-    background: var(--cyan-dim);
-    border-radius: 2px;
 }
 
 .admin-modal-change {
@@ -4233,7 +4148,7 @@ body::before {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
     background: var(--cyan-subtle);
     border: 1px solid var(--cyan);
     border-radius: var(--border-radius-sm);
@@ -4281,24 +4196,6 @@ body::before {
     overflow-y: auto;
 }
 
-.admin-student-list {
-    scrollbar-width: thin;
-    scrollbar-color: var(--cyan-dim) transparent;
-}
-
-.admin-student-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.admin-student-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.admin-student-list::-webkit-scrollbar-thumb {
-    background: var(--cyan-dim);
-    border-radius: 2px;
-}
-
 .admin-student-item {
     display: flex;
     align-items: center;
@@ -4344,7 +4241,7 @@ body::before {
 
 .admin-student-name {
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -4451,7 +4348,7 @@ body::before {
 .admin-form-row input,
 .admin-form-row select {
     width: 100%;
-    padding: 0.6rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
     border-radius: var(--border-radius-sm);
@@ -4496,7 +4393,7 @@ body::before {
     font-size: 0.65rem;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.25rem;
 }
 
 .admin-stat-input input {
@@ -4528,7 +4425,7 @@ body::before {
 }
 
 .admin-modal-delete {
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
     background: rgba(231, 76, 60, 0.15);
     border: 1px solid #ef4444;
     border-radius: var(--border-radius-sm);
@@ -4581,26 +4478,7 @@ body::before {
     padding: 1rem 1.5rem;
     padding-bottom: 4rem; /* Space for keyboard hints */
     overflow-y: auto;
-    scrollbar-gutter: stable; /* Prevent layout shift */
     max-height: calc(100vh - 120px);
-}
-
-/* Scrollbar matches global style (dark with hover highlight) */
-.creator-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.creator-content::-webkit-scrollbar-track {
-    background: var(--bg-primary);
-}
-
-.creator-content::-webkit-scrollbar-thumb {
-    background: var(--bg-card);
-    border-radius: 4px;
-}
-
-.creator-content::-webkit-scrollbar-thumb:hover {
-    background: var(--cyan-dim);
 }
 
 /* Progress Indicator */
@@ -4732,7 +4610,7 @@ body::before {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    padding: 0.3rem 0.75rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 4px;
     background: rgba(77, 201, 230, 0.15);
     color: var(--cyan);
@@ -4842,7 +4720,7 @@ body::before {
     border-radius: 8px;
     padding: 0.75rem 1rem;
     color: var(--text-primary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -4858,7 +4736,7 @@ body::before {
     border-radius: 8px;
     padding: 0.75rem 1rem;
     color: var(--text-primary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-family: inherit;
     min-height: 100px;
     resize: vertical;
@@ -4921,7 +4799,7 @@ body::before {
     flex-direction: column;
     align-items: center;
     padding: 1rem 0.5rem;
-    gap: 0.3rem;
+    gap: 0.25rem;
 }
 
 .class-letter {
@@ -5132,8 +5010,8 @@ body::before {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -5183,6 +5061,10 @@ body::before {
 /* Bar Container */
 .eval-card-bar-container {
     margin-bottom: 0.75rem;
+    /* Match slider width: account for value display (35px) + gap (1rem) */
+    margin-right: calc(35px + 1rem);
+    /* Account for slider thumb overhang (9px each side) */
+    padding: 0 9px;
 }
 
 .eval-card-bar {
@@ -5263,7 +5145,7 @@ body::before {
 .eval-bar-labels {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.35rem;
+    margin-top: 0.25rem;
     padding: 0 0.25rem;
 }
 
@@ -5344,7 +5226,7 @@ body::before {
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.65rem 1rem;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--crimson-light);
     border-radius: 8px;
     background: rgba(154, 46, 72, 0.1);
@@ -5381,7 +5263,7 @@ body::before {
     }
 
     .eval-overall-label {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 
     .eval-card {
@@ -5507,7 +5389,7 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.5);
     margin-top: 1.25rem;
     padding: 0.75rem;
@@ -5560,9 +5442,9 @@ body::before {
 }
 
 .creator-btn {
-    padding: 0.875rem 1.75rem;
+    padding: 1rem 1.75rem;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -5667,7 +5549,7 @@ body::before {
 
 .preview-status-box {
     text-align: center;
-    padding: 0.6rem 1.25rem;
+    padding: 0.5rem 1.25rem;
     border: 1px solid #f59e0b;
     border-radius: var(--border-radius-sm);
     background: rgba(245, 158, 11, 0.1);
@@ -5808,20 +5690,20 @@ body::before {
     color: var(--text-primary);
     margin-bottom: 1.25rem;
     font-size: 1.1rem;
-    padding-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--crimson);
 }
 
 .preview-stat-list {
     display: flex;
     flex-direction: column;
-    gap: 0.875rem;
+    gap: 1rem;
 }
 
 .preview-stat-row {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.25rem;
 }
 
 .preview-stat-header {
@@ -5832,7 +5714,7 @@ body::before {
 }
 
 .preview-stat-name {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
@@ -5881,7 +5763,7 @@ body::before {
 .preview-stat-trait {
     display: inline-block;
     font-size: 0.7rem;
-    padding: 0.25rem 0.6rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -6148,7 +6030,7 @@ body::before {
 }
 
 .trait-quiz-question {
-    font-size: 1.05rem;
+    font-size: 1rem;
     color: var(--text-primary);
     line-height: 1.6;
 }
@@ -6156,7 +6038,7 @@ body::before {
 .trait-quiz-options {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
 }
 
 .trait-quiz-option {
@@ -6165,10 +6047,10 @@ body::before {
     border: 2px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     text-align: left;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
 }
@@ -6211,7 +6093,7 @@ body::before {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
@@ -6346,7 +6228,7 @@ body::before {
     }
 
     .quote-text {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     /* App headers */
