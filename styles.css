@@ -5058,9 +5058,10 @@ body::before {
     opacity: 1;
 }
 
-/* Bar Container */
+/* Bar Container - match slider width */
 .eval-card-bar-container {
     margin-bottom: 0.75rem;
+    margin-right: calc(35px + 1rem);
 }
 
 .eval-card-bar {
@@ -5151,6 +5152,10 @@ body::before {
     font-family: 'Orbitron', monospace;
 }
 
+.eval-bar-labels span:nth-child(2) {
+    display: none;
+}
+
 /* Controls - Slider and Value */
 .eval-card-controls {
     display: flex;
@@ -5207,7 +5212,12 @@ body::before {
 }
 
 .eval-card-value {
-    display: none;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 35px;
+    text-align: right;
 }
 
 /* Discover Button */
