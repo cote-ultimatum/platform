@@ -5058,10 +5058,9 @@ body::before {
     opacity: 1;
 }
 
-/* Bar Container - must match slider width exactly */
+/* Bar Container */
 .eval-card-bar-container {
     margin-bottom: 0.75rem;
-    margin-right: calc(35px + 1rem);
 }
 
 .eval-card-bar {
@@ -5208,14 +5207,7 @@ body::before {
 }
 
 .eval-card-value {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    width: 35px;
-    text-align: center;
-    flex-shrink: 0;
-    margin-left: calc(-35px / 2 - 1rem);
+    display: none;
 }
 
 /* Discover Button */
