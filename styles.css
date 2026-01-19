@@ -5063,8 +5063,6 @@ body::before {
     margin-bottom: 0.75rem;
     /* Match slider width: account for value display (35px) + gap (1rem) */
     margin-right: calc(35px + 1rem);
-    /* Account for slider thumb overhang (9px each side) */
-    padding: 0 9px;
 }
 
 .eval-card-bar {
