@@ -291,34 +291,7 @@ function initKeyboardHintClicks() {
             // Simulate the keyboard action
             switch (key) {
                 case 'ESC':
-                    if (state.currentScreen === 'oaa-app') {
-                        const searchInput = document.querySelector('.search-input');
-                        if (searchInput && document.activeElement === searchInput) {
-                            searchInput.value = '';
-                            filterStudents('');
-                            searchInput.blur();
-                            playSound('back');
-                        } else {
-                            playSound('back');
-                            goBack();
-                        }
-                    } else if (state.currentScreen === 'events-app' || state.currentScreen === 'admin-app') {
-                        playSound('back');
-                        goBack();
-                    } else if (state.currentScreen === 'creator-app') {
-                        const quizModal = document.getElementById('trait-quiz-modal');
-                        if (quizModal && quizModal.classList.contains('active')) {
-                            quizModal.classList.remove('active');
-                            playSound('back');
-                        } else {
-                            playSound('back');
-                            goBack();
-                        }
-                    } else if (state.currentScreen === 'home-screen') {
-                        playSound('back');
-                        state.navigationHistory = [];
-                        showScreen('lock-screen', false);
-                    }
+                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
                     break;
                 case '/':
                     if (state.currentScreen === 'oaa-app' && state.currentOAAView === 'oaa-dashboard') {
@@ -753,9 +726,12 @@ function initKeyboardNav() {
                 searchInput.value = '';
                 filterStudents('');
                 playSound('back');
-            } else if (state.compareMode) {
+            } else if (state.compareMode && state.currentOAAView === 'oaa-dashboard') {
                 exitCompareMode();
                 playSound('back');
+            } else if (state.compareMode) {
+                playSound('back');
+                goBack();
             } else if (state.currentScreen === 'creator-app') {
                 // In Creator app: close quiz modal if open, otherwise go to previous step
                 const quizModal = document.getElementById('trait-quiz-modal');
