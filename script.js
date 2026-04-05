@@ -291,9 +291,29 @@ function initKeyboardHintClicks() {
             // Simulate the keyboard action
             switch (key) {
                 case 'ESC':
-                    if (state.currentScreen === 'oaa-app' || state.currentScreen === 'events-app') {
+                    if (state.currentScreen === 'oaa-app') {
+                        const searchInput = document.querySelector('.search-input');
+                        if (searchInput && document.activeElement === searchInput) {
+                            searchInput.value = '';
+                            filterStudents('');
+                            searchInput.blur();
+                            playSound('back');
+                        } else {
+                            playSound('back');
+                            goBack();
+                        }
+                    } else if (state.currentScreen === 'events-app' || state.currentScreen === 'admin-app') {
                         playSound('back');
                         goBack();
+                    } else if (state.currentScreen === 'creator-app') {
+                        const quizModal = document.getElementById('trait-quiz-modal');
+                        if (quizModal && quizModal.classList.contains('active')) {
+                            quizModal.classList.remove('active');
+                            playSound('back');
+                        } else {
+                            playSound('back');
+                            goBack();
+                        }
                     } else if (state.currentScreen === 'home-screen') {
                         playSound('back');
                         state.navigationHistory = [];
@@ -906,9 +926,11 @@ function initSearch() {
     });
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            e.stopPropagation();
             searchInput.value = '';
             filterStudents('');
             searchInput.blur();
+            playSound('back');
         }
     });
 }
