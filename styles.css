@@ -2728,6 +2728,12 @@ body::before {
 }
 .exam-type-icon.sports svg { color: #e67e22; }
 
+.exam-type-icon.final {
+    background: rgba(52, 152, 219, 0.1);
+    border-color: rgba(52, 152, 219, 0.3);
+}
+.exam-type-icon.final svg { color: #3498db; }
+
 .exam-type-icon.special {
     background: rgba(122, 36, 56, 0.15);
     border-color: rgba(122, 36, 56, 0.4);
