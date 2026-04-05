@@ -920,7 +920,7 @@ body::before {
 
 /* Keyboard hint */
 .keyboard-hint {
-    position: absolute;
+    position: fixed;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
@@ -956,11 +956,6 @@ body::before {
 /* OAA App keyboard hints */
 .oaa-hints,
 .events-hints {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
     transition: bottom 0.3s ease, opacity 0.3s ease;
 }
 
@@ -5492,7 +5487,7 @@ body::before {
 
 /* Position keyboard hints in creator */
 .creator-hints {
-    bottom: 1rem;
+    bottom: 2rem;
 }
 
 /* Export Section */
