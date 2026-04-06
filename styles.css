@@ -5989,10 +5989,14 @@ body::before {
         gap: 0.5rem;
     }
 
-    /* Lock screen - hide time/date on mobile (phone status bar shows them) */
-    .lock-time,
+    /* Lock screen - smaller text */
+    .lock-time {
+        font-size: 3rem;
+    }
+
     .lock-date {
-        display: none;
+        font-size: 0.9rem;
+        margin-bottom: 3rem;
     }
 
     .lock-title {
