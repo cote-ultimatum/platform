@@ -3460,346 +3460,167 @@ function exportCharacterPDF() {
          char.stats.physical + char.stats.cooperativeness) / 5
     );
 
-    // Class color mapping
     const classColors = {
-        'A': '#fecdd3',
-        'B': '#fda4af',
-        'C': '#e11d48',
-        'D': '#881337'
+        'A': '#fecdd3', 'B': '#fda4af', 'C': '#e11d48', 'D': '#881337'
+    };
+    const classGlows = {
+        'A': 'rgba(254, 205, 211, 0.4)', 'B': 'rgba(253, 164, 175, 0.4)',
+        'C': 'rgba(225, 29, 72, 0.4)', 'D': 'rgba(136, 19, 55, 0.4)'
     };
     const classColor = classColors[char.class] || '#9a2e48';
+    const classGlow = classGlows[char.class] || 'rgba(154, 46, 72, 0.4)';
 
-    // Create printable HTML with improved styling
-    const printContent = `
-        <div class="pdf-content">
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                .pdf-content {
-                    font-family: 'Segoe UI', Arial, sans-serif;
-                    background: #fff;
-                    color: #1a1a2e;
-                    padding: 30px;
-                    max-width: 800px;
-                    margin: 0 auto;
-                }
-                .header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    border-bottom: 3px solid #9a2e48;
-                    padding-bottom: 15px;
-                    margin-bottom: 25px;
-                }
-                .header-text h1 {
-                    font-size: 22px;
-                    color: #9a2e48;
-                    margin-bottom: 3px;
-                }
-                .header-text h2 {
-                    font-size: 14px;
-                    color: #666;
-                    font-weight: normal;
-                }
-                .header-id {
-                    text-align: right;
-                    padding: 8px 15px;
-                    background: #f8f8f8;
-                    border-radius: 6px;
-                    border-left: 3px solid ${classColor};
-                }
-                .header-id .label {
-                    font-size: 10px;
-                    text-transform: uppercase;
-                    color: #888;
-                }
-                .header-id .value {
-                    font-size: 14px;
-                    font-weight: 600;
-                    color: #333;
-                }
-                .main-layout {
-                    display: flex;
-                    gap: 25px;
-                    margin-bottom: 20px;
-                }
-                .left-column {
-                    width: 160px;
-                    flex-shrink: 0;
-                }
-                .right-column {
-                    flex: 1;
-                }
-                .photo-box {
-                    width: 160px;
-                    height: 160px;
-                    border: 2px solid ${classColor};
-                    border-radius: 8px;
-                    overflow: hidden;
-                    background: #f8f8f8;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .photo-box img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-                .photo-placeholder {
-                    color: #ccc;
-                    font-size: 12px;
-                    text-align: center;
-                }
-                .class-badge {
-                    margin-top: 10px;
-                    text-align: center;
-                    padding: 8px;
-                    background: ${classColor};
-                    color: ${['A', 'B'].includes(char.class) ? '#1a1a2e' : '#fff'};
-                    border-radius: 6px;
-                    font-weight: 600;
-                    font-size: 14px;
-                }
-                .info-section {
-                    margin-bottom: 15px;
-                }
-                .info-section h3 {
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    color: #9a2e48;
-                    letter-spacing: 1px;
-                    border-bottom: 1px solid #eee;
-                    padding-bottom: 5px;
-                    margin-bottom: 10px;
-                }
-                .name-display {
-                    font-size: 24px;
-                    font-weight: 700;
-                    color: #1a1a2e;
-                    margin-bottom: 15px;
-                }
-                .stats-grid {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 8px;
-                }
-                .stat-row {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                }
-                .stat-name {
-                    width: 130px;
-                    font-size: 12px;
-                    color: #555;
-                }
-                .stat-bar {
-                    flex: 1;
-                    height: 14px;
-                    background: #f0f0f0;
-                    border-radius: 7px;
-                    overflow: hidden;
-                }
-                .stat-fill {
-                    height: 100%;
-                    border-radius: 7px;
-                }
-                .stat-fill.academic { background: linear-gradient(90deg, #8e44ad, #9b59b6); }
-                .stat-fill.intelligence { background: linear-gradient(90deg, #d4a10f, #f1c40f); }
-                .stat-fill.decision { background: linear-gradient(90deg, #d35400, #e67e22); }
-                .stat-fill.physical { background: linear-gradient(90deg, #27ae60, #2ecc71); }
-                .stat-fill.cooperativeness { background: linear-gradient(90deg, #2980b9, #3498db); }
-                .stat-value {
-                    width: 35px;
-                    text-align: right;
-                    font-weight: 600;
-                    font-size: 13px;
-                    color: #333;
-                }
-                .overall-box {
-                    display: inline-block;
-                    text-align: center;
-                    padding: 12px 25px;
-                    background: linear-gradient(135deg, #c0392b, #e74c3c);
-                    border-radius: 8px;
-                    margin-top: 12px;
-                }
-                .overall-label {
-                    font-size: 10px;
-                    text-transform: uppercase;
-                    color: rgba(255,255,255,0.8);
-                    letter-spacing: 1px;
-                }
-                .overall-value {
-                    font-size: 32px;
-                    font-weight: bold;
-                    color: #fff;
-                }
-                .section {
-                    margin-bottom: 18px;
-                }
-                .section-title {
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    color: #9a2e48;
-                    letter-spacing: 1px;
-                    border-bottom: 1px solid #eee;
-                    padding-bottom: 5px;
-                    margin-bottom: 10px;
-                }
-                .traits-list {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 6px;
-                }
-                .trait {
-                    padding: 4px 10px;
-                    border-radius: 10px;
-                    font-size: 11px;
-                    font-weight: 500;
-                }
-                .trait.positive {
-                    background: #d4edda;
-                    color: #155724;
-                }
-                .trait.negative {
-                    background: #f8d7da;
-                    color: #721c24;
-                }
-                .bio-text {
-                    font-size: 12px;
-                    line-height: 1.6;
-                    color: #444;
-                }
-                .footer {
-                    margin-top: 25px;
-                    padding-top: 15px;
-                    border-top: 1px solid #eee;
-                    display: flex;
-                    justify-content: space-between;
-                    font-size: 10px;
-                    color: #999;
-                }
-            </style>
-            <div class="header">
-                <div class="header-text">
-                    <h1>Advanced Nurturing High School</h1>
-                    <h2>Student Admission Form</h2>
+    const statMeta = {
+        academic:        { label: 'Academic Ability',  color: '#9b59b6', gradient: 'linear-gradient(90deg, #8e44ad, #9b59b6)' },
+        intelligence:    { label: 'Intelligence',      color: '#f1c40f', gradient: 'linear-gradient(90deg, #d4a10f, #f1c40f)' },
+        decision:        { label: 'Decision Making',   color: '#e67e22', gradient: 'linear-gradient(90deg, #d35400, #e67e22)' },
+        physical:        { label: 'Physical Ability',  color: '#2ecc71', gradient: 'linear-gradient(90deg, #27ae60, #2ecc71)' },
+        cooperativeness: { label: 'Cooperativeness',   color: '#3498db', gradient: 'linear-gradient(90deg, #2980b9, #3498db)' }
+    };
+
+    const statsHTML = Object.entries(statMeta).map(([key, meta]) => {
+        const value = char.stats[key];
+        const grade = getGradeFromValue(value);
+        const trait = char.traits[key];
+        const traitHTML = trait ? (() => {
+            const isPositive = traitDefinitions[key].positive.includes(trait);
+            const tColor = isPositive ? '#22c55e' : '#ef4444';
+            const tBg = isPositive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
+            return `<span style="display:inline-block;margin-left:10px;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:${tColor};background:${tBg};border:1px solid ${tColor}33;border-radius:4px;font-family:'Inter',sans-serif;">${trait}</span>`;
+        })() : '';
+
+        return `
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <span style="width:130px;font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;letter-spacing:0.3px;">${meta.label}</span>
+                <div style="flex:1;height:10px;background:rgba(255,255,255,0.06);border-radius:5px;overflow:hidden;">
+                    <div style="width:${value}%;height:100%;background:${meta.gradient};border-radius:5px;"></div>
                 </div>
-                <div class="header-id">
-                    <div class="label">Application Date</div>
-                    <div class="value">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                <span style="width:28px;text-align:right;font-size:12px;font-weight:700;color:${meta.color};font-family:'Orbitron',monospace;">${grade}</span>
+                ${traitHTML}
+            </div>
+        `;
+    }).join('');
+
+    const allTraits = Object.entries(char.traits);
+    const traitsHTML = allTraits.length > 0 ? `
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(77,201,230,0.1);">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:10px;">Traits</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                ${allTraits.map(([cat, trait]) => {
+                    const isPositive = traitDefinitions[cat].positive.includes(trait);
+                    const tColor = isPositive ? '#22c55e' : '#ef4444';
+                    const tBg = isPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+                    return `<span style="padding:4px 12px;font-size:11px;font-weight:600;color:${tColor};background:${tBg};border:1px solid ${tColor}33;border-radius:6px;font-family:'Inter',sans-serif;">${trait}</span>`;
+                }).join('')}
+            </div>
+        </div>
+    ` : '';
+
+    const bioHTML = (char.bio || char.personality) ? `
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(77,201,230,0.1);">
+            ${char.bio ? `
+                <div style="margin-bottom:${char.personality ? '14px' : '0'};">
+                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:8px;">Background</div>
+                    <p style="font-size:12px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.bio}</p>
+                </div>
+            ` : ''}
+            ${char.personality ? `
+                <div>
+                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:8px;">Personality</div>
+                    <p style="font-size:12px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.personality}</p>
+                </div>
+            ` : ''}
+        </div>
+    ` : '';
+
+    const docId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const appDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    const printContent = `
+        <div class="export-card" style="width:900px;font-family:'Inter',sans-serif;background:linear-gradient(180deg,#050a12 0%,#0a1220 40%,#0c1628 100%);color:#fff;position:relative;overflow:hidden;">
+
+            <div style="height:4px;background:linear-gradient(90deg,#7a2438,#9a2e48,#4dc9e6,#9a2e48,#7a2438);"></div>
+
+            <div style="padding:24px 32px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(77,201,230,0.12);">
+                <div>
+                    <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#4dc9e6;letter-spacing:2px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>
+                    <div style="font-size:12px;color:#64748b;letter-spacing:3px;text-transform:uppercase;margin-top:4px;">Student Application File</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#64748b;">Application Date</div>
+                    <div style="font-size:13px;color:#94a3b8;font-weight:500;margin-top:2px;">${appDate}</div>
+                    <div style="font-size:9px;color:#64748b;margin-top:2px;letter-spacing:1px;">ID: ${docId}</div>
                 </div>
             </div>
 
-            <div class="main-layout">
-                <div class="left-column">
-                    <div class="photo-box">
+            <div style="display:flex;padding:24px 32px;gap:28px;">
+
+                <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:14px;">
+                    <div style="width:180px;height:180px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(255,255,255,0.03);box-shadow:0 0 24px ${classGlow},inset 0 0 20px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
                         ${char.image
-                            ? `<img src="${char.image}" alt="Student Photo">`
-                            : `<div class="photo-placeholder">No Photo<br>Provided</div>`
+                            ? `<img src="${char.image}" alt="Student Photo" style="width:100%;height:100%;object-fit:cover;">`
+                            : `<div style="color:#334155;font-size:11px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
                         }
                     </div>
-                    <div class="class-badge">
-                        ${char.year}${yearSuffix} Year - Class ${char.class || '?'}
+                    <div style="width:180px;text-align:center;padding:8px 0;background:${classColor};color:${['A', 'B'].includes(char.class) ? '#0a1220' : '#fff'};border-radius:8px;font-weight:700;font-size:13px;font-family:'Orbitron',monospace;letter-spacing:1px;box-shadow:0 0 16px ${classGlow};">
+                        ${char.year}${yearSuffix} YEAR &mdash; CLASS ${char.class || '?'}
+                    </div>
+                    <div style="width:180px;text-align:center;padding:14px 0;background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:10px;box-shadow:0 0 20px rgba(231,76,60,0.25);">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.7);font-family:'Orbitron',monospace;">Overall Rating</div>
+                        <div style="font-size:36px;font-weight:900;color:#fff;font-family:'Orbitron',monospace;line-height:1.1;margin-top:4px;">${overallGrade}</div>
                     </div>
                 </div>
-                <div class="right-column">
-                    <div class="name-display">${char.name || 'Name Not Specified'}</div>
 
-                    <div class="info-section">
-                        <h3>OAA Evaluation</h3>
-                        <div class="stats-grid">
-                            <div class="stat-row">
-                                <span class="stat-name">Academic Ability</span>
-                                <div class="stat-bar"><div class="stat-fill academic" style="width: ${char.stats.academic}%"></div></div>
-                                <span class="stat-value">${char.stats.academic}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-name">Intelligence</span>
-                                <div class="stat-bar"><div class="stat-fill intelligence" style="width: ${char.stats.intelligence}%"></div></div>
-                                <span class="stat-value">${char.stats.intelligence}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-name">Decision Making</span>
-                                <div class="stat-bar"><div class="stat-fill decision" style="width: ${char.stats.decision}%"></div></div>
-                                <span class="stat-value">${char.stats.decision}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-name">Physical Ability</span>
-                                <div class="stat-bar"><div class="stat-fill physical" style="width: ${char.stats.physical}%"></div></div>
-                                <span class="stat-value">${char.stats.physical}</span>
-                            </div>
-                            <div class="stat-row">
-                                <span class="stat-name">Cooperativeness</span>
-                                <div class="stat-bar"><div class="stat-fill cooperativeness" style="width: ${char.stats.cooperativeness}%"></div></div>
-                                <span class="stat-value">${char.stats.cooperativeness}</span>
-                            </div>
-                        </div>
-                        <div class="overall-box">
-                            <div class="overall-label">Overall Grade</div>
-                            <div class="overall-value">${overallGrade}</div>
-                        </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.25);margin-bottom:4px;line-height:1.2;">${char.name || 'Unnamed'}</div>
+
+                    <div style="margin-top:18px;">
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(122,36,56,0.3);">OAA Evaluation</div>
+                        ${statsHTML}
                     </div>
+
+                    ${traitsHTML}
+                    ${bioHTML}
                 </div>
             </div>
 
-            ${Object.keys(char.traits).length > 0 ? `
-                <div class="section">
-                    <div class="section-title">Discovered Traits</div>
-                    <div class="traits-list">
-                        ${Object.entries(char.traits).map(([cat, trait]) => {
-                            const isPositive = traitDefinitions[cat].positive.includes(trait);
-                            return `<span class="trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
-                        }).join('')}
+            <div style="margin:0 32px;padding:12px 0;border-top:1px solid rgba(77,201,230,0.1);display:flex;justify-content:space-between;align-items:center;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="padding:4px 12px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:4px;">
+                        <span style="font-size:10px;font-weight:700;letter-spacing:2px;color:#f59e0b;font-family:'Orbitron',monospace;">PENDING REVIEW</span>
                     </div>
                 </div>
-            ` : ''}
+                <div style="font-size:10px;color:#475569;font-family:'Inter',sans-serif;">Generated via COTE: ULTIMATUM</div>
+            </div>
 
-            ${char.bio ? `
-                <div class="section">
-                    <div class="section-title">Background</div>
-                    <p class="bio-text">${char.bio}</p>
-                </div>
-            ` : ''}
-
-            ${char.personality ? `
-                <div class="section">
-                    <div class="section-title">Personality</div>
-                    <p class="bio-text">${char.personality}</p>
-                </div>
-            ` : ''}
-
-            <div class="footer">
-                <span>Generated via COTE: ULTIMATUM Platform</span>
-                <span>Document ID: ${Math.random().toString(36).substring(2, 8).toUpperCase()}</span>
+            <div style="margin:0 32px 20px;padding:10px 16px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.1);border-radius:6px;text-align:center;">
+                <span style="font-size:10px;color:#64748b;font-family:'Inter',sans-serif;letter-spacing:0.3px;">Submit this application in the <span style="color:#4dc9e6;font-weight:600;">#applications</span> forum on the COTE: ULTIMATUM Discord server</span>
             </div>
         </div>
     `;
 
-    // Create temporary container for PDF generation
     const container = document.createElement('div');
     container.innerHTML = printContent;
-    container.style.position = 'absolute';
+    container.style.position = 'fixed';
     container.style.left = '-9999px';
+    container.style.top = '0';
     document.body.appendChild(container);
 
-    // Get the PDF content element
-    const pdfContent = container.querySelector('.pdf-content');
+    const exportCard = container.querySelector('.export-card');
 
-    // Generate and download PDF
-    const opt = {
-        margin: 10,
-        filename: `ANHS_${(char.name || 'Character').replace(/\s+/g, '_')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(pdfContent).save().then(() => {
+    html2canvas(exportCard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#050a12',
+        logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `ANHS_${(char.name || 'Character').replace(/\s+/g, '_')}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
         document.body.removeChild(container);
     }).catch(err => {
-        console.error('PDF generation failed:', err);
+        console.error('Export failed:', err);
         document.body.removeChild(container);
     });
 }
