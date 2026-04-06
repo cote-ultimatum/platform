@@ -275,7 +275,9 @@
                 </div>
                 <div class="profile-body">
                     <div class="profile-image-container">
-                        <img class="profile-image" id="profile-image" src="" alt="Student" style="display: none;">
+                        <div class="profile-image-frame" id="profile-image-frame" style="display: none;">
+                            <img class="profile-image" id="profile-image" src="" alt="Student">
+                        </div>
                         <div class="profile-image-placeholder" id="profile-placeholder">
                             <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <circle cx="32" cy="24" r="12"/>
@@ -730,6 +732,11 @@
                         <div class="admin-image-input">
                             <label>Image URL</label>
                             <input type="text" id="admin-student-image" placeholder="https://...">
+                            <div class="image-framer-controls">
+                                <input type="range" id="admin-image-zoom" class="image-framer-zoom" min="1" max="3" step="0.05" value="1" title="Zoom">
+                                <button type="button" id="admin-image-reset" class="image-framer-reset">Reset</button>
+                            </div>
+                            <div class="image-framer-hint">Drag preview to pan · slider to zoom</div>
                         </div>
                     </div>
                     <div class="admin-form-section-title">OAA Evaluation</div>
@@ -892,6 +899,11 @@
                                     </label>
                                     <input type="file" id="creator-image-upload" accept="image/*" hidden>
                                 </div>
+                                <div class="image-framer-controls">
+                                    <input type="range" id="creator-image-zoom" class="image-framer-zoom" min="1" max="3" step="0.05" value="1" title="Zoom">
+                                    <button type="button" id="creator-image-reset" class="image-framer-reset">Reset</button>
+                                </div>
+                                <div class="image-framer-hint">Drag preview to pan · slider to zoom</div>
                             </div>
                         </div>
 

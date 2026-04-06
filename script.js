@@ -1244,7 +1244,7 @@ function createStudentPreviewHTML(student) {
     return `
         <div class="student-preview ${isComparing ? 'comparing' : ''}" data-student-id="${student.id}">
             ${student.image
-                ? `<img class="student-avatar" src="${student.image}" alt="${student.name}">`
+                ? `<span class="student-avatar-frame"><img class="student-avatar" src="${student.image}" alt="${student.name}" style="${getImageFrameStyle(student)}"></span>`
                 : `<div class="student-avatar-placeholder">${initials}</div>`}
             <div class="student-preview-info">
                 <div class="student-preview-name">${student.name} ${isFavorite ? '<span class="favorite-star">★</span>' : ''}</div>
@@ -1305,7 +1305,7 @@ function createStudentCard(student) {
     card.innerHTML = `
         ${state.compareMode ? `<div class="compare-checkbox ${isComparing ? 'checked' : ''}"></div>` : ''}
         ${student.image
-            ? `<img class="student-card-avatar" src="${student.image}" alt="${student.name}">`
+            ? `<span class="student-card-avatar-frame"><img class="student-card-avatar" src="${student.image}" alt="${student.name}" style="${getImageFrameStyle(student)}"></span>`
             : `<div class="student-card-avatar-placeholder">${getInitials(student.name)}</div>`}
         <div class="student-card-info">
             <div class="student-card-name">${student.name} ${isFavorite ? '<span class="favorite-star">★</span>' : ''}</div>
@@ -1352,12 +1352,20 @@ function showStudentProfile(student, addToHistory = true) {
         profileImageContainer.classList.add(`class-${student.class.toLowerCase()}-glow`);
     }
 
+    const profileImageFrame = document.getElementById('profile-image-frame');
     if (student.image) {
         profileImage.src = student.image;
-        profileImage.style.display = 'block';
+        const fr = student.imageFrame;
+        if (fr) {
+            profileImage.style.transform = `translate(${fr.x || 0}%, ${fr.y || 0}%) scale(${fr.zoom || 1})`;
+            profileImage.style.transformOrigin = 'center';
+        } else {
+            profileImage.style.transform = '';
+        }
+        if (profileImageFrame) profileImageFrame.style.display = 'block';
         if (profilePlaceholder) profilePlaceholder.style.display = 'none';
     } else {
-        profileImage.style.display = 'none';
+        if (profileImageFrame) profileImageFrame.style.display = 'none';
         if (profilePlaceholder) profilePlaceholder.style.display = 'flex';
     }
 
@@ -1566,7 +1574,7 @@ function showComparison() {
                 ${students.map(s => `
                     <div class="comparison-student">
                         <div class="comparison-avatar class-${s.class.toLowerCase()}-glow">
-                            ${s.image ? `<img src="${s.image}" alt="${s.name}">` : `<div class="avatar-placeholder">${getInitials(s.name)}</div>`}
+                            ${s.image ? `<img src="${s.image}" alt="${s.name}" style="${getImageFrameStyle(s)}">` : `<div class="avatar-placeholder">${getInitials(s.name)}</div>`}
                         </div>
                         <h3>${s.name}</h3>
                         <p>Class ${s.class}</p>
@@ -1649,6 +1657,104 @@ function getClassRank(year, className) {
 
 function getInitials(name) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// ========================================
+// IMAGE FRAMING (zoom + drag-to-pan)
+// ========================================
+// Stored on student/character as `imageFrame: { zoom, x, y }` where x/y are
+// percent offsets applied via CSS transform. Default zoom=1, x=0, y=0 = no transform.
+
+function getImageFrameStyle(obj) {
+    const f = obj && obj.imageFrame;
+    if (!f) return '';
+    const zoom = typeof f.zoom === 'number' ? f.zoom : 1;
+    const x = typeof f.x === 'number' ? f.x : 0;
+    const y = typeof f.y === 'number' ? f.y : 0;
+    if (zoom === 1 && x === 0 && y === 0) return '';
+    return `transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center;`;
+}
+
+function applyImageFramer(container, zoomSlider, frame) {
+    if (!container) return;
+    const img = container.querySelector('img');
+    const f = frame || { zoom: 1, x: 0, y: 0 };
+    if (img) {
+        img.style.transform = `translate(${f.x || 0}%, ${f.y || 0}%) scale(${f.zoom || 1})`;
+        img.style.transformOrigin = 'center';
+    }
+    if (zoomSlider) zoomSlider.value = f.zoom || 1;
+}
+
+// Idempotent: first call wires listeners, subsequent calls just re-apply state.
+// frameRef: getter returning the live frame object to mutate.
+function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
+    if (!container) return;
+    if (container.dataset.framerBound === '1') {
+        applyImageFramer(container, zoomSlider, frameRef());
+        return;
+    }
+    container.dataset.framerBound = '1';
+
+    const apply = () => applyImageFramer(container, zoomSlider, frameRef());
+
+    if (zoomSlider) {
+        zoomSlider.addEventListener('input', () => {
+            const f = frameRef();
+            f.zoom = parseFloat(zoomSlider.value);
+            apply();
+        });
+    }
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            const f = frameRef();
+            f.zoom = 1; f.x = 0; f.y = 0;
+            apply();
+            try { playSound('back'); } catch (e) {}
+        });
+    }
+
+    let dragging = false;
+    let startX = 0, startY = 0, startFX = 0, startFY = 0;
+    container.style.cursor = 'grab';
+
+    const onDown = (clientX, clientY, target) => {
+        if (!target || target.tagName !== 'IMG') return;
+        dragging = true;
+        startX = clientX; startY = clientY;
+        const f = frameRef();
+        startFX = f.x || 0; startFY = f.y || 0;
+        container.style.cursor = 'grabbing';
+    };
+    const onMove = (clientX, clientY) => {
+        if (!dragging) return;
+        const rect = container.getBoundingClientRect();
+        const f = frameRef();
+        const z = f.zoom || 1;
+        const dx = ((clientX - startX) / rect.width) * 100 / z;
+        const dy = ((clientY - startY) / rect.height) * 100 / z;
+        f.x = Math.max(-150, Math.min(150, startFX + dx));
+        f.y = Math.max(-150, Math.min(150, startFY + dy));
+        apply();
+    };
+    const onUp = () => {
+        if (dragging) { dragging = false; container.style.cursor = 'grab'; }
+    };
+
+    container.addEventListener('mousedown', (e) => { onDown(e.clientX, e.clientY, e.target); e.preventDefault(); });
+    window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup', onUp);
+
+    container.addEventListener('touchstart', (e) => {
+        const t = e.touches[0]; onDown(t.clientX, t.clientY, e.target);
+    }, { passive: true });
+    container.addEventListener('touchmove', (e) => {
+        const t = e.touches[0]; onMove(t.clientX, t.clientY);
+        if (dragging) e.preventDefault();
+    }, { passive: false });
+    container.addEventListener('touchend', onUp);
+
+    apply();
 }
 
 function getYearSuffix(year) {
@@ -2514,7 +2620,7 @@ function renderAdminStudentList() {
         return `
             <div class="admin-student-item${retiredClass}" data-student-key="${student._firebaseKey || student.id}">
                 ${student.image
-                    ? `<img class="admin-student-avatar" src="${student.image}" alt="${student.name}">`
+                    ? `<span class="admin-student-avatar-frame"><img class="admin-student-avatar" src="${student.image}" alt="${student.name}" style="${getImageFrameStyle(student)}"></span>`
                     : `<div class="admin-student-avatar-placeholder">${initials}</div>`
                 }
                 <div class="admin-student-info">
@@ -2593,7 +2699,18 @@ function openStudentModal(student) {
     document.getElementById('admin-student-year').value = student?.year || 1;
     document.getElementById('admin-student-class').value = student?.class || 'D';
     document.getElementById('admin-student-image').value = student?.image || '';
+    // Initialize framing state for this edit (clone so we don't mutate the loaded record)
+    adminState.editingImageFrame = student?.imageFrame
+        ? { zoom: student.imageFrame.zoom || 1, x: student.imageFrame.x || 0, y: student.imageFrame.y || 0 }
+        : { zoom: 1, x: 0, y: 0 };
     updateAdminImagePreview(student?.image || '');
+    // Bind framer (idempotent — first call wires listeners, subsequent calls re-apply state)
+    bindImageFramer(
+        document.getElementById('admin-student-image-preview'),
+        document.getElementById('admin-image-zoom'),
+        document.getElementById('admin-image-reset'),
+        () => adminState.editingImageFrame
+    );
     document.getElementById('admin-student-academic').value = student?.stats?.academic || 50;
     document.getElementById('admin-student-intelligence').value = student?.stats?.intelligence || 50;
     document.getElementById('admin-student-decision').value = student?.stats?.decision || 50;
@@ -2632,6 +2749,8 @@ function updateAdminImagePreview(url) {
 
     if (url && url.trim()) {
         preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 64 64\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><circle cx=\\'32\\' cy=\\'24\\' r=\\'12\\'/><path d=\\'M12 56c0-11 9-20 20-20s20 9 20 20\\'/></svg>'">`;
+        // Re-apply current framing to the freshly inserted img
+        applyImageFramer(preview, document.getElementById('admin-image-zoom'), adminState.editingImageFrame);
     } else {
         preview.innerHTML = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="32" cy="24" r="12"/><path d="M12 56c0-11 9-20 20-20s20 9 20 20"/></svg>`;
     }
@@ -2672,6 +2791,7 @@ async function saveStudent() {
         year: year,
         class: studentClass,
         image: image,
+        imageFrame: adminState.editingImageFrame || { zoom: 1, x: 0, y: 0 },
         stats: {
             academic: parseInt(document.getElementById('admin-student-academic').value) || 50,
             intelligence: parseInt(document.getElementById('admin-student-intelligence').value) || 50,
@@ -2797,6 +2917,7 @@ const creatorState = {
         year: 1,
         class: null,
         image: '',
+        imageFrame: { zoom: 1, x: 0, y: 0 },
         stats: {
             academic: 50,
             intelligence: 50,
@@ -3225,6 +3346,17 @@ function initCreatorApp() {
         });
     }
 
+    // Image framer (zoom + drag-to-pan) for creator avatar preview
+    if (!creatorState.character.imageFrame) {
+        creatorState.character.imageFrame = { zoom: 1, x: 0, y: 0 };
+    }
+    bindImageFramer(
+        document.getElementById('creator-avatar-preview'),
+        document.getElementById('creator-image-zoom'),
+        document.getElementById('creator-image-reset'),
+        () => creatorState.character.imageFrame
+    );
+
     // Stats sliders (new eval layout)
     const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
     let lastSliderSoundTime = 0;
@@ -3351,6 +3483,8 @@ function updateAvatarPreview(url) {
 
     if (url && url.trim()) {
         preview.innerHTML = `<img src="${url}" alt="Avatar" onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 64 64\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><circle cx=\\'32\\' cy=\\'24\\' r=\\'12\\'/><path d=\\'M12 56c0-11 9-20 20-20s20 9 20 20\\'/></svg>'">`;
+        // Re-apply current framing to the freshly inserted img
+        applyImageFramer(preview, document.getElementById('creator-image-zoom'), creatorState.character.imageFrame);
     } else {
         preview.innerHTML = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="32" cy="24" r="12"/>
@@ -3750,7 +3884,7 @@ function updateCreatorPreview() {
         <div class="profile-body">
             <div class="profile-image-container ${classGlow}">
                 ${char.image
-                    ? `<img class="profile-image" src="${char.image}" alt="${char.name || 'Character'}">`
+                    ? `<div class="profile-image-frame"><img class="profile-image" src="${char.image}" alt="${char.name || 'Character'}" style="${getImageFrameStyle(char)}"></div>`
                     : `<div class="profile-image-placeholder">
                         <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
                             <circle cx="32" cy="24" r="12"/>
@@ -3884,7 +4018,7 @@ function exportCharacterPDF() {
                 <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;">
                     <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(255,255,255,0.03);box-shadow:0 0 25px ${classGlow};display:flex;align-items:center;justify-content:center;">
                         ${char.image
-                            ? `<img src="${char.image}" alt="Student Photo" style="width:100%;height:100%;object-fit:cover;">`
+                            ? `<img src="${char.image}" alt="Student Photo" style="width:100%;height:100%;object-fit:cover;${getImageFrameStyle(char)}">`
                             : `<div style="color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
                         }
                     </div>
@@ -3941,6 +4075,7 @@ function resetCreator() {
         year: 1,
         class: null,
         image: '',
+        imageFrame: { zoom: 1, x: 0, y: 0 },
         stats: {
             academic: 50,
             intelligence: 50,
