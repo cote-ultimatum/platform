@@ -2063,7 +2063,9 @@ function handleAdminLogout() {
     if (!modal) return;
     modal.classList.add('active');
     playSound('select');
-    document.getElementById('admin-logout-confirm')?.focus();
+    requestAnimationFrame(() => {
+        document.getElementById('admin-logout-confirm')?.focus();
+    });
 }
 
 function confirmAdminLogout() {
@@ -2703,7 +2705,10 @@ function deleteCurrentStudent() {
     if (text) text.textContent = `Are you sure you want to delete ${adminState.editingStudent.name}? This cannot be undone.`;
     if (modal) modal.classList.add('active');
     playSound('select');
-    document.getElementById('admin-delete-student-confirm')?.focus();
+    // Defer focus until visibility transition starts
+    requestAnimationFrame(() => {
+        document.getElementById('admin-delete-student-confirm')?.focus();
+    });
 }
 
 async function confirmDeleteStudent() {
