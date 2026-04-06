@@ -698,8 +698,8 @@
                 </div>
                 <div class="admin-modal-body">
                     <div class="admin-form-row">
-                        <label>Name</label>
-                        <input type="text" id="admin-student-name" placeholder="Enter character name">
+                        <label>Full Name</label>
+                        <input type="text" id="admin-student-name" placeholder="What is your character's full name?">
                     </div>
                     <div class="admin-form-row admin-form-row-half">
                         <div>
@@ -732,10 +732,10 @@
                             <input type="text" id="admin-student-image" placeholder="https://...">
                         </div>
                     </div>
-                    <div class="admin-form-section-title">OAA Stats</div>
+                    <div class="admin-form-section-title">OAA Evaluation</div>
                     <div class="admin-form-stats">
                         <div class="admin-stat-input">
-                            <label>Academic</label>
+                            <label>Academic Ability</label>
                             <input type="number" id="admin-student-academic" min="0" max="100" value="50">
                         </div>
                         <div class="admin-stat-input">
@@ -743,11 +743,11 @@
                             <input type="number" id="admin-student-intelligence" min="0" max="100" value="50">
                         </div>
                         <div class="admin-stat-input">
-                            <label>Decision</label>
+                            <label>Decision Making</label>
                             <input type="number" id="admin-student-decision" min="0" max="100" value="50">
                         </div>
                         <div class="admin-stat-input">
-                            <label>Physical</label>
+                            <label>Physical Ability</label>
                             <input type="number" id="admin-student-physical" min="0" max="100" value="50">
                         </div>
                         <div class="admin-stat-input">
@@ -790,6 +790,19 @@
                 <div class="admin-modal-actions">
                     <button class="admin-modal-cancel" id="admin-logout-cancel">Cancel</button>
                     <button class="admin-modal-confirm" id="admin-logout-confirm">Log Out</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-modal-overlay" id="admin-delete-student-modal">
+            <div class="admin-modal">
+                <div class="admin-modal-header">Delete Student</div>
+                <div class="admin-modal-body">
+                    <p id="admin-delete-student-text">Are you sure you want to delete this student? This cannot be undone.</p>
+                </div>
+                <div class="admin-modal-actions">
+                    <button class="admin-modal-cancel" id="admin-delete-student-cancel">Cancel</button>
+                    <button class="admin-modal-delete" id="admin-delete-student-confirm">Delete</button>
                 </div>
             </div>
         </div>

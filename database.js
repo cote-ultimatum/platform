@@ -87,21 +87,25 @@ async function initDatabase() {
 async function subscribeToClassPoints() {
     if (!dbState.initialized) return;
 
+    // Subscribe to previous values from Firebase (persisted across reloads)
+    firebase.database().ref('previousClassPoints').on('value', (snapshot) => {
+        dbState.previousPoints = snapshot.val();
+        // Recompute deltas if we already have current points
+        if (dbState.classPoints) {
+            const deltas = calculatePointDeltas(dbState.previousPoints, dbState.classPoints);
+            notifyListeners('classPoints', { points: dbState.classPoints, deltas: deltas });
+        }
+    });
+
     const pointsRef = firebase.database().ref('classPoints');
 
     pointsRef.on('value', (snapshot) => {
         const newPoints = snapshot.val();
 
         if (newPoints) {
-            // Store previous values for delta calculation
-            if (dbState.classPoints) {
-                dbState.previousPoints = JSON.parse(JSON.stringify(dbState.classPoints));
-            }
-
-            // Update current points
             dbState.classPoints = newPoints;
 
-            // Calculate deltas
+            // Calculate deltas using Firebase-stored previousPoints
             const deltas = calculatePointDeltas(dbState.previousPoints, newPoints);
 
             // Notify listeners
@@ -318,6 +322,11 @@ async function setClassPointsWithLog(pointsData, userName, changes) {
     }
 
     try {
+        // Snapshot the current points as "previous" before overwriting
+        if (dbState.classPoints) {
+            await firebase.database().ref('previousClassPoints').set(dbState.classPoints);
+        }
+
         // Update class points
         await firebase.database().ref('classPoints').set(pointsData);
 

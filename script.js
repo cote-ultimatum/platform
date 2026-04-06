@@ -24,7 +24,6 @@ const state = {
     // Database state
     dbConnected: false,
     dbClassPoints: null,
-    previousPoints: JSON.parse(localStorage.getItem('cote-previous-points') || 'null'),
     pointDeltas: {}
 };
 
@@ -861,6 +860,13 @@ function initKeyboardNav() {
             const logoutModal = document.getElementById('admin-logout-modal');
             if (logoutModal && logoutModal.classList.contains('active')) {
                 cancelAdminLogout();
+                return;
+            }
+
+            // Close admin delete student modal if open
+            const deleteStudentModal = document.getElementById('admin-delete-student-modal');
+            if (deleteStudentModal && deleteStudentModal.classList.contains('active')) {
+                cancelDeleteStudent();
                 return;
             }
 
@@ -1702,12 +1708,6 @@ function handleDatabaseEvent(event, data) {
 }
 
 function handleClassPointsUpdate(newPoints, deltas) {
-    // Store previous points for next session
-    if (state.dbClassPoints) {
-        localStorage.setItem('cote-previous-points', JSON.stringify(state.dbClassPoints));
-    }
-
-    // Update state
     state.dbClassPoints = newPoints;
     state.pointDeltas = deltas;
 
@@ -1724,21 +1724,10 @@ function getActiveClassPoints() {
 }
 
 function getPointDelta(year, className) {
-    // First check real-time deltas from database
-    if (state.pointDeltas && state.pointDeltas[year] && state.pointDeltas[year][className]) {
-        return state.pointDeltas[year][className];
+    if (state.pointDeltas && state.pointDeltas[year]) {
+        return state.pointDeltas[year][className] || 0;
     }
-
-    // Otherwise calculate from stored previous points
-    if (!state.previousPoints) return 0;
-
-    const activePoints = getActiveClassPoints();
-    if (!activePoints) return 0;
-
-    const prev = state.previousPoints[year]?.[className] || 0;
-    const curr = activePoints[year]?.[className] || 0;
-
-    return curr - prev;
+    return 0;
 }
 
 // Database status indicator
@@ -1776,13 +1765,6 @@ function updateDbStatus(status) {
     }
 }
 
-// Store current points when leaving page (for delta calculation next time)
-window.addEventListener('beforeunload', () => {
-    const activePoints = getActiveClassPoints();
-    if (activePoints) {
-        localStorage.setItem('cote-previous-points', JSON.stringify(activePoints));
-    }
-});
 
 // ========================================
 // ADMIN APP
@@ -1957,6 +1939,27 @@ function initAdminApp() {
     if (logoutOverlay) {
         logoutOverlay.addEventListener('click', (e) => {
             if (e.target === logoutOverlay) cancelAdminLogout();
+        });
+    }
+
+    // Delete student modal listeners
+    const deleteConfirm = document.getElementById('admin-delete-student-confirm');
+    const deleteCancel = document.getElementById('admin-delete-student-cancel');
+    const deleteOverlay = document.getElementById('admin-delete-student-modal');
+
+    if (deleteConfirm) {
+        deleteConfirm.addEventListener('click', confirmDeleteStudent);
+        deleteConfirm.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (deleteCancel) {
+        deleteCancel.addEventListener('click', cancelDeleteStudent);
+        deleteCancel.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (deleteOverlay) {
+        deleteOverlay.addEventListener('click', (e) => {
+            if (e.target === deleteOverlay) cancelDeleteStudent();
         });
     }
 
@@ -2411,9 +2414,19 @@ function initStudentManagement() {
 }
 
 async function loadAdminStudents() {
-    // Try to load from Firebase first, fall back to local
     try {
         adminState.students = await COTEDB.getStudents();
+
+        // Auto-migrate local students if Firebase is empty
+        const allLocal = adminState.students.length > 0 && adminState.students.every(s => !s._firebaseKey);
+        if (allLocal && COTEDB.isInitialized()) {
+            console.log('Migrating local students to Firebase...');
+            for (const s of adminState.students) {
+                await COTEDB.addStudent(s);
+            }
+            adminState.students = await COTEDB.getStudents();
+            showSuccessToast('Migrated local students to database');
+        }
     } catch (error) {
         console.warn('Using local student data:', error);
         adminState.students = typeof studentData !== 'undefined' ? [...studentData] : [];
@@ -2603,24 +2616,29 @@ async function saveStudent() {
     }
 }
 
-async function deleteCurrentStudent() {
+function deleteCurrentStudent() {
     if (!adminState.editingStudent) return;
+    if (!adminState.editingStudent._firebaseKey) {
+        showErrorToast('Cannot delete this student');
+        return;
+    }
 
+    const modal = document.getElementById('admin-delete-student-modal');
+    const text = document.getElementById('admin-delete-student-text');
+    if (text) text.textContent = `Are you sure you want to delete ${adminState.editingStudent.name}? This cannot be undone.`;
+    if (modal) modal.classList.add('active');
+    playSound('select');
+}
+
+async function confirmDeleteStudent() {
+    const modal = document.getElementById('admin-delete-student-modal');
+    if (modal) modal.classList.remove('active');
+
+    if (!adminState.editingStudent) return;
     const key = adminState.editingStudent._firebaseKey;
-    if (!key) {
-        playSound('error');
-        return;
-    }
-
-    // Confirm deletion
-    if (!confirm(`Delete ${adminState.editingStudent.name}? This cannot be undone.`)) {
-        return;
-    }
+    if (!key) return;
 
     const deleteBtn = document.getElementById('admin-student-delete');
-    if (deleteBtn.disabled) return;
-
-    // Show loading state
     deleteBtn.disabled = true;
     const originalText = deleteBtn.textContent;
     deleteBtn.textContent = 'Deleting...';
@@ -2628,20 +2646,26 @@ async function deleteCurrentStudent() {
     try {
         const success = await COTEDB.deleteStudent(key);
         if (success) {
-            playSound('success');
+            showSuccessToast('Student deleted');
             closeStudentModal();
             await loadAdminStudents();
             renderClassCards();
         } else {
-            playSound('error');
+            showErrorToast('Failed to delete');
         }
     } catch (error) {
         console.error('Error deleting student:', error);
-        playSound('error');
+        showErrorToast(error.message || 'Failed to delete');
     } finally {
         deleteBtn.disabled = false;
         deleteBtn.textContent = originalText;
     }
+}
+
+function cancelDeleteStudent() {
+    const modal = document.getElementById('admin-delete-student-modal');
+    if (modal) modal.classList.remove('active');
+    playSound('back');
 }
 
 // ========================================
