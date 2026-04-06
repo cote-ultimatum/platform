@@ -6270,3 +6270,111 @@ body::before {
         height: 28px;
     }
 }
+
+/* ========================================
+   MOBILE - CONTENT AREA FIXES
+   ======================================== */
+
+@media (max-width: 600px) {
+    /* Reduce app-view padding for mobile */
+    .app-view {
+        padding: 0 1rem 2rem;
+    }
+
+    /* Creator Identity - stack vertically */
+    .creator-identity-layout {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .creator-avatar-section {
+        align-items: center;
+    }
+
+    .creator-avatar-preview {
+        width: 120px;
+        height: 120px;
+    }
+
+    /* Creator class select - 2x2 grid */
+    .creator-select-group.class-select {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Creator card padding */
+    .creator-card {
+        padding: 1.25rem;
+    }
+
+    /* Export preview */
+    .preview-card-header {
+        padding: 1.25rem;
+    }
+
+    .preview-card-body {
+        padding: 0 1.25rem 1.25rem;
+    }
+
+    .preview-name {
+        font-size: 1.3rem;
+    }
+
+    /* Trait quiz modal */
+    .trait-quiz-content {
+        width: 95%;
+    }
+
+    .trait-quiz-header {
+        padding: 1rem;
+    }
+
+    .trait-quiz-body {
+        padding: 1rem;
+    }
+
+    /* OAA profile */
+    .profile-body {
+        padding: 0 1rem 1rem;
+    }
+
+    /* Events/Exams content */
+    .events-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .app-view {
+        padding: 0 0.75rem 1.5rem;
+    }
+
+    .creator-avatar-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+    .creator-card {
+        padding: 1rem;
+    }
+
+    .preview-card-header {
+        padding: 1rem;
+    }
+
+    .preview-card-body {
+        padding: 0 1rem 1rem;
+        gap: 1rem;
+    }
+
+    .preview-name {
+        font-size: 1.1rem;
+    }
+
+    .eval-card {
+        padding: 0.85rem;
+    }
+
+    .eval-card-controls {
+        gap: 0.5rem;
+    }
+}
