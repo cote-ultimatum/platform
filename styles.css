@@ -5507,7 +5507,7 @@ body::before {
 
 /* Preview Card Header */
 .preview-card-header {
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 2rem 1.25rem;
     position: relative;
     background: linear-gradient(180deg, rgba(0, 245, 255, 0.05) 0%, transparent 100%);
     display: flex;
@@ -5530,15 +5530,16 @@ body::before {
 
 .preview-status-banner {
     font-family: 'Orbitron', monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #f59e0b;
-    background: rgba(245, 158, 11, 0.08);
-    border-top: 1px solid rgba(245, 158, 11, 0.2);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.06);
+    border-top: 1px solid rgba(245, 158, 11, 0.15);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.15);
     text-align: center;
-    padding: 0.5rem;
-    letter-spacing: 0.2em;
+    padding: 0.6rem 1rem;
+    letter-spacing: 0.25em;
+    margin: 0;
 }
 
 .preview-status-box {
@@ -5570,7 +5571,7 @@ body::before {
     display: grid;
     grid-template-columns: 180px 1fr;
     gap: 2rem;
-    padding: 0 2rem 2rem;
+    padding: 1.25rem 2rem 2rem;
 }
 
 @media (max-width: 700px) {

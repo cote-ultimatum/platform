@@ -3485,36 +3485,26 @@ function exportCharacterPDF() {
         const traitHTML = trait ? (() => {
             const isPositive = traitDefinitions[key].positive.includes(trait);
             const tColor = isPositive ? '#22c55e' : '#ef4444';
-            const tBg = isPositive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
-            return `<span style="display:inline-block;margin-left:10px;padding:2px 8px;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:${tColor};background:${tBg};border:1px solid ${tColor}33;border-radius:4px;font-family:'Inter',sans-serif;">${trait}</span>`;
+            const tBg = isPositive ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)';
+            return `<span style="display:inline-block;padding:2px 8px;font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:${tColor};background:${tBg};border:1px solid ${tColor}30;border-radius:3px;font-family:'Inter',sans-serif;">${trait}</span>`;
         })() : '';
 
         return `
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                <span style="width:130px;font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;letter-spacing:0.3px;">${meta.label}</span>
-                <div style="flex:1;height:10px;background:rgba(255,255,255,0.06);border-radius:5px;overflow:hidden;">
-                    <div style="width:${value}%;height:100%;background:${meta.gradient};border-radius:5px;"></div>
+            <div style="margin-bottom:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;letter-spacing:0.3px;">${meta.label}</span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        ${traitHTML}
+                        <span style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;">${value}</span>
+                        <span style="font-size:12px;font-weight:700;color:${meta.color};font-family:'Orbitron',monospace;min-width:24px;text-align:right;">${grade}</span>
+                    </div>
                 </div>
-                <span style="width:28px;text-align:right;font-size:12px;font-weight:700;color:${meta.color};font-family:'Orbitron',monospace;">${grade}</span>
-                ${traitHTML}
+                <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                    <div style="width:${value}%;height:100%;background:${meta.gradient};border-radius:4px;"></div>
+                </div>
             </div>
         `;
     }).join('');
-
-    const allTraits = Object.entries(char.traits);
-    const traitsHTML = allTraits.length > 0 ? `
-        <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(77,201,230,0.1);">
-            <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:10px;">Traits</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                ${allTraits.map(([cat, trait]) => {
-                    const isPositive = traitDefinitions[cat].positive.includes(trait);
-                    const tColor = isPositive ? '#22c55e' : '#ef4444';
-                    const tBg = isPositive ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
-                    return `<span style="padding:4px 12px;font-size:11px;font-weight:600;color:${tColor};background:${tBg};border:1px solid ${tColor}33;border-radius:6px;font-family:'Inter',sans-serif;">${trait}</span>`;
-                }).join('')}
-            </div>
-        </div>
-    ` : '';
 
     const bioHTML = (char.bio || char.personality) ? `
         <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(77,201,230,0.1);">
@@ -3572,14 +3562,14 @@ function exportCharacterPDF() {
                 </div>
 
                 <div style="flex:1;min-width:0;">
-                    <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.25);margin-bottom:4px;line-height:1.2;">${char.name || 'Unnamed'}</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.25);line-height:1.2;">${char.name || 'Unnamed'}</div>
+                    <div style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;margin-top:4px;letter-spacing:1px;">${char.year}${yearSuffix} Year &mdash; Class ${char.class || '?'}</div>
 
-                    <div style="margin-top:18px;">
-                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(122,36,56,0.3);">OAA Evaluation</div>
+                    <div style="margin-top:20px;">
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(122,36,56,0.3);">OAA Evaluation</div>
                         ${statsHTML}
                     </div>
 
-                    ${traitsHTML}
                     ${bioHTML}
                 </div>
             </div>
