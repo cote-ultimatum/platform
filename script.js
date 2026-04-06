@@ -3323,7 +3323,7 @@ function finishQuiz() {
             : '<span class="trait-icon negative">▼</span>';
         resultEl.innerHTML = `
             <span class="trait-badge clickable ${isPositive ? 'positive' : 'negative'}" onclick="clearTrait('${category}')" title="Click to remove">
-                ${icon}${resultTrait}
+                ${icon}<span class="trait-name">${resultTrait}</span>
             </span>`;
     }
 

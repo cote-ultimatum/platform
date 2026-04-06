@@ -5048,6 +5048,9 @@ body::before {
 
 .eval-card-trait .trait-badge.clickable:hover {
     opacity: 0.6;
+}
+
+.eval-card-trait .trait-badge.clickable:hover .trait-name {
     text-decoration: line-through;
 }
 
