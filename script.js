@@ -2625,10 +2625,10 @@ function applyTraitLimits(category) {
     slider.style.setProperty('--limit-min', limits.min + '%');
     slider.style.setProperty('--limit-max', limits.max + '%');
 
-    // Position fill bar to start from min limit (so locked areas are visible)
+    // Fill bar starts from 0 so left locked area shows dimmed color
     if (bar) {
-        bar.style.left = `${limits.min}%`;
-        bar.style.width = `${currentValue - limits.min}%`;
+        bar.style.left = '0%';
+        bar.style.width = `${currentValue}%`;
     }
 
     // Update locked area indicators
@@ -2924,11 +2924,10 @@ function initCreatorApp() {
             const updateStat = (value) => {
                 creatorState.character.stats[stat] = value;
                 if (display) display.textContent = value;
-                // Position bar from min limit to value
-                const currentLimits = getStatLimitsFromTrait(stat);
+                // Fill bar from 0 so left locked area shows dimmed color
                 if (bar) {
-                    bar.style.left = `${currentLimits.min}%`;
-                    bar.style.width = `${value - currentLimits.min}%`;
+                    bar.style.left = '0%';
+                    bar.style.width = `${value}%`;
                 }
                 updateCreatorOverallGrade();
             };
@@ -2940,6 +2939,7 @@ function initCreatorApp() {
             slider.value = initialValue;
             updateStat(initialValue);
 
+            let lastSliderValue = initialValue;
             slider.addEventListener('input', () => {
                 // Clamp to trait limits since slider is always 0-100
                 const currentLimits = getStatLimitsFromTrait(stat);
@@ -2947,11 +2947,14 @@ function initCreatorApp() {
                 if (val < currentLimits.min) { val = currentLimits.min; slider.value = val; }
                 if (val > currentLimits.max) { val = currentLimits.max; slider.value = val; }
                 updateStat(val);
-                // Throttled tick sound while sliding
-                const now = Date.now();
-                if (now - lastSliderSoundTime > sliderSoundThrottle) {
-                    playSound('type');
-                    lastSliderSoundTime = now;
+                // Only play sound if value actually changed
+                if (val !== lastSliderValue) {
+                    const now = Date.now();
+                    if (now - lastSliderSoundTime > sliderSoundThrottle) {
+                        playSound('type');
+                        lastSliderSoundTime = now;
+                    }
+                    lastSliderValue = val;
                 }
             });
 
@@ -3151,7 +3154,8 @@ function openTraitQuiz(category) {
         questionIndex: 0,
         scores: { positive: 0, negative: 0 },
         positiveType: 0,
-        negativeType: 0
+        negativeType: 0,
+        finished: false
     };
 
     const modal = document.getElementById('trait-quiz-modal');
@@ -3249,6 +3253,9 @@ function showQuizQuestion() {
 }
 
 function selectQuizOption(btn) {
+    // Prevent clicks after quiz is finished
+    if (creatorState.quizState.finished) return;
+
     playSound('click');
 
     const isPositive = btn.dataset.positive === 'true';
@@ -3297,21 +3304,27 @@ function finishQuiz() {
     }
 
     creatorState.character.traits[category] = resultTrait;
+    creatorState.quizState.finished = true;
+
+    // Disable all quiz option buttons immediately
+    document.querySelectorAll('.trait-quiz-option').forEach(btn => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none';
+    });
 
     // Determine trait polarity
     const isPositive = traits.positive.includes(resultTrait);
 
-    // Update UI with compact badge (with icon) and clear button
+    // Update UI with clickable badge (click to remove)
     const resultEl = document.getElementById(`trait-result-${category}`);
     if (resultEl) {
         const icon = isPositive
             ? '<span class="trait-icon positive">▲</span>'
             : '<span class="trait-icon negative">▼</span>';
         resultEl.innerHTML = `
-            <span class="trait-badge ${isPositive ? 'positive' : 'negative'}">
+            <span class="trait-badge clickable ${isPositive ? 'positive' : 'negative'}" onclick="clearTrait('${category}')" title="Click to remove">
                 ${icon}${resultTrait}
-            </span>
-            <button class="trait-clear-btn" onclick="clearTrait('${category}')" title="Remove trait">×</button>`;
+            </span>`;
     }
 
     // Update completion counter
@@ -3838,10 +3851,10 @@ function resetCreator() {
             slider.style.setProperty('--limit-max', '60%');
         }
         if (display) display.textContent = '50';
-        // Position bar from min (40) to value (50) = 10% width
+        // Fill bar from 0 to value (50)
         if (bar) {
-            bar.style.left = '40%';
-            bar.style.width = '10%';
+            bar.style.left = '0%';
+            bar.style.width = '50%';
         }
         // Reset locked areas to default (40% on each side)
         if (lockedLeft) lockedLeft.style.width = '40%';
