@@ -857,6 +857,13 @@ function initKeyboardNav() {
                 return;
             }
 
+            // Close admin logout confirmation modal if open
+            const logoutModal = document.getElementById('admin-logout-modal');
+            if (logoutModal && logoutModal.classList.contains('active')) {
+                cancelAdminLogout();
+                return;
+            }
+
             const searchInput = document.querySelector('.search-input');
             if (searchInput && document.activeElement === searchInput) {
                 searchInput.blur();
