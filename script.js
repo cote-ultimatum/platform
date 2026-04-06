@@ -636,24 +636,14 @@ function startMusic() {
 
     function tryPlay() {
         music.volume = 0;
-        const playPromise = music.play();
-        if (playPromise) {
-            playPromise.then(() => {
-                fadeMusic(music, 0, 0.15, 300);
-            }).catch(() => {
-                // Retry when audio is ready
-                if (music.readyState >= 2) {
-                    // Already loaded — retry immediately
-                    setTimeout(() => {
-                        music.play().then(() => fadeMusic(music, 0, 0.15, 300)).catch(() => {});
-                    }, 100);
-                } else {
-                    music.addEventListener('canplay', () => {
-                        music.play().then(() => fadeMusic(music, 0, 0.15, 300)).catch(() => {});
-                    }, { once: true });
-                }
-            });
-        }
+        music.play().then(() => {
+            fadeMusic(music, 0, 0.15, 300);
+        }).catch(() => {
+            // Not ready yet — retry when buffered
+            music.addEventListener('canplay', () => {
+                music.play().then(() => fadeMusic(music, 0, 0.15, 300)).catch(() => {});
+            }, { once: true });
+        });
     }
 
     // Delay slightly to avoid competing with boot sound
