@@ -1965,6 +1965,13 @@ function initAdminApp() {
         logoutOverlay.addEventListener('click', (e) => {
             if (e.target === logoutOverlay) cancelAdminLogout();
         });
+        logoutOverlay.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                confirmAdminLogout();
+            }
+        });
     }
 
     // Delete student modal listeners
@@ -1985,6 +1992,13 @@ function initAdminApp() {
     if (deleteOverlay) {
         deleteOverlay.addEventListener('click', (e) => {
             if (e.target === deleteOverlay) cancelDeleteStudent();
+        });
+        deleteOverlay.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                confirmDeleteStudent();
+            }
         });
     }
 
@@ -2413,6 +2427,9 @@ function initStudentManagement() {
     if (studentModal) {
         studentModal.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
+                // Don't trigger save if a confirmation modal is on top
+                const deleteModal = document.getElementById('admin-delete-student-modal');
+                if (deleteModal && deleteModal.classList.contains('active')) return;
                 e.preventDefault();
                 saveStudent();
             }
@@ -2686,6 +2703,7 @@ function deleteCurrentStudent() {
     if (text) text.textContent = `Are you sure you want to delete ${adminState.editingStudent.name}? This cannot be undone.`;
     if (modal) modal.classList.add('active');
     playSound('select');
+    document.getElementById('admin-delete-student-confirm')?.focus();
 }
 
 async function confirmDeleteStudent() {
