@@ -3500,7 +3500,7 @@ body::before {
     background: var(--bg-card);
     border: 1px solid var(--bg-tertiary);
     border-radius: 12px;
-    padding: 1rem 1.25rem;
+    padding: 1.1rem 1.5rem;
     margin-bottom: 1.5rem;
 }
 
@@ -3511,8 +3511,8 @@ body::before {
 }
 
 .admin-user-icon {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     color: var(--cyan);
 }
 
@@ -3523,6 +3523,7 @@ body::before {
 
 .admin-user-name {
     font-weight: 600;
+    font-size: 1.05rem;
     color: var(--text-primary);
 }
 
@@ -3546,15 +3547,18 @@ body::before {
     background: var(--bg-card);
     border: 1px solid var(--bg-tertiary);
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
 .admin-section-title {
     font-family: 'Orbitron', monospace;
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: var(--cyan);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(77, 201, 230, 0.15);
+    letter-spacing: 0.05em;
 }
 
 .admin-years-container {
@@ -3574,11 +3578,12 @@ body::before {
 }
 
 .admin-year-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     margin-bottom: 0.75rem;
+    font-weight: 600;
 }
 
 .admin-class-grid {
@@ -3595,14 +3600,14 @@ body::before {
 }
 
 .admin-class-badge {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
@@ -3616,10 +3621,10 @@ body::before {
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
     border-radius: 8px;
-    padding: 0.75rem;
+    padding: 0.85rem;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
-    font-size: 0.9rem;
+    font-size: 1rem;
     text-align: center;
     transition: all 0.2s ease;
 }
@@ -3630,12 +3635,22 @@ body::before {
     box-shadow: 0 0 0 2px var(--cyan-subtle);
 }
 
-.admin-class-input input.changed {
+.admin-class-input input.changed-up {
+    border-color: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+.admin-class-input input.changed-up:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2), 0 0 12px rgba(34, 197, 94, 0.3);
+}
+
+.admin-class-input input.changed-down {
     border-color: var(--crimson-light);
     box-shadow: 0 0 8px rgba(154, 46, 72, 0.3);
 }
 
-.admin-class-input input.changed:focus {
+.admin-class-input input.changed-down:focus {
     border-color: var(--crimson-light);
     box-shadow: 0 0 0 2px rgba(154, 46, 72, 0.2), 0 0 12px rgba(154, 46, 72, 0.3);
 }
@@ -3691,66 +3706,6 @@ body::before {
     color: var(--text-secondary);
 }
 
-.admin-status {
-    margin-top: 1rem;
-    padding: 0;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: all 0.2s ease;
-}
-
-.admin-status.success {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #22c55e;
-    height: auto;
-    padding: 0.75rem;
-    opacity: 1;
-}
-
-.status-checkmark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    background: #22c55e;
-    color: var(--bg-primary);
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: bold;
-    animation: checkmarkPop 0.3s ease-out;
-}
-
-@keyframes checkmarkPop {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.admin-status.error {
-    display: block;
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #ef4444;
-    height: auto;
-    padding: 0.75rem;
-    opacity: 1;
-}
 
 /* Changelog */
 .admin-changelog {
@@ -4075,36 +4030,6 @@ body::before {
     animation: savingShimmer 1s infinite;
 }
 
-/* Status message animations */
-.admin-status.success {
-    animation: statusPop 0.3s ease-out;
-}
-
-.admin-status.error {
-    animation: statusShake 0.4s ease-out;
-}
-
-@keyframes statusPop {
-    0% {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    50% {
-        transform: scale(1.02);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes statusShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-5px); }
-    40% { transform: translateX(5px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-}
 
 /* Admin login icon glitch on hover */
 .admin-login-icon {
@@ -5466,6 +5391,30 @@ body::before {
 }
 
 .error-toast.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.success-toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(34, 197, 94, 0.95);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.success-toast.visible {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);

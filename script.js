@@ -1807,10 +1807,11 @@ function initAdminApp() {
                 const cls = parts[3];
                 const original = adminState.originalPoints[year]?.[cls] || 1000;
 
-                if (num !== original) {
-                    input.classList.add('changed');
-                } else {
-                    input.classList.remove('changed');
+                input.classList.remove('changed-up', 'changed-down');
+                if (num > original) {
+                    input.classList.add('changed-up');
+                } else if (num < original) {
+                    input.classList.add('changed-down');
                 }
             });
             input.addEventListener('input', () => playSound('type'));
@@ -1993,7 +1994,7 @@ function loadAdminPointsFromDB() {
             if (input && points[year]) {
                 const value = points[year][cls] || 1000;
                 input.value = value.toLocaleString();
-                input.classList.remove('changed');
+                input.classList.remove('changed-up', 'changed-down');
                 adminState.originalPoints[year][cls] = value;
             }
         });
@@ -2018,8 +2019,6 @@ let pendingChanges = null;
 let pendingNewPoints = null;
 
 function handleAdminSave() {
-    const statusEl = document.getElementById('admin-status');
-
     const newPoints = getAdminPointsFromInputs();
     const oldPoints = getActiveClassPoints();
 
@@ -2038,14 +2037,7 @@ function handleAdminSave() {
     }
 
     if (changes.length === 0) {
-        statusEl.textContent = 'No changes to save';
-        statusEl.className = 'admin-status error';
-        playSound('error');
-        // Auto-dismiss after 3 seconds
-        setTimeout(() => {
-            statusEl.textContent = '';
-            statusEl.className = 'admin-status';
-        }, 3000);
+        showErrorToast('No changes to save');
         return;
     }
 
@@ -2089,7 +2081,6 @@ async function confirmAdminSave() {
     const newPoints = pendingNewPoints;
 
     const saveBtn = document.getElementById('admin-save-btn');
-    const statusEl = document.getElementById('admin-status');
 
     // Hide modal
     hideSaveConfirmModal();
@@ -2097,8 +2088,6 @@ async function confirmAdminSave() {
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving...';
     saveBtn.classList.add('saving');
-    statusEl.className = 'admin-status';
-    statusEl.textContent = '';
     playSound('select');
 
     // Minimum delay for visual feedback
@@ -2109,9 +2098,7 @@ async function confirmAdminSave() {
 
     // Check if database is initialized
     if (!COTEDB.isInitialized()) {
-        statusEl.textContent = 'Database not connected. Changes saved locally only.';
-        statusEl.className = 'admin-status error';
-        playSound('error');
+        showErrorToast('Database not connected');
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save Changes';
         saveBtn.classList.remove('saving');
@@ -2134,27 +2121,25 @@ async function confirmAdminSave() {
         ]);
 
         if (success) {
-            statusEl.innerHTML = `<span class="status-checkmark">✓</span> Saved ${changes.length} change(s)`;
-            statusEl.className = 'admin-status success';
-            playSound('success');
+            showSuccessToast(`Saved ${changes.length} change(s)`);
+
+            // Update original points so changed styling clears
+            for (let year = 1; year <= 3; year++) {
+                ['A', 'B', 'C', 'D'].forEach(cls => {
+                    adminState.originalPoints[year][cls] = newPoints[year][cls];
+                    const input = document.getElementById(`admin-points-${year}-${cls}`);
+                    if (input) input.classList.remove('changed-up', 'changed-down');
+                });
+            }
 
             // Refresh changelog
             loadAdminChangelog();
-
-            // Auto-hide success message
-            setTimeout(() => {
-                statusEl.className = 'admin-status';
-            }, 4000);
         } else {
-            statusEl.textContent = 'Failed to save. Try again.';
-            statusEl.className = 'admin-status error';
-            playSound('error');
+            showErrorToast('Failed to save. Try again.');
         }
     } catch (error) {
         console.error('Save error:', error);
-        statusEl.textContent = 'Error: ' + (error.message || 'Unknown error');
-        statusEl.className = 'admin-status error';
-        playSound('error');
+        showErrorToast(error.message || 'Unknown error');
     } finally {
         // Always reset button state
         saveBtn.disabled = false;
@@ -3176,6 +3161,26 @@ function showErrorToast(message) {
     clearTimeout(errorEl._timeout);
     errorEl._timeout = setTimeout(() => {
         errorEl.classList.remove('visible');
+    }, 3000);
+}
+
+function showSuccessToast(message) {
+    let el = document.querySelector('.success-toast');
+    if (!el) {
+        el = document.createElement('div');
+        el.className = 'success-toast';
+        document.body.appendChild(el);
+    }
+
+    el.textContent = message;
+    el.classList.remove('visible');
+    el.offsetHeight;
+    el.classList.add('visible');
+    playSound('success');
+
+    clearTimeout(el._timeout);
+    el._timeout = setTimeout(() => {
+        el.classList.remove('visible');
     }, 3000);
 }
 
