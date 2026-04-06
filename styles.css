@@ -4363,12 +4363,61 @@ body::before {
     align-items: center;
     margin-top: 0.6rem;
 }
-.image-framer-zoom {
+/* Wrapper that lets the slider thumb visually reach the track ends.
+   The slider is rendered 14px wider than its visible area and shifted
+   left by 7px, so the thumb's edge-clamping happens outside the visible
+   bounds — making the thumb appear to reach 0% and 100%. */
+.image-framer-slider-wrap {
     flex: 1;
     min-width: 0;
+    position: relative;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+.image-framer-zoom {
+    -webkit-appearance: none;
+    appearance: none;
+    width: calc(100% + 14px);
+    margin: 0 -7px;
+    height: 14px;
+    background: transparent;
     cursor: pointer;
-    accent-color: var(--cyan);
-    margin: 0;
+    padding: 0;
+}
+.image-framer-zoom::-webkit-slider-runnable-track {
+    height: 6px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 999px;
+}
+.image-framer-zoom::-moz-range-track {
+    height: 6px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 999px;
+}
+.image-framer-zoom::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    border: none;
+    margin-top: -5px;
+    cursor: grab;
+    box-shadow: 0 0 6px var(--cyan-dim);
+}
+.image-framer-zoom::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    border: none;
+    cursor: grab;
+    box-shadow: 0 0 6px var(--cyan-dim);
 }
 .image-framer-reset {
     padding: 0.35rem 0.65rem;

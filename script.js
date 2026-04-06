@@ -1703,7 +1703,7 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
             const f = frameRef();
             f.zoom = parseFloat(zoomSlider.value);
             // Re-clamp pan offsets to fit the new zoom level
-            const maxOffset = (f.zoom - 1) * 50;
+            const maxOffset = f.zoom * 50;
             f.x = Math.max(-maxOffset, Math.min(maxOffset, f.x || 0));
             f.y = Math.max(-maxOffset, Math.min(maxOffset, f.y || 0));
             apply();
@@ -1740,9 +1740,11 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
         // no /zoom needed.
         const dx = ((clientX - startX) / rect.width) * 100;
         const dy = ((clientY - startY) / rect.height) * 100;
-        // Clamp so the image edge can't move past the container edge inward
-        // (i.e. the image always fully covers the visible area).
-        const maxOffset = (z - 1) * 50;
+        // Clamp pan so at least half the image stays in the container.
+        // (z-1)*50 would mean "image always fully covers container" but that's
+        // too restrictive — users want to put a feature off-center. z*50 lets
+        // them pan until half the image leaves one side.
+        const maxOffset = z * 50;
         f.x = Math.max(-maxOffset, Math.min(maxOffset, startFX + dx));
         f.y = Math.max(-maxOffset, Math.min(maxOffset, startFY + dy));
         apply();
