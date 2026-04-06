@@ -3410,7 +3410,7 @@ function updateCreatorPreview() {
                 <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
             </div>
         </div>
-        <div class="preview-status-banner">PENDING REVIEW</div>
+        <div class="preview-stamp">PENDING<br>REVIEW</div>
         <div class="preview-card-body">
             <div class="preview-image-container ${classGlow}">
                 ${char.image
@@ -3567,7 +3567,7 @@ function exportCharacterPDF() {
                     <div style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;margin-top:4px;letter-spacing:1px;">${char.year}${yearSuffix} Year &mdash; Class ${char.class || '?'}</div>
 
                     <div style="margin-top:20px;">
-                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(122,36,56,0.3);">OAA Evaluation</div>
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(122,36,56,0.3);">Evaluation</div>
                         ${statsHTML}
                     </div>
 
@@ -3575,18 +3575,11 @@ function exportCharacterPDF() {
                 </div>
             </div>
 
-            <div style="margin:0 32px;padding:12px 0;border-top:1px solid rgba(77,201,230,0.1);display:flex;justify-content:space-between;align-items:center;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <div style="padding:4px 12px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:4px;">
-                        <span style="font-size:10px;font-weight:700;letter-spacing:2px;color:#f59e0b;font-family:'Orbitron',monospace;">PENDING REVIEW</span>
-                    </div>
-                </div>
-                <div style="font-size:10px;color:#475569;font-family:'Inter',sans-serif;">Generated via COTE: ULTIMATUM</div>
+            <div style="margin:0 32px 20px;padding:10px 16px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.1);border-radius:6px;text-align:center;border-top:1px solid rgba(77,201,230,0.1);">
+                <span style="font-size:10px;color:#64748b;font-family:'Inter',sans-serif;letter-spacing:0.3px;">Submit this application in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server</span>
             </div>
 
-            <div style="margin:0 32px 20px;padding:10px 16px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.1);border-radius:6px;text-align:center;">
-                <span style="font-size:10px;color:#64748b;font-family:'Inter',sans-serif;letter-spacing:0.3px;">Submit this application in the <span style="color:#4dc9e6;font-weight:600;">#applications</span> forum on the COTE: ULTIMATUM Discord server</span>
-            </div>
+            <div style="position:absolute;top:50%;right:40px;transform:translateY(-50%) rotate(-16deg);font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:rgba(245,158,11,0.25);border:4px solid rgba(245,158,11,0.2);border-radius:10px;padding:12px 28px;letter-spacing:0.15em;text-align:center;line-height:1.3;pointer-events:none;">PENDING<br>REVIEW</div>
         </div>
     `;
 
