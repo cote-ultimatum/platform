@@ -3368,74 +3368,68 @@ function updateCreatorPreview() {
          char.stats.physical + char.stats.cooperativeness) / 5
     );
 
-    // Generate stat rows with traits inline
-    const statNames = {
-        academic: 'Academic Ability',
-        intelligence: 'Intelligence',
-        decision: 'Decision Making',
-        physical: 'Physical Ability',
-        cooperativeness: 'Cooperativeness'
-    };
+    const statNames = ['Academic Ability', 'Intelligence', 'Decision Making', 'Physical Ability', 'Cooperativeness'];
+    const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
 
-    const statsHTML = Object.entries(statNames).map(([key, label]) => {
+    const statsHTML = statKeys.map((key, i) => {
         const value = char.stats[key];
         const trait = char.traits[key];
-        const traitHTML = trait ? (() => {
+        let traitHTML = '';
+        if (trait) {
             const isPositive = traitDefinitions[key].positive.includes(trait);
-            return `<div class="preview-stat-trait-row"><span class="preview-stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span></div>`;
-        })() : '';
-
+            traitHTML = `<span class="stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+        }
         return `
-            <div class="preview-stat-row">
-                <div class="preview-stat-header">
-                    <span class="preview-stat-name">${label}</span>
-                    <span class="preview-stat-value">${value}</span>
+            <div class="stat-row">
+                <div class="stat-header">
+                    <span class="stat-label">${statNames[i]}</span>
+                    <span class="stat-value">${value}/100 <span class="stat-grade">${getGradeFromValue(value)}</span></span>
                 </div>
-                <div class="preview-stat-bar">
-                    <div class="preview-stat-fill stat-${key}" style="width: ${value}%"></div>
-                </div>
+                <div class="stat-bar"><div class="stat-bar-fill stat-${key}" style="width: ${value}%"></div></div>
                 ${traitHTML}
             </div>
         `;
     }).join('');
 
-    // Class-specific styling
     const classLower = char.class ? char.class.toLowerCase() : '';
     const classGlow = classLower ? `class-${classLower}-glow` : '';
 
     preview.innerHTML = `
-        <div class="preview-card-header">
-            <div class="preview-header-info">
-                <h2 class="preview-name">${char.name || 'Unnamed Character'}</h2>
-                <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
+        <div class="profile-header">
+            <div class="profile-header-info">
+                <h2>${char.name || 'Unnamed Character'}</h2>
+                <p>${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
+            </div>
+            <div class="profile-id preview-pending-id">
+                <span class="id-label">STATUS</span>
+                <span class="id-value pending">PENDING</span>
             </div>
         </div>
-        <div class="preview-stamp">PENDING<br>REVIEW</div>
-        <div class="preview-card-body">
-            <div class="preview-image-container ${classGlow}">
+        <div class="profile-body">
+            <div class="profile-image-container ${classGlow}">
                 ${char.image
-                    ? `<img class="preview-image" src="${char.image}" alt="${char.name || 'Character'}">`
-                    : `<div class="preview-image-placeholder">
+                    ? `<img class="profile-image" src="${char.image}" alt="${char.name || 'Character'}">`
+                    : `<div class="profile-image-placeholder">
                         <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
                             <circle cx="32" cy="24" r="12"/>
                             <path d="M12 56c0-11 9-20 20-20s20 9 20 20"/>
                         </svg>
                     </div>`}
-                <div class="preview-grade-box">
-                    <span class="preview-grade-label">OVERALL RATING</span>
-                    <span class="preview-grade-value">${overallGrade}</span>
+                <div class="overall-grade-box">
+                    <span class="overall-label">OVERALL RATING</span>
+                    <span class="overall-value">${overallGrade}</span>
                 </div>
             </div>
-            <div class="preview-stats-section">
-                <h3 class="preview-stats-title">Evaluation</h3>
-                <div class="preview-stat-list">
+            <div class="profile-stats">
+                <h3 class="stats-title">Evaluation</h3>
+                <div class="stat-list">
                     ${statsHTML}
                 </div>
                 ${(char.bio || char.personality) ? `
                     <div class="preview-bio-section">
                         ${char.bio ? `
                             <div class="preview-bio-item">
-                                <h4>Biography</h4>
+                                <h4>Background</h4>
                                 <p>${char.bio}</p>
                             </div>
                         ` : ''}
@@ -3470,116 +3464,106 @@ function exportCharacterPDF() {
     const classColor = classColors[char.class] || '#9a2e48';
     const classGlow = classGlows[char.class] || 'rgba(154, 46, 72, 0.4)';
 
-    const statMeta = {
-        academic:        { label: 'Academic Ability',  color: '#9b59b6', gradient: 'linear-gradient(90deg, #8e44ad, #9b59b6)' },
-        intelligence:    { label: 'Intelligence',      color: '#f1c40f', gradient: 'linear-gradient(90deg, #d4a10f, #f1c40f)' },
-        decision:        { label: 'Decision Making',   color: '#e67e22', gradient: 'linear-gradient(90deg, #d35400, #e67e22)' },
-        physical:        { label: 'Physical Ability',  color: '#2ecc71', gradient: 'linear-gradient(90deg, #27ae60, #2ecc71)' },
-        cooperativeness: { label: 'Cooperativeness',   color: '#3498db', gradient: 'linear-gradient(90deg, #2980b9, #3498db)' }
-    };
+    const statMeta = [
+        { key: 'academic',        label: 'Academic Ability',  color: '#9b59b6', grad: '#8e44ad, #9b59b6', glow: 'rgba(155,89,182,0.4)' },
+        { key: 'intelligence',    label: 'Intelligence',      color: '#f1c40f', grad: '#d4a10f, #f1c40f', glow: 'rgba(241,196,15,0.4)' },
+        { key: 'decision',        label: 'Decision Making',   color: '#e67e22', grad: '#d35400, #e67e22', glow: 'rgba(230,126,34,0.4)' },
+        { key: 'physical',        label: 'Physical Ability',  color: '#2ecc71', grad: '#27ae60, #2ecc71', glow: 'rgba(46,204,113,0.4)' },
+        { key: 'cooperativeness', label: 'Cooperativeness',   color: '#3498db', grad: '#2980b9, #3498db', glow: 'rgba(52,152,219,0.4)' }
+    ];
 
-    const statsHTML = Object.entries(statMeta).map(([key, meta]) => {
-        const value = char.stats[key];
+    const statsHTML = statMeta.map(meta => {
+        const value = char.stats[meta.key];
         const grade = getGradeFromValue(value);
-        const trait = char.traits[key];
-        const traitHTML = trait ? (() => {
-            const isPositive = traitDefinitions[key].positive.includes(trait);
+        const trait = char.traits[meta.key];
+        let traitHTML = '';
+        if (trait) {
+            const isPositive = traitDefinitions[meta.key].positive.includes(trait);
             const tColor = isPositive ? '#22c55e' : '#ef4444';
-            const tBg = isPositive ? 'rgba(34,197,94,0.10)' : 'rgba(239,68,68,0.10)';
-            return `<span style="display:inline-block;padding:2px 8px;font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:${tColor};background:${tBg};border:1px solid ${tColor}30;border-radius:3px;font-family:'Inter',sans-serif;">${trait}</span>`;
-        })() : '';
-
+            const tBg = isPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+            const tBorder = isPositive ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)';
+            traitHTML = `<div style="margin-top:4px;"><span style="display:inline-block;padding:3px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};background:${tBg};border:1px solid ${tBorder};border-radius:4px;font-family:'Inter',sans-serif;">${trait}</span></div>`;
+        }
         return `
-            <div style="margin-bottom:10px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                    <span style="font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;letter-spacing:0.3px;">${meta.label}</span>
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        ${traitHTML}
-                        <span style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;">${value}</span>
-                        <span style="font-size:12px;font-weight:700;color:${meta.color};font-family:'Orbitron',monospace;min-width:24px;text-align:right;">${grade}</span>
-                    </div>
+            <div style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+                    <span style="font-size:13px;color:#94a3b8;font-family:'Inter',sans-serif;">${meta.label}</span>
+                    <span style="font-family:'Orbitron',monospace;font-size:13px;color:#64748b;">${value}/100 <span style="color:#4dc9e6;margin-left:6px;text-shadow:0 0 10px rgba(77,201,230,0.3);">${grade}</span></span>
                 </div>
-                <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;position:relative;">
-                    <div style="width:${value}%;height:100%;background:${meta.gradient};border-radius:4px;"></div>
+                <div style="height:12px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;position:relative;">
+                    <div style="width:${value}%;height:100%;background:linear-gradient(90deg,${meta.grad});border-radius:4px;box-shadow:0 0 15px ${meta.glow};"></div>
                     <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(90deg,transparent,transparent 9.8%,rgba(255,255,255,0.06) 9.8%,rgba(255,255,255,0.06) 10%);"></div>
                 </div>
+                ${traitHTML}
             </div>
         `;
     }).join('');
 
     const bioHTML = (char.bio || char.personality) ? `
-        <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(77,201,230,0.1);">
+        <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);">
             ${char.bio ? `
-                <div style="margin-bottom:${char.personality ? '14px' : '0'};">
-                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:8px;">Background</div>
-                    <p style="font-size:12px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.bio}</p>
+                <div style="margin-bottom:${char.personality ? '16px' : '0'};">
+                    <h4 style="font-size:11px;text-transform:uppercase;color:#4dc9e6;letter-spacing:0.1em;margin:0 0 8px;font-family:'Inter',sans-serif;">Background</h4>
+                    <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.bio}</p>
                 </div>
             ` : ''}
             ${char.personality ? `
                 <div>
-                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:8px;">Personality</div>
-                    <p style="font-size:12px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.personality}</p>
+                    <h4 style="font-size:11px;text-transform:uppercase;color:#4dc9e6;letter-spacing:0.1em;margin:0 0 8px;font-family:'Inter',sans-serif;">Personality</h4>
+                    <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.personality}</p>
                 </div>
             ` : ''}
         </div>
     ` : '';
 
-    const docId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const appDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const printContent = `
-        <div class="export-card" style="width:900px;font-family:'Inter',sans-serif;background:linear-gradient(180deg,#050a12 0%,#0a1220 40%,#0c1628 100%);color:#fff;position:relative;overflow:hidden;">
+        <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%);color:#fff;position:relative;overflow:hidden;">
 
-            <div style="height:4px;background:linear-gradient(90deg,#7a2438,#9a2e48,#4dc9e6,#9a2e48,#7a2438);"></div>
+            <div style="height:4px;background:linear-gradient(90deg,#7a2438,#4dc9e6,#7a2438);"></div>
 
-            <div style="padding:24px 32px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(77,201,230,0.12);">
+            <div style="padding:18px 28px;text-align:center;border-bottom:1px solid rgba(77,201,230,0.1);">
+                <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#4dc9e6;letter-spacing:3px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>
+                <div style="font-size:11px;color:#64748b;letter-spacing:4px;text-transform:uppercase;margin-top:4px;">Student Application File</div>
+            </div>
+
+            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);">
                 <div>
-                    <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#4dc9e6;letter-spacing:2px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>
-                    <div style="font-size:12px;color:#64748b;letter-spacing:3px;text-transform:uppercase;margin-top:4px;">Student Application File</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1.2;">${char.name || 'Unnamed'}</div>
+                    <div style="font-size:14px;color:#94a3b8;margin-top:6px;">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</div>
                 </div>
-                <div style="text-align:right;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#64748b;">Application Date</div>
-                    <div style="font-size:13px;color:#94a3b8;font-weight:500;margin-top:2px;">${appDate}</div>
-                    <div style="font-size:9px;color:#64748b;margin-top:2px;letter-spacing:1px;">ID: ${docId}</div>
+                <div style="text-align:center;padding:10px 18px;border:1px solid #f59e0b;border-radius:8px;background:rgba(245,158,11,0.08);">
+                    <div style="font-size:9px;color:#64748b;letter-spacing:0.1em;margin-bottom:3px;">STATUS</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,0.4);">PENDING</div>
                 </div>
             </div>
 
-            <div style="display:flex;padding:24px 32px;gap:28px;">
-
-                <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:14px;">
-                    <div style="width:180px;height:180px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(255,255,255,0.03);box-shadow:0 0 24px ${classGlow},inset 0 0 20px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+            <div style="display:flex;padding:0 28px 24px;gap:28px;">
+                <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;">
+                    <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(255,255,255,0.03);box-shadow:0 0 25px ${classGlow};display:flex;align-items:center;justify-content:center;">
                         ${char.image
                             ? `<img src="${char.image}" alt="Student Photo" style="width:100%;height:100%;object-fit:cover;">`
-                            : `<div style="color:#334155;font-size:11px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
+                            : `<div style="color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
                         }
                     </div>
-                    <div style="width:180px;text-align:center;padding:8px 0;background:${classColor};color:${['A', 'B'].includes(char.class) ? '#0a1220' : '#fff'};border-radius:8px;font-weight:700;font-size:13px;font-family:'Orbitron',monospace;letter-spacing:1px;box-shadow:0 0 16px ${classGlow};">
-                        ${char.year}${yearSuffix} YEAR &mdash; CLASS ${char.class || '?'}
-                    </div>
-                    <div style="width:180px;text-align:center;padding:14px 0;background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:10px;box-shadow:0 0 20px rgba(231,76,60,0.25);">
-                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.7);font-family:'Orbitron',monospace;">Overall Rating</div>
-                        <div style="font-size:36px;font-weight:900;color:#fff;font-family:'Orbitron',monospace;line-height:1.1;margin-top:4px;">${overallGrade}</div>
+                    <div style="width:240px;text-align:center;padding:16px 0;background:linear-gradient(135deg,#dc2626,#ef4444);border-radius:12px;box-shadow:0 0 20px rgba(231,76,60,0.3);">
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.7);font-family:'Orbitron',monospace;">Overall Rating</div>
+                        <div style="font-size:40px;font-weight:900;color:#fff;font-family:'Orbitron',monospace;line-height:1.1;margin-top:6px;text-shadow:0 2px 10px rgba(0,0,0,0.3);">${overallGrade}</div>
                     </div>
                 </div>
 
                 <div style="flex:1;min-width:0;">
-                    <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.25);line-height:1.2;">${char.name || 'Unnamed'}</div>
-                    <div style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;margin-top:4px;letter-spacing:1px;">${char.year}${yearSuffix} Year &mdash; Class ${char.class || '?'}</div>
-
-                    <div style="margin-top:20px;">
-                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#7a2438;font-family:'Orbitron',monospace;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(122,36,56,0.3);">Evaluation</div>
-                        ${statsHTML}
-                    </div>
-
+                    <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 18px;font-size:16px;padding-bottom:10px;border-bottom:2px solid #7a2438;">Evaluation</h3>
+                    ${statsHTML}
                     ${bioHTML}
                 </div>
             </div>
 
-            <div style="margin:0 32px 20px;padding:10px 16px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.1);border-radius:6px;text-align:center;border-top:1px solid rgba(77,201,230,0.1);">
-                <span style="font-size:10px;color:#64748b;font-family:'Inter',sans-serif;letter-spacing:0.3px;">Submit this application in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server</span>
+            <div style="margin:0 28px 20px;padding:12px 20px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;">To apply, post this image in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server.</span>
+                <span style="font-size:11px;color:#475569;font-family:'Inter',sans-serif;">${appDate}</span>
             </div>
-
-            <div style="position:absolute;top:50%;right:40px;transform:translateY(-50%) rotate(-16deg);font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:rgba(245,158,11,0.25);border:4px solid rgba(245,158,11,0.2);border-radius:10px;padding:12px 28px;letter-spacing:0.15em;text-align:center;line-height:1.3;pointer-events:none;">PENDING<br>REVIEW</div>
         </div>
     `;
 
@@ -3595,7 +3579,7 @@ function exportCharacterPDF() {
     html2canvas(exportCard, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#050a12',
+        backgroundColor: '#0f1a2e',
         logging: false
     }).then(canvas => {
         const link = document.createElement('a');
