@@ -1702,6 +1702,10 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
         zoomSlider.addEventListener('input', () => {
             const f = frameRef();
             f.zoom = parseFloat(zoomSlider.value);
+            // Re-clamp pan offsets to fit the new zoom level
+            const maxOffset = (f.zoom - 1) * 50;
+            f.x = Math.max(-maxOffset, Math.min(maxOffset, f.x || 0));
+            f.y = Math.max(-maxOffset, Math.min(maxOffset, f.y || 0));
             apply();
         });
     }
@@ -1731,10 +1735,16 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
         const rect = container.getBoundingClientRect();
         const f = frameRef();
         const z = f.zoom || 1;
-        const dx = ((clientX - startX) / rect.width) * 100 / z;
-        const dy = ((clientY - startY) / rect.height) * 100 / z;
-        f.x = Math.max(-150, Math.min(150, startFX + dx));
-        f.y = Math.max(-150, Math.min(150, startFY + dy));
+        // 1px screen drag = 1px visual movement. Translate % is relative to the
+        // image's own (untransformed) box, which equals the container size, so
+        // no /zoom needed.
+        const dx = ((clientX - startX) / rect.width) * 100;
+        const dy = ((clientY - startY) / rect.height) * 100;
+        // Clamp so the image edge can't move past the container edge inward
+        // (i.e. the image always fully covers the visible area).
+        const maxOffset = (z - 1) * 50;
+        f.x = Math.max(-maxOffset, Math.min(maxOffset, startFX + dx));
+        f.y = Math.max(-maxOffset, Math.min(maxOffset, startFY + dy));
         apply();
     };
     const onUp = () => {
