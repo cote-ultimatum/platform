@@ -3813,6 +3813,16 @@ body::before {
     animation: modalSlideIn 0.2s ease-out;
 }
 
+/* The student edit/add modal has many fields — give it more breathing room */
+#admin-student-modal .admin-modal {
+    max-width: 640px;
+}
+@media (max-width: 700px) {
+    #admin-student-modal .admin-modal {
+        max-width: 95vw;
+    }
+}
+
 @keyframes modalSlideIn {
     from {
         opacity: 0;
@@ -4355,8 +4365,48 @@ body::before {
 }
 .image-framer-zoom {
     flex: 1;
+    min-width: 0;
+    height: 6px;
     cursor: pointer;
     accent-color: var(--cyan);
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 999px;
+    margin: 0;
+    padding: 0;
+}
+.image-framer-zoom::-webkit-slider-runnable-track {
+    height: 6px;
+    background: transparent;
+    border-radius: 999px;
+}
+.image-framer-zoom::-moz-range-track {
+    height: 6px;
+    background: transparent;
+    border-radius: 999px;
+}
+.image-framer-zoom::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    border: none;
+    margin-top: -5px;
+    cursor: grab;
+    box-shadow: 0 0 6px var(--cyan-dim);
+}
+.image-framer-zoom::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    border: none;
+    cursor: grab;
+    box-shadow: 0 0 6px var(--cyan-dim);
 }
 .image-framer-reset {
     padding: 0.35rem 0.65rem;
