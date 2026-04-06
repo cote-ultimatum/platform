@@ -839,6 +839,14 @@ function showOAAView(viewId, addToHistory = true) {
         state.currentOAAView = viewId;
         target.scrollTop = 0;
     }
+
+    // Update keyboard hints based on current view
+    const searchHint = document.querySelector('.oaa-hint-search');
+    const favHint = document.querySelector('.oaa-hint-favorites');
+    const compareHint = document.querySelector('.oaa-hint-compare');
+    if (searchHint) searchHint.style.display = viewId === 'oaa-dashboard' ? '' : 'none';
+    if (favHint) favHint.style.display = viewId === 'oaa-dashboard' ? '' : 'none';
+    if (compareHint) compareHint.style.display = (viewId === 'oaa-dashboard' || viewId === 'oaa-class') ? '' : 'none';
 }
 
 function buildStudentLookup() {
