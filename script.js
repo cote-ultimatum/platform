@@ -1888,7 +1888,7 @@ function initAdminApp() {
                 const parts = inputId.split('-');
                 const year = parseInt(parts[2]);
                 const cls = parts[3];
-                const original = adminState.originalPoints[year]?.[cls] || 1000;
+                const original = adminState.originalPoints[year]?.[cls] ?? 1000;
 
                 input.classList.remove('changed-up', 'changed-down');
                 if (num > original) {
@@ -2109,7 +2109,7 @@ function loadAdminPointsFromDB() {
         ['A', 'B', 'C', 'D'].forEach(cls => {
             const input = document.getElementById(`admin-points-${year}-${cls}`);
             if (input && points[year]) {
-                const value = points[year][cls] || 1000;
+                const value = points[year][cls] ?? 1000;
                 input.value = value.toLocaleString();
                 input.classList.remove('changed-up', 'changed-down');
                 adminState.originalPoints[year][cls] = value;
