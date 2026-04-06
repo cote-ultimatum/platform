@@ -3402,6 +3402,7 @@ function updateCreatorPreview() {
                 <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
             </div>
         </div>
+        <div class="preview-status-banner">PENDING REVIEW</div>
         <div class="preview-card-body">
             <div class="preview-image-container ${classGlow}">
                 ${char.image
@@ -3440,7 +3441,6 @@ function updateCreatorPreview() {
                 ` : ''}
             </div>
         </div>
-        <div class="preview-stamp">PENDING</div>
     `;
 }
 
