@@ -4330,6 +4330,25 @@ body::before {
     border-color: var(--cyan);
 }
 
+.admin-trait-select {
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 0.4rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.admin-trait-select:focus {
+    outline: none;
+    border-color: var(--cyan);
+}
+
 .admin-modal-actions {
     display: flex;
     justify-content: space-between;

@@ -2600,6 +2600,22 @@ function openStudentModal(student) {
     document.getElementById('admin-student-physical').value = student?.stats?.physical || 50;
     document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
 
+    // Populate + set trait dropdowns (build options from traitDefinitions)
+    Object.keys(traitDefinitions).forEach(category => {
+        const select = document.getElementById(`admin-student-trait-${category}`);
+        if (!select) return;
+        const def = traitDefinitions[category];
+        select.innerHTML =
+            `<option value="">No Trait</option>` +
+            `<optgroup label="Positive">` +
+            def.positive.map(t => `<option value="${t}">▲ ${t}</option>`).join('') +
+            `</optgroup>` +
+            `<optgroup label="Negative">` +
+            def.negative.map(t => `<option value="${t}">▼ ${t}</option>`).join('') +
+            `</optgroup>`;
+        select.value = student?.traits?.[category] || '';
+    });
+
     // Show modal
     modal.classList.add('active');
 }
@@ -2644,6 +2660,13 @@ async function saveStudent() {
     // Minimum delay so the loading state doesn't flash
     const minDelay = new Promise(resolve => setTimeout(resolve, 600));
 
+    // Collect traits (only include keys with a selected trait)
+    const traits = {};
+    Object.keys(traitDefinitions).forEach(category => {
+        const val = document.getElementById(`admin-student-trait-${category}`)?.value || '';
+        if (val) traits[category] = val;
+    });
+
     const studentData = {
         name: name,
         year: year,
@@ -2655,7 +2678,8 @@ async function saveStudent() {
             decision: parseInt(document.getElementById('admin-student-decision').value) || 50,
             physical: parseInt(document.getElementById('admin-student-physical').value) || 50,
             cooperativeness: parseInt(document.getElementById('admin-student-cooperativeness').value) || 50
-        }
+        },
+        traits: traits
     };
 
     // Clamp stats to 0-100
