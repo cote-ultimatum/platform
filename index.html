@@ -10,7 +10,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="COTE: ULTIMATUM">
     <meta property="og:description" content="Welcome to Advanced Nurturing High School. Track student abilities, monitor class standings, and prepare for special exams.">
-    <meta property="og:image" content="https://coteultimatum.github.io/platform/GRVN8MNQY-backdrop_wide.png">
+    <meta property="og:image" content="https://coteultimatum.github.io/platform/preview.png">
     <meta property="og:url" content="https://coteultimatum.github.io/platform/">
     <meta name="theme-color" content="#050a12">
 
@@ -18,7 +18,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="COTE: ULTIMATUM">
     <meta name="twitter:description" content="Welcome to Advanced Nurturing High School. Track student abilities and special exams.">
-    <meta name="twitter:image" content="https://coteultimatum.github.io/platform/GRVN8MNQY-backdrop_wide.png">
+    <meta name="twitter:image" content="https://coteultimatum.github.io/platform/preview.png">
 
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -855,8 +855,14 @@
                                 </svg>
                             </div>
                             <div class="creator-input-group">
-                                <label for="creator-image">Image URL</label>
-                                <input type="url" id="creator-image" placeholder="https://...">
+                                <label for="creator-image">Image</label>
+                                <div class="creator-image-input-row">
+                                    <input type="url" id="creator-image" placeholder="Paste URL...">
+                                    <label class="creator-upload-btn" for="creator-image-upload" title="Upload from device">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    </label>
+                                    <input type="file" id="creator-image-upload" accept="image/*" hidden>
+                                </div>
                             </div>
                         </div>
 

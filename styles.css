@@ -4704,6 +4704,46 @@ body::before {
     letter-spacing: 0.1em;
 }
 
+.creator-image-input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.creator-image-input-row input[type="url"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.creator-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    background: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+
+.creator-upload-btn svg {
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.creator-upload-btn:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(77, 201, 230, 0.1);
+}
+
+.creator-upload-btn:hover svg {
+    color: var(--cyan);
+}
+
 .creator-input-group input[type="text"],
 .creator-input-group input[type="url"] {
     background: var(--bg-darker);

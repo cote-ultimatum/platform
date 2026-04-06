@@ -2910,6 +2910,25 @@ function initCreatorApp() {
         imageInput.addEventListener('focus', () => playSound('select'));
     }
 
+    // Image file upload
+    const imageUpload = document.getElementById('creator-image-upload');
+    if (imageUpload) {
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const dataUrl = ev.target.result;
+                creatorState.character.image = dataUrl;
+                updateAvatarPreview(dataUrl);
+                if (imageInput) imageInput.value = '';
+                imageInput.placeholder = file.name;
+            };
+            reader.readAsDataURL(file);
+            playSound('select');
+        });
+    }
+
     // Stats sliders (new eval layout)
     const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
     let lastSliderSoundTime = 0;
@@ -3064,7 +3083,7 @@ function validateCreatorStep(stepId) {
             return false;
         }
         if (!char.image || char.image.trim() === '') {
-            showCreatorError('Enter an image URL to continue');
+            showCreatorError('Add an image to continue');
             document.getElementById('creator-image')?.focus();
             return false;
         }
@@ -3614,6 +3633,8 @@ function resetCreator() {
     // Reset form fields
     document.getElementById('creator-name').value = '';
     document.getElementById('creator-image').value = '';
+    document.getElementById('creator-image').placeholder = 'Paste URL...';
+    document.getElementById('creator-image-upload').value = '';
     document.getElementById('creator-bio').value = '';
     document.getElementById('creator-personality').value = '';
 
