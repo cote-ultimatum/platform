@@ -5055,14 +5055,34 @@ body::before {
     left: 0;
     width: 40%;
     border-radius: 4px 0 0 4px;
-    opacity: 0.35;
+    opacity: 0.55;
 }
 
-#locked-left-academic { background: linear-gradient(90deg, #8e44ad, #9b59b6); }
-#locked-left-intelligence { background: linear-gradient(90deg, #d4a10f, #f1c40f); }
-#locked-left-decision { background: linear-gradient(90deg, #d35400, #e67e22); }
-#locked-left-physical { background: linear-gradient(90deg, #27ae60, #2ecc71); }
-#locked-left-cooperativeness { background: linear-gradient(90deg, #2980b9, #3498db); }
+#locked-left-academic {
+    background:
+        repeating-linear-gradient(-45deg, rgba(0,0,0,0.45), rgba(0,0,0,0.45) 2px, transparent 2px, transparent 4px),
+        linear-gradient(90deg, #8e44ad, #9b59b6);
+}
+#locked-left-intelligence {
+    background:
+        repeating-linear-gradient(-45deg, rgba(0,0,0,0.45), rgba(0,0,0,0.45) 2px, transparent 2px, transparent 4px),
+        linear-gradient(90deg, #d4a10f, #f1c40f);
+}
+#locked-left-decision {
+    background:
+        repeating-linear-gradient(-45deg, rgba(0,0,0,0.45), rgba(0,0,0,0.45) 2px, transparent 2px, transparent 4px),
+        linear-gradient(90deg, #d35400, #e67e22);
+}
+#locked-left-physical {
+    background:
+        repeating-linear-gradient(-45deg, rgba(0,0,0,0.45), rgba(0,0,0,0.45) 2px, transparent 2px, transparent 4px),
+        linear-gradient(90deg, #27ae60, #2ecc71);
+}
+#locked-left-cooperativeness {
+    background:
+        repeating-linear-gradient(-45deg, rgba(0,0,0,0.45), rgba(0,0,0,0.45) 2px, transparent 2px, transparent 4px),
+        linear-gradient(90deg, #2980b9, #3498db);
+}
 
 .eval-bar-locked-right {
     right: 0;
