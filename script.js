@@ -2023,13 +2023,7 @@ function showAdminPanel() {
     const userName = document.getElementById('admin-user-name');
 
     if (loginView) loginView.style.display = 'none';
-    if (panelView) {
-        panelView.style.display = 'block';
-        // Re-trigger panel fade-in
-        panelView.style.animation = 'none';
-        panelView.offsetHeight;
-        panelView.style.animation = '';
-    }
+    if (panelView) panelView.style.display = 'block';
     if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
 
     // Load current points

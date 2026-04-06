@@ -3935,10 +3935,6 @@ body::before {
     animation: adminFadeIn 0.35s ease-out;
 }
 
-.admin-panel-view {
-    animation: adminSlideIn 0.35s ease-out;
-}
-
 @keyframes adminFadeIn {
     from {
         opacity: 0;
@@ -3947,17 +3943,6 @@ body::before {
     to {
         opacity: 1;
         transform: scale(1);
-    }
-}
-
-@keyframes adminSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }
 
