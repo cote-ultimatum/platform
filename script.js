@@ -3400,7 +3400,6 @@ function updateCreatorPreview() {
             <div class="preview-header-info">
                 <h2 class="preview-name">${char.name || 'Unnamed Character'}</h2>
                 <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
-                <span class="preview-pending-tag">PENDING</span>
             </div>
         </div>
         <div class="preview-card-body">
@@ -3441,6 +3440,7 @@ function updateCreatorPreview() {
                 ` : ''}
             </div>
         </div>
+        <div class="preview-stamp">PENDING</div>
     `;
 }
 
