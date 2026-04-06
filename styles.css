@@ -6272,16 +6272,156 @@ body::before {
 }
 
 /* ========================================
-   MOBILE - CONTENT AREA FIXES
+   MOBILE - COMPREHENSIVE FIXES (600px)
    ======================================== */
 
 @media (max-width: 600px) {
-    /* Reduce app-view padding for mobile */
+    /* --- Global --- */
     .app-view {
         padding: 0 1rem 2rem;
     }
 
-    /* Creator Identity - stack vertically */
+    .dashboard-header,
+    .class-view-top {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding: 1rem;
+    }
+
+    .nav-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* --- Boot screen --- */
+    .boot-logo {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .boot-loader {
+        width: 150px;
+    }
+
+    /* --- Lock screen --- */
+    .lock-content {
+        padding: 2rem;
+    }
+
+    .lock-content::before,
+    .lock-content::after {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* --- OAA dashboard --- */
+    .search-container {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .sort-buttons {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        max-width: 100%;
+    }
+
+    .sort-btn {
+        flex-shrink: 0;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.7rem;
+    }
+
+    /* --- OAA class view / student cards --- */
+    .student-card {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+
+    .student-card-avatar {
+        width: 44px;
+        height: 44px;
+    }
+
+    .student-card-name {
+        font-size: 0.9rem;
+    }
+
+    /* --- OAA profile --- */
+    .profile-header {
+        padding: 1.25rem;
+    }
+
+    .profile-header-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .profile-body {
+        padding: 0 1rem 1rem;
+        gap: 1.5rem;
+    }
+
+    .profile-image-container {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    /* --- Compare mode --- */
+    .compare-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .comparison-stat-row .stat-name {
+        flex: 0 0 80px;
+        font-size: 0.7rem;
+    }
+
+    /* --- Exams --- */
+    .events-content {
+        padding: 1rem;
+    }
+
+    .exam-type-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+
+    /* --- Admin --- */
+    .admin-content {
+        padding: 1rem;
+    }
+
+    .admin-login-container {
+        max-width: 100%;
+        margin: 2rem 1rem;
+    }
+
+    .admin-student-modal {
+        max-width: calc(100vw - 2rem);
+    }
+
+    .admin-class-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-class-badge {
+        width: 36px;
+        height: 36px;
+    }
+
+    .admin-student-controls {
+        flex-direction: column;
+    }
+
+    .admin-student-filter {
+        width: 100%;
+    }
+
+    /* --- Creator --- */
     .creator-identity-layout {
         grid-template-columns: 1fr;
         gap: 1.25rem;
@@ -6296,17 +6436,15 @@ body::before {
         height: 120px;
     }
 
-    /* Creator class select - 2x2 grid */
     .creator-select-group.class-select {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Creator card padding */
     .creator-card {
         padding: 1.25rem;
     }
 
-    /* Export preview */
+    /* --- Creator export preview --- */
     .preview-card-header {
         padding: 1.25rem;
     }
@@ -6319,7 +6457,7 @@ body::before {
         font-size: 1.3rem;
     }
 
-    /* Trait quiz modal */
+    /* --- Trait quiz modal --- */
     .trait-quiz-content {
         width: 95%;
     }
@@ -6331,21 +6469,57 @@ body::before {
     .trait-quiz-body {
         padding: 1rem;
     }
-
-    /* OAA profile */
-    .profile-body {
-        padding: 0 1rem 1rem;
-    }
-
-    /* Events/Exams content */
-    .events-content {
-        padding: 1rem;
-    }
 }
+
+/* ========================================
+   MOBILE - SMALL SCREENS (400px)
+   ======================================== */
 
 @media (max-width: 400px) {
     .app-view {
         padding: 0 0.75rem 1.5rem;
+    }
+
+    .dashboard-header,
+    .class-view-top {
+        margin-left: -0.75rem;
+        margin-right: -0.75rem;
+        padding: 0.75rem;
+    }
+
+    .boot-logo {
+        font-size: 2.5rem;
+    }
+
+    .lock-content {
+        padding: 1.5rem;
+    }
+
+    .lock-content::before,
+    .lock-content::after {
+        width: 30px;
+        height: 30px;
+    }
+
+    .student-card {
+        padding: 0.75rem;
+    }
+
+    .student-card-avatar {
+        width: 38px;
+        height: 38px;
+    }
+
+    .profile-header {
+        padding: 1rem;
+    }
+
+    .profile-header-info h2 {
+        font-size: 1.25rem;
+    }
+
+    .profile-body {
+        gap: 1rem;
     }
 
     .creator-avatar-preview {
@@ -6376,5 +6550,18 @@ body::before {
 
     .eval-card-controls {
         gap: 0.5rem;
+    }
+
+    .admin-content {
+        padding: 0.75rem;
+    }
+
+    .admin-login-container {
+        margin: 1.5rem 0.5rem;
+    }
+
+    .admin-login-icon {
+        width: 60px;
+        height: 60px;
     }
 }
