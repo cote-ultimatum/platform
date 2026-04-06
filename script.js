@@ -630,11 +630,12 @@ function fadeMusic(audio, from, to, duration, onDone) {
     const start = performance.now();
     function step(now) {
         const t = Math.min((now - start) / duration, 1);
-        audio.volume = from + (to - from) * t;
+        const v = from + (to - from) * t;
+        audio.volume = Math.max(0, Math.min(1, v));
         if (t < 1) {
             requestAnimationFrame(step);
         } else {
-            audio.volume = to;
+            audio.volume = Math.max(0, Math.min(1, to));
             if (onDone) onDone();
         }
     }
@@ -648,20 +649,14 @@ function getTrack(name) {
 // Robust play helper — handles unloaded audio by waiting for it
 function playWhenReady(audio, onPlaying) {
     audio.volume = 0;
-    console.log('[music] playWhenReady, readyState:', audio.readyState, 'paused:', audio.paused);
     const attempt = () => {
         const p = audio.play();
         if (p && typeof p.then === 'function') {
-            p.then(() => {
-                console.log('[music] play() resolved successfully');
-                onPlaying();
-            }).catch((err) => {
-                console.log('[music] play() rejected:', err.name, err.message);
+            p.then(onPlaying).catch(() => {
                 const onReady = () => {
                     audio.removeEventListener('canplaythrough', onReady);
                     audio.removeEventListener('loadeddata', onReady);
-                    console.log('[music] retry after ready event');
-                    audio.play().then(onPlaying).catch((e) => console.log('[music] retry failed:', e));
+                    audio.play().then(onPlaying).catch(() => {});
                 };
                 audio.addEventListener('canplaythrough', onReady);
                 audio.addEventListener('loadeddata', onReady);
@@ -686,7 +681,6 @@ function fadeOutTrack(audio, duration, pauseAfter = true) {
 }
 
 function switchTrack(trackName) {
-    console.log('[music] switchTrack called:', trackName, 'current:', musicState.activeTrack);
     if (musicState.activeTrack === trackName) return;
 
     const oldAudio = getTrack(musicState.activeTrack);
@@ -695,7 +689,6 @@ function switchTrack(trackName) {
     if (musicState.muted) return;
 
     const newAudio = getTrack(trackName);
-    console.log('[music] newAudio element:', newAudio, 'src:', newAudio?.currentSrc, 'readyState:', newAudio?.readyState);
     fadeOutTrack(oldAudio, musicState.crossfadeDuration);
     fadeInTrack(newAudio, musicState.crossfadeDuration);
 }
