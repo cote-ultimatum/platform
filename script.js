@@ -3413,7 +3413,7 @@ function updateCreatorPreview() {
                         </svg>
                     </div>`}
                 <div class="preview-grade-box">
-                    <span class="preview-grade-label">OVERALL GRADE</span>
+                    <span class="preview-grade-label">OVERALL RATING</span>
                     <span class="preview-grade-value">${overallGrade}</span>
                 </div>
             </div>
