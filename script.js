@@ -666,7 +666,16 @@ function switchTrack(trackName) {
     newAudio.volume = 0;
     newAudio.play().then(() => {
         fadeMusic(newAudio, 0, musicState.maxVolume, dur);
-    }).catch(() => {});
+    }).catch(() => {
+        // Not loaded yet — wait for it
+        newAudio.addEventListener('canplay', () => {
+            if (musicState.activeTrack === trackName && !musicState.muted) {
+                newAudio.play().then(() => {
+                    fadeMusic(newAudio, 0, musicState.maxVolume, dur);
+                }).catch(() => {});
+            }
+        }, { once: true });
+    });
 
     musicState.activeTrack = trackName;
 }
