@@ -635,19 +635,29 @@ function startMusic() {
     toggle.classList.add('visible');
 
     function tryPlay() {
-        music.play().then(() => {
-            fadeMusic(music, 0, 0.15, 300);
-        }).catch(() => {
-            // Not ready yet — retry when enough data has loaded
-            music.addEventListener('canplay', () => {
-                music.play().then(() => {
-                    fadeMusic(music, 0, 0.15, 300);
-                }).catch(() => {});
-            }, { once: true });
-        });
+        music.volume = 0;
+        const playPromise = music.play();
+        if (playPromise) {
+            playPromise.then(() => {
+                fadeMusic(music, 0, 0.15, 300);
+            }).catch(() => {
+                // Retry when audio is ready
+                if (music.readyState >= 2) {
+                    // Already loaded — retry immediately
+                    setTimeout(() => {
+                        music.play().then(() => fadeMusic(music, 0, 0.15, 300)).catch(() => {});
+                    }, 100);
+                } else {
+                    music.addEventListener('canplay', () => {
+                        music.play().then(() => fadeMusic(music, 0, 0.15, 300)).catch(() => {});
+                    }, { once: true });
+                }
+            });
+        }
     }
 
-    tryPlay();
+    // Delay slightly to avoid competing with boot sound
+    setTimeout(tryPlay, 500);
 
     toggle.addEventListener('click', () => {
         playSound('select');
