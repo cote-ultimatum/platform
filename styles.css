@@ -4906,29 +4906,28 @@ body::before {
 .eval-overall {
     display: inline-flex;
     align-items: center;
-    gap: 0.85rem;
-    padding: 0.6rem 1.5rem 0.6rem 0.6rem;
+    gap: 1rem;
+    padding: 0.75rem 2rem 0.75rem 0.75rem;
     background: rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(154, 46, 72, 0.3);
     border-radius: 50px;
 }
 
-
 .eval-overall-grade {
-    width: 42px;
-    height: 42px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 0 12px rgba(231, 76, 60, 0.3);
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
 }
 
 .eval-overall-letter {
     font-family: 'Orbitron', monospace;
-    font-size: 1.15rem;
+    font-size: 1.4rem;
     font-weight: 900;
     color: white;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -4936,7 +4935,7 @@ body::before {
 
 .eval-overall-label {
     font-family: 'Orbitron', monospace;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-primary);
 }
@@ -5527,23 +5526,20 @@ body::before {
 .preview-class-info {
     color: var(--text-secondary);
     font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
 }
 
 .preview-pending-tag {
+    display: inline-block;
+    margin-top: 0.75rem;
     font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.8rem;
+    font-weight: 600;
     color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.5);
-    background: rgba(245, 158, 11, 0.15);
-    padding: 0.25rem 0.75rem;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.1);
+    padding: 0.35rem 1rem;
     border-radius: 4px;
-    letter-spacing: 0.12em;
-    text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+    letter-spacing: 0.1em;
 }
 
 .preview-status-box {
