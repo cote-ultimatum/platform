@@ -2105,14 +2105,7 @@ function showAdminPanel(animate = true) {
             loginView.style.display = 'none';
             loginView.classList.remove('fading-out');
         }
-        if (panelView) {
-            panelView.style.display = 'block';
-            panelView.classList.remove('fading-in');
-            if (transitioningFromLogin) {
-                panelView.offsetHeight;
-                panelView.classList.add('fading-in');
-            }
-        }
+        if (panelView) panelView.style.display = 'block';
         if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
 
         loadAdminPointsFromDB();
@@ -2122,7 +2115,7 @@ function showAdminPanel(animate = true) {
 
     if (transitioningFromLogin) {
         loginView.classList.add('fading-out');
-        setTimeout(swap, 300);
+        setTimeout(swap, 350);
     } else {
         swap();
     }
