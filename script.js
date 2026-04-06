@@ -4091,7 +4091,7 @@ function resetCreator() {
     // Reset form fields
     document.getElementById('creator-name').value = '';
     document.getElementById('creator-image').value = '';
-    document.getElementById('creator-image').placeholder = 'Paste image link';
+    document.getElementById('creator-image').placeholder = 'Paste image URL or upload →';
     document.getElementById('creator-image-upload').value = '';
     document.getElementById('creator-bio').value = '';
     document.getElementById('creator-personality').value = '';
