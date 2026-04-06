@@ -632,10 +632,22 @@ function startMusic() {
     if (!music || !toggle) return;
 
     music.volume = 0;
-    music.play().then(() => {
-        fadeMusic(music, 0, 0.15, 300);
-        toggle.classList.add('visible');
-    }).catch(() => {});
+    toggle.classList.add('visible');
+
+    function tryPlay() {
+        music.play().then(() => {
+            fadeMusic(music, 0, 0.15, 300);
+        }).catch(() => {
+            // Not ready yet — retry when enough data has loaded
+            music.addEventListener('canplay', () => {
+                music.play().then(() => {
+                    fadeMusic(music, 0, 0.15, 300);
+                }).catch(() => {});
+            }, { once: true });
+        });
+    }
+
+    tryPlay();
 
     toggle.addEventListener('click', () => {
         playSound('select');
