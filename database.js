@@ -396,8 +396,9 @@ async function getStudents() {
             }));
         }
 
-        // If no Firebase data, return local data (migration scenario)
-        return typeof studentData !== 'undefined' ? studentData : [];
+        // Firebase reachable but empty — return empty array so deletions persist.
+        // (Do NOT fall back to local studentData here, or deleted students get re-seeded.)
+        return [];
     } catch (error) {
         console.error('Error getting students:', error);
         return typeof studentData !== 'undefined' ? studentData : [];

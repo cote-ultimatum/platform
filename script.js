@@ -2472,17 +2472,7 @@ function initStudentManagement() {
 async function loadAdminStudents() {
     try {
         adminState.students = await COTEDB.getStudents();
-
-        // Auto-migrate local students if Firebase is empty
-        const allLocal = adminState.students.length > 0 && adminState.students.every(s => !s._firebaseKey);
-        if (allLocal && COTEDB.isInitialized()) {
-            console.log('Migrating local students to Firebase...');
-            for (const s of adminState.students) {
-                await COTEDB.addStudent(s);
-            }
-            adminState.students = await COTEDB.getStudents();
-            showSuccessToast('Migrated local students to database');
-        }
+        // Note: no auto-seeding from local studentData. Deletions must persist.
     } catch (error) {
         console.warn('Using local student data:', error);
         adminState.students = typeof studentData !== 'undefined' ? [...studentData] : [];
@@ -2651,6 +2641,9 @@ async function saveStudent() {
     const originalText = saveBtn.textContent;
     saveBtn.textContent = 'Saving...';
 
+    // Minimum delay so the loading state doesn't flash
+    const minDelay = new Promise(resolve => setTimeout(resolve, 600));
+
     const studentData = {
         name: name,
         year: year,
@@ -2675,7 +2668,7 @@ async function saveStudent() {
             // Update existing student
             const key = adminState.editingStudent._firebaseKey;
             if (key) {
-                const success = await COTEDB.updateStudent(key, studentData);
+                const [success] = await Promise.all([COTEDB.updateStudent(key, studentData), minDelay]);
                 if (success) {
                     playSound('success');
                     closeStudentModal();
@@ -2688,7 +2681,7 @@ async function saveStudent() {
             }
         } else {
             // Add new student
-            const result = await COTEDB.addStudent(studentData);
+            const [result] = await Promise.all([COTEDB.addStudent(studentData), minDelay]);
             if (result.success) {
                 playSound('success');
                 closeStudentModal();
@@ -2740,8 +2733,11 @@ async function confirmDeleteStudent() {
     const originalText = deleteBtn.textContent;
     deleteBtn.textContent = 'Deleting...';
 
+    // Minimum delay so the loading state doesn't flash
+    const minDelay = new Promise(resolve => setTimeout(resolve, 600));
+
     try {
-        const success = await COTEDB.deleteStudent(key);
+        const [success] = await Promise.all([COTEDB.deleteStudent(key), minDelay]);
         if (success) {
             showSuccessToast('Student deleted');
             closeStudentModal();
