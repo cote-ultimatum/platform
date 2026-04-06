@@ -4364,27 +4364,31 @@ body::before {
     margin-top: 0.6rem;
 }
 /* Wrapper that lets the slider thumb visually reach the track ends.
-   The slider is rendered 14px wider than its visible area and shifted
-   left by 7px, so the thumb's edge-clamping happens outside the visible
-   bounds — making the thumb appear to reach 0% and 100%. */
+   The slider is absolutely positioned with negative left/right so it
+   overhangs the wrap by half a thumb on each side. The browser's natural
+   thumb-clamping happens in the overhang area, so within the visible
+   wrap the thumb appears to span 0%–100%. */
 .image-framer-slider-wrap {
     flex: 1;
     min-width: 0;
     position: relative;
     height: 14px;
-    display: flex;
-    align-items: center;
     overflow: hidden;
 }
 .image-framer-zoom {
     -webkit-appearance: none;
     appearance: none;
-    width: calc(100% + 14px);
-    margin: 0 -7px;
+    position: absolute;
+    left: -7px;
+    right: -7px;
+    top: 0;
+    bottom: 0;
+    width: auto;
     height: 14px;
+    margin: 0;
+    padding: 0;
     background: transparent;
     cursor: pointer;
-    padding: 0;
 }
 .image-framer-zoom::-webkit-slider-runnable-track {
     height: 6px;
