@@ -6413,6 +6413,10 @@ body::before {
     transition: color 0.2s;
 }
 
+.music-toggle:focus {
+    outline: none;
+}
+
 .music-toggle:hover {
     border-color: var(--cyan);
     box-shadow: 0 0 12px rgba(77, 201, 230, 0.15);

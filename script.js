@@ -615,39 +615,39 @@ function startMusic() {
 
     music.volume = 0;
     music.play().then(() => {
-        // Fade in
         let vol = 0;
         const fadeIn = setInterval(() => {
-            vol = Math.min(vol + 0.005, 0.15);
+            vol = Math.min(vol + 0.015, 0.15);
             music.volume = vol;
             if (vol >= 0.15) clearInterval(fadeIn);
-        }, 50);
+        }, 30);
         toggle.classList.add('visible');
     }).catch(() => {});
 
     toggle.addEventListener('click', () => {
         playSound('select');
+        toggle.blur();
         if (toggle.classList.contains('muted')) {
             toggle.classList.remove('muted');
             music.play();
             let vol = 0;
             music.volume = 0;
             const fadeIn = setInterval(() => {
-                vol = Math.min(vol + 0.005, 0.15);
+                vol = Math.min(vol + 0.015, 0.15);
                 music.volume = vol;
                 if (vol >= 0.15) clearInterval(fadeIn);
-            }, 50);
+            }, 30);
         } else {
             toggle.classList.add('muted');
             let vol = music.volume;
             const fadeOut = setInterval(() => {
-                vol = Math.max(vol - 0.005, 0);
+                vol = Math.max(vol - 0.015, 0);
                 music.volume = vol;
                 if (vol <= 0) {
                     clearInterval(fadeOut);
                     music.pause();
                 }
-            }, 50);
+            }, 30);
         }
     });
 }
