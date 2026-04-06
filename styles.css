@@ -5224,7 +5224,8 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    width: 100%;
+    width: auto;
+    margin-right: calc(35px + 1rem);
     padding: 0.75rem 1rem;
     border: 1px solid var(--crimson-light);
     border-radius: 8px;

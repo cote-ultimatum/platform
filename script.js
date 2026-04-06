@@ -2605,10 +2605,11 @@ function applyTraitLimits(category) {
 
     const limits = getStatLimitsFromTrait(category);
     const trait = creatorState.character.traits[category];
-    slider.min = limits.min;
-    slider.max = limits.max;
+    // Always keep slider 0-100 so thumb position matches the visual bar
+    slider.min = 0;
+    slider.max = 100;
 
-    // Clamp current value to new limits
+    // Clamp current value to trait limits
     let currentValue = parseInt(slider.value);
     if (currentValue < limits.min) {
         currentValue = limits.min;
@@ -2908,10 +2909,10 @@ function initCreatorApp() {
         const bar = document.getElementById(`creator-stat-${stat}-bar`);
 
         if (slider) {
-            // Apply initial limits based on trait (or lack thereof)
+            // Always keep slider 0-100 so thumb position matches the visual bar
             const limits = getStatLimitsFromTrait(stat);
-            slider.min = limits.min;
-            slider.max = limits.max;
+            slider.min = 0;
+            slider.max = 100;
 
             // Update function for this stat
             const updateStat = (value) => {
@@ -2934,7 +2935,12 @@ function initCreatorApp() {
             updateStat(initialValue);
 
             slider.addEventListener('input', () => {
-                updateStat(parseInt(slider.value));
+                // Clamp to trait limits since slider is always 0-100
+                const currentLimits = getStatLimitsFromTrait(stat);
+                let val = parseInt(slider.value);
+                if (val < currentLimits.min) { val = currentLimits.min; slider.value = val; }
+                if (val > currentLimits.max) { val = currentLimits.max; slider.value = val; }
+                updateStat(val);
                 // Throttled tick sound while sliding
                 const now = Date.now();
                 if (now - lastSliderSoundTime > sliderSoundThrottle) {
@@ -3032,16 +3038,16 @@ function validateCreatorStep(stepId) {
     if (stepId === 'info') {
         // Required: name, class, and image
         if (!char.name || char.name.trim() === '') {
-            showCreatorError('Please enter a character name');
+            showCreatorError('Enter a character name to continue');
             document.getElementById('creator-name')?.focus();
             return false;
         }
         if (!char.class) {
-            showCreatorError('Please select a class');
+            showCreatorError('Select a class to continue');
             return false;
         }
         if (!char.image || char.image.trim() === '') {
-            showCreatorError('Please enter an image URL');
+            showCreatorError('Enter an image URL to continue');
             document.getElementById('creator-image')?.focus();
             return false;
         }
@@ -3050,12 +3056,12 @@ function validateCreatorStep(stepId) {
     if (stepId === 'bio') {
         // Required: biography and personality
         if (!char.bio || char.bio.trim() === '') {
-            showCreatorError('Please enter a biography');
+            showCreatorError('Enter a biography to continue');
             document.getElementById('creator-bio')?.focus();
             return false;
         }
         if (!char.personality || char.personality.trim() === '') {
-            showCreatorError('Please enter a personality description');
+            showCreatorError('Enter a personality to continue');
             document.getElementById('creator-personality')?.focus();
             return false;
         }
@@ -3819,8 +3825,8 @@ function resetCreator() {
         const discoverBtn = document.querySelector(`.eval-card-discover[data-category="${stat}"]`);
 
         if (slider) {
-            slider.min = 40;
-            slider.max = 60; // Default "no trait" range
+            slider.min = 0;
+            slider.max = 100; // Always 0-100, clamped by JS
             slider.value = 50;
         }
         if (display) display.textContent = '50';
