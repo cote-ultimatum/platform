@@ -195,6 +195,9 @@ function triggerScreenFlicker() {
 }
 
 function initGlitchEffects() {
+    // Skip hover-based glitch on touch devices
+    if (window.matchMedia('(hover: none)').matches) return;
+
     // Continuous glitch on hover for app icons
     document.querySelectorAll('.app-icon-image').forEach(icon => {
         icon.addEventListener('mouseenter', () => startContinuousGlitch(icon));
@@ -608,6 +611,21 @@ function handleUnlock() {
 // BACKGROUND MUSIC
 // ========================================
 
+function fadeMusic(music, from, to, duration, onDone) {
+    const start = performance.now();
+    function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        music.volume = from + (to - from) * t;
+        if (t < 1) {
+            requestAnimationFrame(step);
+        } else {
+            music.volume = to;
+            if (onDone) onDone();
+        }
+    }
+    requestAnimationFrame(step);
+}
+
 function startMusic() {
     const music = document.getElementById('bg-music');
     const toggle = document.getElementById('music-toggle');
@@ -615,12 +633,7 @@ function startMusic() {
 
     music.volume = 0;
     music.play().then(() => {
-        let vol = 0;
-        const fadeIn = setInterval(() => {
-            vol = Math.min(vol + 0.015, 0.15);
-            music.volume = vol;
-            if (vol >= 0.15) clearInterval(fadeIn);
-        }, 30);
+        fadeMusic(music, 0, 0.15, 300);
         toggle.classList.add('visible');
     }).catch(() => {});
 
@@ -629,25 +642,12 @@ function startMusic() {
         toggle.blur();
         if (toggle.classList.contains('muted')) {
             toggle.classList.remove('muted');
-            music.play();
-            let vol = 0;
             music.volume = 0;
-            const fadeIn = setInterval(() => {
-                vol = Math.min(vol + 0.015, 0.15);
-                music.volume = vol;
-                if (vol >= 0.15) clearInterval(fadeIn);
-            }, 30);
+            music.play();
+            fadeMusic(music, 0, 0.15, 300);
         } else {
             toggle.classList.add('muted');
-            let vol = music.volume;
-            const fadeOut = setInterval(() => {
-                vol = Math.max(vol - 0.015, 0);
-                music.volume = vol;
-                if (vol <= 0) {
-                    clearInterval(fadeOut);
-                    music.pause();
-                }
-            }, 30);
+            fadeMusic(music, music.volume, 0, 300, () => music.pause());
         }
     });
 }
