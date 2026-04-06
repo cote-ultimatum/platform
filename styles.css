@@ -5012,6 +5012,27 @@ body::before {
     position: absolute;
     top: 0;
     height: 100%;
+    z-index: 2; /* Above fill bar so locked areas are always visible */
+    transition: width 0.4s ease;
+}
+
+.eval-bar-locked-left {
+    left: 0;
+    width: 40%;
+    border-radius: 4px 0 0 4px;
+    opacity: 0.35;
+}
+
+#locked-left-academic { background: linear-gradient(90deg, #8e44ad, #9b59b6); }
+#locked-left-intelligence { background: linear-gradient(90deg, #d4a10f, #f1c40f); }
+#locked-left-decision { background: linear-gradient(90deg, #d35400, #e67e22); }
+#locked-left-physical { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+#locked-left-cooperativeness { background: linear-gradient(90deg, #2980b9, #3498db); }
+
+.eval-bar-locked-right {
+    right: 0;
+    width: 40%;
+    border-radius: 0 4px 4px 0;
     background:
         repeating-linear-gradient(
             -45deg,
@@ -5021,21 +5042,6 @@ body::before {
             rgba(60, 60, 60, 0.4) 4px
         ),
         rgba(30, 30, 30, 0.6);
-    z-index: 1; /* Above fill bar so locked areas are always visible */
-    transition: width 0.4s ease;
-}
-
-.eval-bar-locked-left {
-    left: 0;
-    width: 40%;
-    border-radius: 4px 0 0 4px;
-    background: rgba(0, 0, 0, 0.55);
-}
-
-.eval-bar-locked-right {
-    right: 0;
-    width: 40%;
-    border-radius: 0 4px 4px 0;
 }
 
 /* Fill bar */
