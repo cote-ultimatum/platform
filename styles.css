@@ -5559,9 +5559,9 @@ body::before {
 .preview-bio-item h4 {
     font-family: 'Orbitron', monospace;
     color: var(--text-primary);
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    padding-bottom: 0.75rem;
     border-bottom: 2px solid var(--crimson);
 }
 

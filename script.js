@@ -3520,14 +3520,14 @@ function exportCharacterPDF() {
         <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%);color:#fff;position:relative;overflow:hidden;">
 
             <div style="height:4px;background:linear-gradient(90deg,#7a2438,#4dc9e6,#7a2438);"></div>
-            <div style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
 
             <div style="padding:18px 28px;text-align:center;border-bottom:1px solid rgba(77,201,230,0.1);">
                 <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#4dc9e6;letter-spacing:3px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>
                 <div style="font-size:11px;color:#64748b;letter-spacing:4px;text-transform:uppercase;margin-top:4px;">Student Application File</div>
             </div>
 
-            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);">
+            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);position:relative;">
+                <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
                 <div>
                     <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1.2;">${char.name || 'Unnamed'}</div>
                     <div style="font-size:14px;color:#94a3b8;margin-top:6px;">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</div>
