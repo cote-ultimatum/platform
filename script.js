@@ -621,8 +621,9 @@ function handleUnlock() {
 const musicState = {
     maxVolume: 0.15,
     crossfadeDuration: 800,
-    activeTrack: null,  // 'main' or 'admin'
-    muted: false
+    activeTrack: 'main',
+    muted: false,
+    initialized: false
 };
 
 function fadeMusic(audio, from, to, duration, onDone) {
@@ -644,81 +645,88 @@ function getTrack(name) {
     return document.getElementById(name === 'admin' ? 'bg-music-admin' : 'bg-music');
 }
 
+// Robust play helper — handles unloaded audio by waiting for it
+function playWhenReady(audio, onPlaying) {
+    audio.volume = 0;
+    const attempt = () => {
+        const p = audio.play();
+        if (p && typeof p.then === 'function') {
+            p.then(onPlaying).catch(() => {
+                // Wait for the audio to be ready then retry once
+                const onReady = () => {
+                    audio.removeEventListener('canplaythrough', onReady);
+                    audio.removeEventListener('loadeddata', onReady);
+                    audio.play().then(onPlaying).catch(() => {});
+                };
+                audio.addEventListener('canplaythrough', onReady);
+                audio.addEventListener('loadeddata', onReady);
+                // Force load if it hasn't started
+                if (audio.readyState === 0) audio.load();
+            });
+        }
+    };
+    attempt();
+}
+
+function fadeInTrack(audio, duration) {
+    playWhenReady(audio, () => {
+        fadeMusic(audio, audio.volume, musicState.maxVolume, duration);
+    });
+}
+
+function fadeOutTrack(audio, duration, pauseAfter = true) {
+    if (!audio || audio.paused) return;
+    fadeMusic(audio, audio.volume, 0, duration, () => {
+        if (pauseAfter) audio.pause();
+    });
+}
+
 function switchTrack(trackName) {
     if (musicState.activeTrack === trackName) return;
 
-    if (musicState.muted) {
-        // Just update the track name so unmute plays the right one
-        musicState.activeTrack = trackName;
-        return;
-    }
-
     const oldAudio = getTrack(musicState.activeTrack);
-    const newAudio = getTrack(trackName);
-    const dur = musicState.crossfadeDuration;
-
-    // Fade out old
-    if (oldAudio && !oldAudio.paused) {
-        fadeMusic(oldAudio, oldAudio.volume, 0, dur, () => oldAudio.pause());
-    }
-
-    // Fade in new
-    newAudio.volume = 0;
-    newAudio.play().then(() => {
-        fadeMusic(newAudio, 0, musicState.maxVolume, dur);
-    }).catch(() => {
-        // Not loaded yet — wait for it
-        newAudio.addEventListener('canplay', () => {
-            if (musicState.activeTrack === trackName && !musicState.muted) {
-                newAudio.play().then(() => {
-                    fadeMusic(newAudio, 0, musicState.maxVolume, dur);
-                }).catch(() => {});
-            }
-        }, { once: true });
-    });
-
     musicState.activeTrack = trackName;
+
+    if (musicState.muted) return;  // Just update name; unmute will play correct one
+
+    const newAudio = getTrack(trackName);
+    fadeOutTrack(oldAudio, musicState.crossfadeDuration);
+    fadeInTrack(newAudio, musicState.crossfadeDuration);
 }
 
 function startMusic() {
-    const mainTrack = document.getElementById('bg-music');
+    if (musicState.initialized) return;
+    musicState.initialized = true;
+
     const toggle = document.getElementById('music-toggle');
-    if (!mainTrack || !toggle) return;
+    if (!toggle) return;
 
-    mainTrack.volume = 0;
     toggle.classList.add('visible');
-    musicState.activeTrack = 'main';
 
-    function tryPlay() {
-        mainTrack.volume = 0;
-        mainTrack.play().then(() => {
-            fadeMusic(mainTrack, 0, musicState.maxVolume, 300);
-        }).catch(() => {
-            mainTrack.addEventListener('canplay', () => {
-                mainTrack.play().then(() => fadeMusic(mainTrack, 0, musicState.maxVolume, 300)).catch(() => {});
-            }, { once: true });
-        });
-    }
+    // Pre-load both tracks
+    getTrack('main').load();
+    getTrack('admin').load();
 
-    setTimeout(tryPlay, 500);
+    // Start main track after a short delay (avoid competing with boot sound)
+    setTimeout(() => {
+        if (!musicState.muted) {
+            fadeInTrack(getTrack('main'), 300);
+        }
+    }, 500);
 
     toggle.addEventListener('click', () => {
         playSound('select');
         toggle.blur();
         const activeAudio = getTrack(musicState.activeTrack);
 
-        if (toggle.classList.contains('muted')) {
-            // Unmute
-            toggle.classList.remove('muted');
+        if (musicState.muted) {
             musicState.muted = false;
-            activeAudio.volume = 0;
-            activeAudio.play();
-            fadeMusic(activeAudio, 0, musicState.maxVolume, 300);
+            toggle.classList.remove('muted');
+            fadeInTrack(activeAudio, 300);
         } else {
-            // Mute
-            toggle.classList.add('muted');
             musicState.muted = true;
-            fadeMusic(activeAudio, activeAudio.volume, 0, 300, () => activeAudio.pause());
+            toggle.classList.add('muted');
+            fadeOutTrack(activeAudio, 300);
         }
     });
 }
@@ -2011,21 +2019,10 @@ function showAdminPanel() {
     if (loginView) loginView.style.display = 'none';
     if (panelView) {
         panelView.style.display = 'block';
-        // Re-trigger animations
+        // Re-trigger panel fade-in
         panelView.style.animation = 'none';
-        panelView.offsetHeight; // Trigger reflow
+        panelView.offsetHeight;
         panelView.style.animation = '';
-
-        // Re-trigger child animations
-        const userBar = panelView.querySelector('.admin-user-bar');
-        const sections = panelView.querySelectorAll('.admin-section');
-        [userBar, ...sections].forEach(el => {
-            if (el) {
-                el.style.animation = 'none';
-                el.offsetHeight;
-                el.style.animation = '';
-            }
-        });
     }
     if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
 

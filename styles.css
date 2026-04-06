@@ -3961,35 +3961,6 @@ body::before {
     }
 }
 
-/* Admin Panel Entrance Animations */
-.admin-user-bar {
-    animation: adminItemIn 0.3s ease-out;
-    animation-delay: 0.05s;
-    animation-fill-mode: backwards;
-}
-
-.admin-section:nth-child(1) {
-    animation: adminItemIn 0.3s ease-out;
-    animation-delay: 0.1s;
-    animation-fill-mode: backwards;
-}
-
-.admin-section:nth-child(2) {
-    animation: adminItemIn 0.3s ease-out;
-    animation-delay: 0.15s;
-    animation-fill-mode: backwards;
-}
-
-@keyframes adminItemIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
 /* Saving button animation */
 .admin-save-btn.saving {
