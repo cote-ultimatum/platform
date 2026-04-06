@@ -3499,22 +3499,20 @@ function exportCharacterPDF() {
         `;
     }).join('');
 
-    const bioHTML = (char.bio || char.personality) ? `
-        <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);">
-            ${char.bio ? `
-                <div style="margin-bottom:${char.personality ? '16px' : '0'};">
-                    <h4 style="font-size:11px;text-transform:uppercase;color:#4dc9e6;letter-spacing:0.1em;margin:0 0 8px;font-family:'Inter',sans-serif;">Background</h4>
-                    <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.bio}</p>
-                </div>
-            ` : ''}
-            ${char.personality ? `
-                <div>
-                    <h4 style="font-size:11px;text-transform:uppercase;color:#4dc9e6;letter-spacing:0.1em;margin:0 0 8px;font-family:'Inter',sans-serif;">Personality</h4>
-                    <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.personality}</p>
-                </div>
-            ` : ''}
-        </div>
-    ` : '';
+    const bioHTML = `
+        ${char.bio ? `
+            <div style="margin-top:24px;">
+                <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 14px;font-size:16px;padding-bottom:10px;border-bottom:2px solid #7a2438;">Background</h3>
+                <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.bio}</p>
+            </div>
+        ` : ''}
+        ${char.personality ? `
+            <div style="margin-top:24px;">
+                <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 14px;font-size:16px;padding-bottom:10px;border-bottom:2px solid #7a2438;">Personality</h3>
+                <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.personality}</p>
+            </div>
+        ` : ''}
+    `;
 
     const appDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -3522,6 +3520,7 @@ function exportCharacterPDF() {
         <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%);color:#fff;position:relative;overflow:hidden;">
 
             <div style="height:4px;background:linear-gradient(90deg,#7a2438,#4dc9e6,#7a2438);"></div>
+            <div style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
 
             <div style="padding:18px 28px;text-align:center;border-bottom:1px solid rgba(77,201,230,0.1);">
                 <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#4dc9e6;letter-spacing:3px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>

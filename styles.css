@@ -5519,7 +5519,15 @@ body::before {
 }
 
 .creator-preview-card::after {
-    display: none;
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-top: 2px solid rgba(0, 245, 255, 0.3);
+    border-right: 2px solid rgba(0, 245, 255, 0.3);
+    pointer-events: none;
 }
 
 
@@ -5543,25 +5551,24 @@ body::before {
 /* Preview Bio Section */
 .preview-bio-section {
     margin-top: 1.5rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .preview-bio-item h4 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: var(--cyan);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.4rem;
+    font-family: 'Orbitron', monospace;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--crimson);
 }
 
 .preview-bio-item p {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 /* Export Actions */
