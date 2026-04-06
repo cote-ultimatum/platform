@@ -1922,6 +1922,27 @@ function initAdminApp() {
         });
     }
 
+    // Logout modal listeners
+    const logoutConfirm = document.getElementById('admin-logout-confirm');
+    const logoutCancel = document.getElementById('admin-logout-cancel');
+    const logoutOverlay = document.getElementById('admin-logout-modal');
+
+    if (logoutConfirm) {
+        logoutConfirm.addEventListener('click', confirmAdminLogout);
+        logoutConfirm.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (logoutCancel) {
+        logoutCancel.addEventListener('click', cancelAdminLogout);
+        logoutCancel.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
+    if (logoutOverlay) {
+        logoutOverlay.addEventListener('click', (e) => {
+            if (e.target === logoutOverlay) cancelAdminLogout();
+        });
+    }
+
     // Student management initialization
     initStudentManagement();
 }
@@ -1979,12 +2000,29 @@ async function handleAdminLogin() {
 }
 
 function handleAdminLogout() {
+    const modal = document.getElementById('admin-logout-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+    playSound('select');
+    document.getElementById('admin-logout-confirm')?.focus();
+}
+
+function confirmAdminLogout() {
+    const modal = document.getElementById('admin-logout-modal');
+    if (modal) modal.classList.remove('active');
+
     adminState.loggedIn = false;
     adminState.currentUser = null;
     adminState.displayName = null;
 
     playSound('back');
     showAdminLogin();
+}
+
+function cancelAdminLogout() {
+    const modal = document.getElementById('admin-logout-modal');
+    if (modal) modal.classList.remove('active');
+    playSound('back');
 }
 
 function showAdminLogin() {
@@ -2010,23 +2048,36 @@ function showAdminLogin() {
     }
 }
 
-function showAdminPanel() {
+function showAdminPanel(animate = true) {
     const loginView = document.getElementById('admin-login-view');
     const panelView = document.getElementById('admin-panel-view');
     const userName = document.getElementById('admin-user-name');
 
-    if (loginView) loginView.style.display = 'none';
-    if (panelView) panelView.style.display = 'block';
-    if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
+    const swap = () => {
+        if (loginView) {
+            loginView.style.display = 'none';
+            loginView.classList.remove('fading-out');
+        }
+        if (panelView) {
+            panelView.style.display = 'block';
+            panelView.classList.remove('fading-in');
+            // Re-trigger fade-in
+            panelView.offsetHeight;
+            panelView.classList.add('fading-in');
+        }
+        if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
 
-    // Load current points
-    loadAdminPointsFromDB();
+        loadAdminPointsFromDB();
+        loadAdminChangelog();
+        loadAdminStudents();
+    };
 
-    // Load changelog
-    loadAdminChangelog();
-
-    // Load students
-    loadAdminStudents();
+    if (animate && loginView && loginView.style.display !== 'none') {
+        loginView.classList.add('fading-out');
+        setTimeout(swap, 300);
+    } else {
+        swap();
+    }
 }
 
 function loadAdminPointsFromDB() {

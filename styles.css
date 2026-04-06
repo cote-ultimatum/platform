@@ -3935,15 +3935,27 @@ body::before {
     animation: adminFadeIn 0.35s ease-out;
 }
 
+#admin-login-view.fading-out {
+    animation: adminFadeOut 0.3s ease-in forwards;
+}
+
+.admin-panel-view.fading-in {
+    animation: adminPanelIn 0.4s ease-out;
+}
+
 @keyframes adminFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes adminFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.96); }
+}
+
+@keyframes adminPanelIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 
