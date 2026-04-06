@@ -2966,24 +2966,20 @@ function initCreatorApp() {
         quizClose.addEventListener('mouseenter', () => playSound('hover'));
     }
 
-    // Bio character count
+    // Bio input
     const bioInput = document.getElementById('creator-bio');
-    const bioCount = document.getElementById('bio-char-count');
-    if (bioInput && bioCount) {
+    if (bioInput) {
         bioInput.addEventListener('input', () => {
-            bioCount.textContent = bioInput.value.length;
             creatorState.character.bio = bioInput.value;
             playSound('type');
         });
         bioInput.addEventListener('focus', () => playSound('select'));
     }
 
-    // Personality character count
+    // Personality input
     const personalityInput = document.getElementById('creator-personality');
-    const personalityCount = document.getElementById('personality-char-count');
-    if (personalityInput && personalityCount) {
+    if (personalityInput) {
         personalityInput.addEventListener('input', () => {
-            personalityCount.textContent = personalityInput.value.length;
             creatorState.character.personality = personalityInput.value;
             playSound('type');
         });
@@ -3800,8 +3796,6 @@ function resetCreator() {
     document.getElementById('creator-image').value = '';
     document.getElementById('creator-bio').value = '';
     document.getElementById('creator-personality').value = '';
-    document.getElementById('bio-char-count').textContent = '0';
-    document.getElementById('personality-char-count').textContent = '0';
 
     // Reset year buttons
     document.querySelectorAll('.creator-select-btn[data-year]').forEach((btn, i) => {

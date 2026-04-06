@@ -4579,16 +4579,6 @@ body::before {
     box-shadow: 0 0 20px var(--cyan-glow);
 }
 
-.creator-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--crimson), var(--cyan), var(--crimson));
-    border-radius: 12px 12px 0 0;
-}
 
 .creator-card-header {
     display: flex;
@@ -4748,6 +4738,13 @@ body::before {
     outline: none;
     border-color: var(--cyan);
     box-shadow: 0 0 0 3px rgba(77, 201, 230, 0.1);
+}
+
+.input-sublabel {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
 }
 
 .input-hint {
