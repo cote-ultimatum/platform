@@ -6054,7 +6054,8 @@ body::before {
         font-size: 1.25rem;
     }
 
-    .header-brand {
+    .header-brand,
+    .header-time {
         display: none;
     }
 
