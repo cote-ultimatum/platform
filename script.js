@@ -3499,8 +3499,9 @@ function exportCharacterPDF() {
                         <span style="font-size:12px;font-weight:700;color:${meta.color};font-family:'Orbitron',monospace;min-width:24px;text-align:right;">${grade}</span>
                     </div>
                 </div>
-                <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;position:relative;">
                     <div style="width:${value}%;height:100%;background:${meta.gradient};border-radius:4px;"></div>
+                    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(90deg,transparent,transparent 9.8%,rgba(255,255,255,0.06) 9.8%,rgba(255,255,255,0.06) 10%);"></div>
                 </div>
             </div>
         `;

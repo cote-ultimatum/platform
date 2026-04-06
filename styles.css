@@ -5059,6 +5059,23 @@ body::before {
     overflow: hidden;
 }
 
+.eval-card-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 9.8%,
+        rgba(255, 255, 255, 0.06) 9.8%,
+        rgba(255, 255, 255, 0.06) 10%
+    );
+    z-index: 2;
+}
+
 /* Locked area pattern - diagonal stripes */
 .eval-bar-locked {
     position: absolute;
@@ -5726,6 +5743,24 @@ body::before {
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+.preview-stat-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 9.8%,
+        rgba(255, 255, 255, 0.06) 9.8%,
+        rgba(255, 255, 255, 0.06) 10%
+    );
+    z-index: 1;
 }
 
 .preview-stat-fill {
