@@ -4904,22 +4904,19 @@ body::before {
     gap: 1rem;
     padding: 1rem 1.25rem;
     margin-bottom: 1.25rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--cyan);
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
     border-radius: 12px;
-    box-shadow: 0 0 15px var(--cyan-glow);
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
 }
 
 .eval-overall-grade {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(77, 201, 230, 0.2), rgba(154, 46, 72, 0.2));
-    border: 2px solid var(--cyan);
+    background: rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 20px var(--cyan-glow), inset 0 0 15px rgba(77, 201, 230, 0.1);
     flex-shrink: 0;
 }
 
@@ -4927,8 +4924,8 @@ body::before {
     font-family: 'Orbitron', monospace;
     font-size: 1.5rem;
     font-weight: 900;
-    color: var(--cyan);
-    text-shadow: 0 0 15px var(--cyan-glow);
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .eval-overall-info {
@@ -4941,12 +4938,12 @@ body::before {
     font-family: 'Orbitron', monospace;
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: white;
 }
 
 .eval-overall-hint {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Stat Cards Grid */
@@ -5525,15 +5522,7 @@ body::before {
 }
 
 .creator-preview-card::after {
-    content: '';
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 40px;
-    height: 40px;
-    border-top: 2px solid rgba(0, 245, 255, 0.3);
-    border-right: 2px solid rgba(0, 245, 255, 0.3);
-    pointer-events: none;
+    display: none;
 }
 
 /* Preview Card Header */

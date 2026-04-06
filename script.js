@@ -3399,10 +3399,6 @@ function updateCreatorPreview() {
                 <h2 class="preview-name">${char.name || 'Unnamed Character'}</h2>
                 <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
             </div>
-            <div class="preview-status-box">
-                <span class="preview-status-label">STATUS</span>
-                <span class="preview-status-value">PENDING</span>
-            </div>
         </div>
         <div class="preview-card-body">
             <div class="preview-image-container ${classGlow}">
