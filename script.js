@@ -620,7 +620,9 @@ function handleUnlock() {
 
 const musicState = {
     maxVolume: 0.15,
-    crossfadeDuration: 800,
+    crossfadeDuration: 1200,  // track-to-track crossfade
+    toggleDuration: 400,       // mute/unmute fade
+    startupDuration: 700,      // initial fade-in
     activeTrack: 'main',
     muted: false,
     initialized: false
@@ -648,7 +650,6 @@ function getTrack(name) {
 
 // Robust play helper — handles unloaded audio by waiting for it
 function playWhenReady(audio, onPlaying) {
-    audio.volume = 0;
     const attempt = () => {
         const p = audio.play();
         if (p && typeof p.then === 'function') {
@@ -667,30 +668,27 @@ function playWhenReady(audio, onPlaying) {
     attempt();
 }
 
-function fadeInTrack(audio, duration) {
-    playWhenReady(audio, () => {
-        fadeMusic(audio, audio.volume, musicState.maxVolume, duration);
-    });
-}
-
-function fadeOutTrack(audio, duration, pauseAfter = true) {
-    if (!audio || audio.paused) return;
-    fadeMusic(audio, audio.volume, 0, duration, () => {
-        if (pauseAfter) audio.pause();
-    });
+// Start both tracks playing — admin silent, main at target volume
+function startBothTracks(targetVolume, duration) {
+    const main = getTrack('main');
+    const admin = getTrack('admin');
+    main.volume = 0;
+    admin.volume = 0;
+    playWhenReady(main, () => fadeMusic(main, 0, targetVolume, duration));
+    playWhenReady(admin, () => {});  // play silently
 }
 
 function switchTrack(trackName) {
     if (musicState.activeTrack === trackName) return;
 
     const oldAudio = getTrack(musicState.activeTrack);
+    const newAudio = getTrack(trackName);
     musicState.activeTrack = trackName;
 
-    if (musicState.muted) return;
+    if (musicState.muted) return;  // both already paused; unmute will play correct one
 
-    const newAudio = getTrack(trackName);
-    fadeOutTrack(oldAudio, musicState.crossfadeDuration);
-    fadeInTrack(newAudio, musicState.crossfadeDuration);
+    fadeMusic(oldAudio, oldAudio.volume, 0, musicState.crossfadeDuration);
+    fadeMusic(newAudio, newAudio.volume, musicState.maxVolume, musicState.crossfadeDuration);
 }
 
 function startMusic() {
@@ -706,26 +704,38 @@ function startMusic() {
     getTrack('main').load();
     getTrack('admin').load();
 
-    // Start main track after a short delay (avoid competing with boot sound)
+    // Start both tracks after short delay (avoid competing with boot sound)
     setTimeout(() => {
         if (!musicState.muted) {
-            fadeInTrack(getTrack('main'), 300);
+            startBothTracks(musicState.maxVolume, musicState.startupDuration);
         }
     }, 500);
 
     toggle.addEventListener('click', () => {
         playSound('select');
         toggle.blur();
+        const main = getTrack('main');
+        const admin = getTrack('admin');
         const activeAudio = getTrack(musicState.activeTrack);
+        const inactiveAudio = activeAudio === main ? admin : main;
 
         if (musicState.muted) {
+            // Unmute — resume both, fade up active
             musicState.muted = false;
             toggle.classList.remove('muted');
-            fadeInTrack(activeAudio, 300);
+            inactiveAudio.volume = 0;
+            playWhenReady(inactiveAudio, () => {});
+            playWhenReady(activeAudio, () => {
+                fadeMusic(activeAudio, 0, musicState.maxVolume, musicState.toggleDuration);
+            });
         } else {
+            // Mute — fade down active, pause both at end
             musicState.muted = true;
             toggle.classList.add('muted');
-            fadeOutTrack(activeAudio, 300);
+            fadeMusic(activeAudio, activeAudio.volume, 0, musicState.toggleDuration, () => {
+                main.pause();
+                admin.pause();
+            });
         }
     });
 }
