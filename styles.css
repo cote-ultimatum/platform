@@ -4118,17 +4118,10 @@ body::before {
     font-weight: 600;
 }
 
-.admin-student-main {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
 .admin-student-info {
     min-width: 0;
-    flex: 1;
+    flex: 0 1 auto;
+    max-width: 60%;
 }
 
 .admin-student-name {
@@ -4153,6 +4146,7 @@ body::before {
 }
 
 .admin-student-retire {
+    margin-left: auto;
     background: transparent;
     border: 1px solid var(--bg-tertiary);
     border-radius: 8px;

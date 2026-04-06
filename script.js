@@ -2499,13 +2499,11 @@ function renderAdminStudentList() {
                     ? `<img class="admin-student-avatar" src="${student.image}" alt="${student.name}">`
                     : `<div class="admin-student-avatar-placeholder">${initials}</div>`
                 }
-                <div class="admin-student-main">
-                    <div class="admin-student-info">
-                        <div class="admin-student-name">${student.name || 'Unknown'}</div>
-                        <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
-                    </div>
-                    <div class="admin-student-grade">${overallGrade}</div>
+                <div class="admin-student-info">
+                    <div class="admin-student-name">${student.name || 'Unknown'}</div>
+                    <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
                 </div>
+                <div class="admin-student-grade">${overallGrade}</div>
                 <button class="admin-student-retire" data-retire-key="${student._firebaseKey || student.id}" title="${retireTitle}" aria-label="${retireTitle}">
                     ${student.retired
                         ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
