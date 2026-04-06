@@ -548,6 +548,13 @@ function showScreen(screenId, addToHistory = true) {
         target.classList.add('active');
         state.currentScreen = screenId;
         if (screenId === 'home-screen') triggerQuoteTyping();
+
+        // Crossfade music tracks
+        if (screenId === 'admin-app') {
+            switchTrack('admin');
+        } else if (musicState.activeTrack === 'admin') {
+            switchTrack('main');
+        }
     }
 }
 
@@ -611,55 +618,98 @@ function handleUnlock() {
 // BACKGROUND MUSIC
 // ========================================
 
-function fadeMusic(music, from, to, duration, onDone) {
+const musicState = {
+    maxVolume: 0.15,
+    crossfadeDuration: 800,
+    activeTrack: null,  // 'main' or 'admin'
+    muted: false
+};
+
+function fadeMusic(audio, from, to, duration, onDone) {
     const start = performance.now();
     function step(now) {
         const t = Math.min((now - start) / duration, 1);
-        music.volume = from + (to - from) * t;
+        audio.volume = from + (to - from) * t;
         if (t < 1) {
             requestAnimationFrame(step);
         } else {
-            music.volume = to;
+            audio.volume = to;
             if (onDone) onDone();
         }
     }
     requestAnimationFrame(step);
 }
 
-function startMusic() {
-    const music = document.getElementById('bg-music');
-    const toggle = document.getElementById('music-toggle');
-    if (!music || !toggle) return;
+function getTrack(name) {
+    return document.getElementById(name === 'admin' ? 'bg-music-admin' : 'bg-music');
+}
 
-    music.volume = 0;
+function switchTrack(trackName) {
+    if (musicState.activeTrack === trackName) return;
+
+    if (musicState.muted) {
+        // Just update the track name so unmute plays the right one
+        musicState.activeTrack = trackName;
+        return;
+    }
+
+    const oldAudio = getTrack(musicState.activeTrack);
+    const newAudio = getTrack(trackName);
+    const dur = musicState.crossfadeDuration;
+
+    // Fade out old
+    if (oldAudio && !oldAudio.paused) {
+        fadeMusic(oldAudio, oldAudio.volume, 0, dur, () => oldAudio.pause());
+    }
+
+    // Fade in new
+    newAudio.volume = 0;
+    newAudio.play().then(() => {
+        fadeMusic(newAudio, 0, musicState.maxVolume, dur);
+    }).catch(() => {});
+
+    musicState.activeTrack = trackName;
+}
+
+function startMusic() {
+    const mainTrack = document.getElementById('bg-music');
+    const toggle = document.getElementById('music-toggle');
+    if (!mainTrack || !toggle) return;
+
+    mainTrack.volume = 0;
     toggle.classList.add('visible');
+    musicState.activeTrack = 'main';
 
     function tryPlay() {
-        music.volume = 0;
-        music.play().then(() => {
-            fadeMusic(music, 0, 0.15, 300);
+        mainTrack.volume = 0;
+        mainTrack.play().then(() => {
+            fadeMusic(mainTrack, 0, musicState.maxVolume, 300);
         }).catch(() => {
-            // Not ready yet — retry when buffered
-            music.addEventListener('canplay', () => {
-                music.play().then(() => fadeMusic(music, 0, 0.15, 300)).catch(() => {});
+            mainTrack.addEventListener('canplay', () => {
+                mainTrack.play().then(() => fadeMusic(mainTrack, 0, musicState.maxVolume, 300)).catch(() => {});
             }, { once: true });
         });
     }
 
-    // Delay slightly to avoid competing with boot sound
     setTimeout(tryPlay, 500);
 
     toggle.addEventListener('click', () => {
         playSound('select');
         toggle.blur();
+        const activeAudio = getTrack(musicState.activeTrack);
+
         if (toggle.classList.contains('muted')) {
+            // Unmute
             toggle.classList.remove('muted');
-            music.volume = 0;
-            music.play();
-            fadeMusic(music, 0, 0.15, 300);
+            musicState.muted = false;
+            activeAudio.volume = 0;
+            activeAudio.play();
+            fadeMusic(activeAudio, 0, musicState.maxVolume, 300);
         } else {
+            // Mute
             toggle.classList.add('muted');
-            fadeMusic(music, music.volume, 0, 300, () => music.pause());
+            musicState.muted = true;
+            fadeMusic(activeAudio, activeAudio.volume, 0, 300, () => activeAudio.pause());
         }
     });
 }
