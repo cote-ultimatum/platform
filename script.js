@@ -830,6 +830,22 @@ function initKeyboardNav() {
             return;
         }
 
+        // Enter confirms top-most active admin modal (logout / delete student)
+        if (e.key === 'Enter') {
+            const deleteStudentModal = document.getElementById('admin-delete-student-modal');
+            if (deleteStudentModal && deleteStudentModal.classList.contains('active')) {
+                e.preventDefault();
+                confirmDeleteStudent();
+                return;
+            }
+            const logoutModal = document.getElementById('admin-logout-modal');
+            if (logoutModal && logoutModal.classList.contains('active')) {
+                e.preventDefault();
+                confirmAdminLogout();
+                return;
+            }
+        }
+
         // ESC to go back
         if (e.key === 'Escape') {
             // Close comparison modal first if open
