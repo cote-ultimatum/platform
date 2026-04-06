@@ -2098,6 +2098,8 @@ function showAdminPanel(animate = true) {
     const panelView = document.getElementById('admin-panel-view');
     const userName = document.getElementById('admin-user-name');
 
+    const transitioningFromLogin = animate && loginView && loginView.style.display !== 'none';
+
     const swap = () => {
         if (loginView) {
             loginView.style.display = 'none';
@@ -2106,9 +2108,10 @@ function showAdminPanel(animate = true) {
         if (panelView) {
             panelView.style.display = 'block';
             panelView.classList.remove('fading-in');
-            // Re-trigger fade-in
-            panelView.offsetHeight;
-            panelView.classList.add('fading-in');
+            if (transitioningFromLogin) {
+                panelView.offsetHeight;
+                panelView.classList.add('fading-in');
+            }
         }
         if (userName) userName.textContent = adminState.displayName || adminState.currentUser;
 
@@ -2117,7 +2120,7 @@ function showAdminPanel(animate = true) {
         loadAdminStudents();
     };
 
-    if (animate && loginView && loginView.style.display !== 'none') {
+    if (transitioningFromLogin) {
         loginView.classList.add('fading-out');
         setTimeout(swap, 300);
     } else {
