@@ -4147,17 +4147,17 @@ body::before {
 
 .admin-student-retire {
     margin-left: auto;
-    background: transparent;
-    border: 1px solid var(--bg-tertiary);
-    border-radius: 8px;
-    width: 36px;
-    height: 36px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
     flex-shrink: 0;
 }
 
@@ -4167,9 +4167,9 @@ body::before {
 }
 
 .admin-student-retire:hover {
-    border-color: var(--crimson-light);
     color: var(--crimson-light);
     background: rgba(154, 46, 72, 0.1);
+    transform: scale(1.1);
 }
 
 .admin-student-item.retired {
@@ -4178,7 +4178,6 @@ body::before {
 
 .admin-student-item.retired .admin-student-retire {
     color: var(--crimson-light);
-    border-color: var(--crimson-light);
 }
 
 .admin-student-empty {
