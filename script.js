@@ -3145,7 +3145,9 @@ function updateCreatorOverallGrade() {
     const avg = (stats.academic + stats.intelligence + stats.decision + stats.physical + stats.cooperativeness) / 5;
     const grade = getGradeFromValue(avg);
     const gradeEl = document.getElementById('creator-overall-grade');
+    const avgEl = document.getElementById('creator-overall-avg');
     if (gradeEl) gradeEl.textContent = grade;
+    if (avgEl) avgEl.textContent = Math.round(avg);
 }
 
 function openTraitQuiz(category) {
@@ -3397,7 +3399,7 @@ function updateCreatorPreview() {
         <div class="preview-card-header">
             <div class="preview-header-info">
                 <h2 class="preview-name">${char.name || 'Unnamed Character'}</h2>
-                <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</p>
+                <p class="preview-class-info">${char.year}${yearSuffix} Year - Class ${char.class || '?'} <span class="preview-pending-tag">PENDING</span></p>
             </div>
         </div>
         <div class="preview-card-body">
