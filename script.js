@@ -24,6 +24,7 @@ const state = {
     // Database state
     dbConnected: false,
     dbClassPoints: null,
+    dbStudents: null,
     pointDeltas: {}
 };
 
@@ -840,15 +841,19 @@ function initKeyboardNav() {
                 return;
             }
 
-            // Close admin student modal if open
-            const studentModal = document.getElementById('admin-student-modal');
-            if (studentModal && studentModal.classList.contains('active')) {
-                closeStudentModal();
-                playSound('back');
+            // Top-most modals first (they layer on top of others)
+            const deleteStudentModal = document.getElementById('admin-delete-student-modal');
+            if (deleteStudentModal && deleteStudentModal.classList.contains('active')) {
+                cancelDeleteStudent();
                 return;
             }
 
-            // Close admin save confirmation modal if open
+            const logoutModal = document.getElementById('admin-logout-modal');
+            if (logoutModal && logoutModal.classList.contains('active')) {
+                cancelAdminLogout();
+                return;
+            }
+
             const confirmModal = document.getElementById('admin-confirm-modal');
             if (confirmModal && confirmModal.classList.contains('active')) {
                 hideSaveConfirmModal();
@@ -856,17 +861,10 @@ function initKeyboardNav() {
                 return;
             }
 
-            // Close admin logout confirmation modal if open
-            const logoutModal = document.getElementById('admin-logout-modal');
-            if (logoutModal && logoutModal.classList.contains('active')) {
-                cancelAdminLogout();
-                return;
-            }
-
-            // Close admin delete student modal if open
-            const deleteStudentModal = document.getElementById('admin-delete-student-modal');
-            if (deleteStudentModal && deleteStudentModal.classList.contains('active')) {
-                cancelDeleteStudent();
+            const studentModal = document.getElementById('admin-student-modal');
+            if (studentModal && studentModal.classList.contains('active')) {
+                closeStudentModal();
+                playSound('back');
                 return;
             }
 
@@ -1615,9 +1613,15 @@ function getClassGlowColor(className) {
 // UTILITY FUNCTIONS
 // ========================================
 
+function getAllStudents() {
+    // Prefer Firebase students if loaded, otherwise local
+    if (state.dbStudents && state.dbStudents.length > 0) return state.dbStudents;
+    if (typeof studentData !== 'undefined') return studentData;
+    return [];
+}
+
 function getStudentsByClass(year, className) {
-    if (typeof studentData === 'undefined') return [];
-    return studentData.filter(s => s.year === year && s.class === className);
+    return getAllStudents().filter(s => s.year === year && s.class === className && !s.retired);
 }
 
 function getClassRank(year, className) {
@@ -1684,6 +1688,7 @@ function initDatabase() {
             console.log('Database connected');
             state.dbConnected = true;
             updateDbStatus('connected');
+            loadStudentsFromDB();
         } else {
             console.log('Database not configured, using local data');
             updateDbStatus('local');
@@ -1692,6 +1697,26 @@ function initDatabase() {
         console.error('Database error:', err);
         updateDbStatus('disconnected');
     });
+}
+
+async function loadStudentsFromDB() {
+    try {
+        const students = await COTEDB.getStudents();
+        if (students && students.length > 0) {
+            state.dbStudents = students;
+            // Rebuild lookup with Firebase students
+            students.forEach(s => { studentLookup[s.id] = s; });
+            // Re-render OAA if visible
+            if (state.currentScreen === 'oaa-app') {
+                if (state.currentOAAView === 'oaa-dashboard') renderClassCards();
+                else if (state.currentOAAView === 'oaa-class' && state.currentClass) {
+                    showClassView(state.currentClass.year, state.currentClass.className, false);
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('Could not load students from DB:', err);
+    }
 }
 
 function handleDatabaseEvent(event, data) {
@@ -2462,25 +2487,36 @@ function renderAdminStudentList() {
         const initials = getInitials(student.name || 'Unknown');
         const yearSuffix = ['', 'st', 'nd', 'rd'][student.year] || 'th';
         const overallGrade = calculateOverallGrade(student.stats || {});
+        const retiredClass = student.retired ? ' retired' : '';
+        const retireTitle = student.retired ? 'Reinstate student' : 'Retire student';
 
         return `
-            <div class="admin-student-item" data-student-key="${student._firebaseKey || student.id}">
+            <div class="admin-student-item${retiredClass}" data-student-key="${student._firebaseKey || student.id}">
                 ${student.image
                     ? `<img class="admin-student-avatar" src="${student.image}" alt="${student.name}">`
                     : `<div class="admin-student-avatar-placeholder">${initials}</div>`
                 }
-                <div class="admin-student-info">
-                    <div class="admin-student-name">${student.name || 'Unknown'}</div>
-                    <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
+                <div class="admin-student-main">
+                    <div class="admin-student-info">
+                        <div class="admin-student-name">${student.name || 'Unknown'}</div>
+                        <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
+                    </div>
+                    <div class="admin-student-grade">${overallGrade}</div>
                 </div>
-                <div class="admin-student-grade">${overallGrade}</div>
+                <button class="admin-student-retire" data-retire-key="${student._firebaseKey || student.id}" title="${retireTitle}" aria-label="${retireTitle}">
+                    ${student.retired
+                        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+                        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+                    }
+                </button>
             </div>
         `;
     }).join('');
 
-    // Add click handlers
+    // Click on item (excluding retire button) opens edit modal
     container.querySelectorAll('.admin-student-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.admin-student-retire')) return;
             const key = item.dataset.studentKey;
             const student = adminState.students.find(s => (s._firebaseKey || s.id) === key);
             if (student) {
@@ -2489,6 +2525,34 @@ function renderAdminStudentList() {
             }
         });
         item.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    // Retire toggle
+    container.querySelectorAll('.admin-student-retire').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.retireKey;
+            const student = adminState.students.find(s => (s._firebaseKey || s.id) === key);
+            if (!student || !student._firebaseKey) {
+                showErrorToast('Cannot retire this student');
+                return;
+            }
+            const newRetired = !student.retired;
+            try {
+                const success = await COTEDB.updateStudent(student._firebaseKey, { retired: newRetired });
+                if (success) {
+                    student.retired = newRetired;
+                    showSuccessToast(newRetired ? 'Student retired' : 'Student reinstated');
+                    renderAdminStudentList();
+                    // Refresh OAA data so the change reflects there
+                    await loadStudentsFromDB();
+                }
+            } catch (err) {
+                console.error('Retire toggle failed:', err);
+                showErrorToast('Failed to update');
+            }
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
     });
 }
 

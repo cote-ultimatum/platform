@@ -4118,9 +4118,17 @@ body::before {
     font-weight: 600;
 }
 
-.admin-student-info {
+.admin-student-main {
     flex: 1;
     min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-student-info {
+    min-width: 0;
+    flex: 1;
 }
 
 .admin-student-name {
@@ -4141,6 +4149,42 @@ body::before {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--cyan);
+    flex-shrink: 0;
+}
+
+.admin-student-retire {
+    background: transparent;
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.admin-student-retire svg {
+    width: 18px;
+    height: 18px;
+}
+
+.admin-student-retire:hover {
+    border-color: var(--crimson-light);
+    color: var(--crimson-light);
+    background: rgba(154, 46, 72, 0.1);
+}
+
+.admin-student-item.retired {
+    opacity: 0.55;
+}
+
+.admin-student-item.retired .admin-student-retire {
+    color: var(--crimson-light);
+    border-color: var(--crimson-light);
 }
 
 .admin-student-empty {
@@ -4270,6 +4314,9 @@ body::before {
 
 .admin-stat-input {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 .admin-stat-input label {
@@ -4278,6 +4325,8 @@ body::before {
     text-transform: uppercase;
     color: var(--text-muted);
     margin-bottom: 0.25rem;
+    min-height: 2em;
+    line-height: 1.1;
 }
 
 .admin-stat-input input {
