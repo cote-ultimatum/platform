@@ -4352,6 +4352,8 @@ body::before {
     font-family: inherit;
     cursor: pointer;
     transition: border-color var(--transition-fast);
+    text-align: center;
+    text-align-last: center;
 }
 
 /* ========================================

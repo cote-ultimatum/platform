@@ -230,6 +230,18 @@ function initGlitchEffects() {
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Global UX: blur selects after change and buttons after click so they
+    // don't stay in a focused/highlighted state after the user picks something.
+    document.addEventListener('change', (e) => {
+        if (e.target && e.target.tagName === 'SELECT') e.target.blur();
+    });
+    document.addEventListener('click', (e) => {
+        const btn = e.target && e.target.closest && e.target.closest('button');
+        // Don't blur form-submit-style buttons mid-action; only blur after the
+        // browser dispatches the synthetic click for selection-style controls.
+        if (btn && !btn.matches('input')) btn.blur();
+    });
+
     createStarfield();
     createParticles();
     initShootingStars();
