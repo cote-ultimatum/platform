@@ -6376,3 +6376,60 @@ body::before {
         height: 60px;
     }
 }
+
+/* ========================================
+   MUSIC TOGGLE
+   ======================================== */
+
+.music-toggle {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(10, 20, 40, 0.8);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.music-toggle.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.music-toggle svg {
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.music-toggle:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px rgba(77, 201, 230, 0.15);
+}
+
+.music-toggle:hover svg {
+    color: var(--cyan);
+}
+
+.music-toggle .music-icon-off {
+    display: none;
+}
+
+.music-toggle.muted .music-icon-on {
+    display: none;
+}
+
+.music-toggle.muted .music-icon-off {
+    display: block;
+}

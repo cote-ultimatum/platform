@@ -596,11 +596,60 @@ function handleUnlock() {
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         playSound('boot');
+        startMusic();
     } else {
         playSound('unlock');
     }
     state.navigationHistory = [];
     showScreen('home-screen');
+}
+
+// ========================================
+// BACKGROUND MUSIC
+// ========================================
+
+function startMusic() {
+    const music = document.getElementById('bg-music');
+    const toggle = document.getElementById('music-toggle');
+    if (!music || !toggle) return;
+
+    music.volume = 0;
+    music.play().then(() => {
+        // Fade in
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+            vol = Math.min(vol + 0.005, 0.15);
+            music.volume = vol;
+            if (vol >= 0.15) clearInterval(fadeIn);
+        }, 50);
+        toggle.classList.add('visible');
+    }).catch(() => {});
+
+    toggle.addEventListener('click', () => {
+        playSound('select');
+        if (toggle.classList.contains('muted')) {
+            toggle.classList.remove('muted');
+            music.play();
+            let vol = 0;
+            music.volume = 0;
+            const fadeIn = setInterval(() => {
+                vol = Math.min(vol + 0.005, 0.15);
+                music.volume = vol;
+                if (vol >= 0.15) clearInterval(fadeIn);
+            }, 50);
+        } else {
+            toggle.classList.add('muted');
+            let vol = music.volume;
+            const fadeOut = setInterval(() => {
+                vol = Math.max(vol - 0.005, 0);
+                music.volume = vol;
+                if (vol <= 0) {
+                    clearInterval(fadeOut);
+                    music.pause();
+                }
+            }, 50);
+        }
+    });
 }
 
 // ========================================
@@ -2911,6 +2960,10 @@ function initCreatorApp() {
     }
 
     // Image file upload
+    const uploadBtn = document.querySelector('.creator-upload-btn');
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => playSound('select'));
+    }
     const imageUpload = document.getElementById('creator-image-upload');
     if (imageUpload) {
         imageUpload.addEventListener('change', (e) => {
@@ -2923,9 +2976,9 @@ function initCreatorApp() {
                 updateAvatarPreview(dataUrl);
                 if (imageInput) imageInput.value = '';
                 imageInput.placeholder = file.name;
+                playSound('success');
             };
             reader.readAsDataURL(file);
-            playSound('select');
         });
     }
 
@@ -3633,7 +3686,7 @@ function resetCreator() {
     // Reset form fields
     document.getElementById('creator-name').value = '';
     document.getElementById('creator-image').value = '';
-    document.getElementById('creator-image').placeholder = 'Paste URL...';
+    document.getElementById('creator-image').placeholder = 'Paste image link';
     document.getElementById('creator-image-upload').value = '';
     document.getElementById('creator-bio').value = '';
     document.getElementById('creator-personality').value = '';
