@@ -2621,6 +2621,10 @@ function applyTraitLimits(category) {
     creatorState.character.stats[category] = currentValue;
     if (display) display.textContent = currentValue;
 
+    // Update slider track to show limited range
+    slider.style.setProperty('--limit-min', limits.min + '%');
+    slider.style.setProperty('--limit-max', limits.max + '%');
+
     // Position fill bar to start from min limit (so locked areas are visible)
     if (bar) {
         bar.style.left = `${limits.min}%`;
@@ -2913,6 +2917,8 @@ function initCreatorApp() {
             const limits = getStatLimitsFromTrait(stat);
             slider.min = 0;
             slider.max = 100;
+            slider.style.setProperty('--limit-min', limits.min + '%');
+            slider.style.setProperty('--limit-max', limits.max + '%');
 
             // Update function for this stat
             const updateStat = (value) => {
@@ -3828,6 +3834,8 @@ function resetCreator() {
             slider.min = 0;
             slider.max = 100; // Always 0-100, clamped by JS
             slider.value = 50;
+            slider.style.setProperty('--limit-min', '40%');
+            slider.style.setProperty('--limit-max', '60%');
         }
         if (display) display.textContent = '50';
         // Position bar from min (40) to value (50) = 10% width

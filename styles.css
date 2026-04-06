@@ -5173,7 +5173,14 @@ body::before {
 
 .eval-card-slider::-webkit-slider-runnable-track {
     height: 4px;
-    background: rgba(255, 255, 255, 0.15);
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.05) var(--limit-min, 0%),
+        rgba(255, 255, 255, 0.15) var(--limit-min, 0%),
+        rgba(255, 255, 255, 0.15) var(--limit-max, 100%),
+        rgba(255, 255, 255, 0.05) var(--limit-max, 100%),
+        rgba(255, 255, 255, 0.05) 100%
+    );
     border-radius: 2px;
 }
 
@@ -5196,7 +5203,14 @@ body::before {
 
 .eval-card-slider::-moz-range-track {
     height: 4px;
-    background: rgba(255, 255, 255, 0.15);
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.05) var(--limit-min, 0%),
+        rgba(255, 255, 255, 0.15) var(--limit-min, 0%),
+        rgba(255, 255, 255, 0.15) var(--limit-max, 100%),
+        rgba(255, 255, 255, 0.05) var(--limit-max, 100%),
+        rgba(255, 255, 255, 0.05) 100%
+    );
     border-radius: 2px;
 }
 
@@ -5224,8 +5238,7 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    width: auto;
-    margin-right: calc(35px + 1rem);
+    width: calc(100% - 35px - 1rem);
     padding: 0.75rem 1rem;
     border: 1px solid var(--crimson-light);
     border-radius: 8px;
