@@ -1862,22 +1862,19 @@ function initAdminApp() {
 async function handleAdminLogin() {
     const usernameInput = document.getElementById('admin-username');
     const passwordInput = document.getElementById('admin-password');
-    const errorEl = document.getElementById('admin-login-error');
     const loginBtn = document.getElementById('admin-login-btn');
 
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
 
     if (!username || !password) {
-        showLoginError(errorEl, 'Please enter username and password');
-        playSound('error');
+        showErrorToast('Please enter username and password');
         return;
     }
 
     // Disable button while checking
     loginBtn.disabled = true;
     loginBtn.textContent = 'Verifying...';
-    errorEl.textContent = '';
     playSound('select');
 
     // Minimum delay to prevent flash (feels more intentional)
@@ -1902,25 +1899,16 @@ async function handleAdminLogin() {
             playSound('success');
             showAdminPanel();
         } else {
-            showLoginError(errorEl, 'Invalid credentials');
+            showErrorToast('Invalid credentials');
             loginBtn.disabled = false;
             loginBtn.textContent = 'Log In';
-            playSound('error');
         }
     } catch (error) {
         console.error('Login error:', error);
-        showLoginError(errorEl, 'Connection error. Try again.');
+        showErrorToast('Connection error. Try again.');
         loginBtn.disabled = false;
         loginBtn.textContent = 'Log In';
-        playSound('error');
     }
-}
-
-// Helper to show login error with animation re-trigger
-function showLoginError(errorEl, message) {
-    errorEl.textContent = '';
-    errorEl.offsetHeight; // Force reflow
-    errorEl.textContent = message;
 }
 
 function handleAdminLogout() {
@@ -3171,22 +3159,29 @@ function validateCreatorStep(stepId) {
     return true;
 }
 
-function showCreatorError(message) {
-    // Find or create error element
-    let errorEl = document.querySelector('.creator-error-toast');
+function showErrorToast(message) {
+    let errorEl = document.querySelector('.error-toast');
     if (!errorEl) {
         errorEl = document.createElement('div');
-        errorEl.className = 'creator-error-toast';
-        document.querySelector('.creator-content')?.appendChild(errorEl);
+        errorEl.className = 'error-toast';
+        document.body.appendChild(errorEl);
     }
 
     errorEl.textContent = message;
+    errorEl.classList.remove('visible');
+    errorEl.offsetHeight; // Force reflow for re-trigger
     errorEl.classList.add('visible');
     playSound('error');
 
-    setTimeout(() => {
+    clearTimeout(errorEl._timeout);
+    errorEl._timeout = setTimeout(() => {
         errorEl.classList.remove('visible');
     }, 3000);
+}
+
+// Alias for creator-specific calls
+function showCreatorError(message) {
+    showErrorToast(message);
 }
 
 function goToCreatorStep(stepId, skipValidation = false) {

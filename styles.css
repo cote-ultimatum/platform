@@ -3462,16 +3462,6 @@ body::before {
     color: var(--text-muted);
 }
 
-.admin-login-error {
-    font-size: 0.85rem;
-    color: #ef4444;
-    min-height: 1.25rem;
-}
-
-.admin-login-error:not(:empty) {
-    animation: statusShake 0.4s ease-out;
-}
-
 .admin-login-btn {
     background: var(--cyan);
     color: var(--bg-primary);
@@ -5457,7 +5447,7 @@ body::before {
 }
 
 /* Error Toast */
-.creator-error-toast {
+.error-toast {
     position: fixed;
     bottom: 100px;
     left: 50%;
@@ -5469,13 +5459,13 @@ body::before {
     font-size: 0.9rem;
     font-weight: 500;
     box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
-    z-index: 1000;
+    z-index: 9999;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
 }
 
-.creator-error-toast.visible {
+.error-toast.visible {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
