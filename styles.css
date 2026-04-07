@@ -5228,9 +5228,11 @@ body::before {
 }
 
 /* Spacing when the badge sits under a stat bar (OAA profile + creator
-   live preview), since the bar leaves no breathing room by default. */
+   live preview). align-self:flex-start prevents the parent flex column
+   from stretching the badge to full row width. */
 .stat-row .trait-badge {
     margin-top: 0.4rem;
+    align-self: flex-start;
 }
 
 .eval-card-trait .trait-badge.clickable {
