@@ -1650,8 +1650,10 @@ function getClassGlowColor(className) {
 // ========================================
 
 function getAllStudents() {
-    // Prefer Firebase students if loaded, otherwise local
-    if (state.dbStudents && state.dbStudents.length > 0) return state.dbStudents;
+    // Prefer Firebase students once loaded — even an empty array means
+    // "the admin has actively cleared the roster", which we must respect.
+    // Only fall back to local studentData if Firebase has never loaded yet.
+    if (Array.isArray(state.dbStudents)) return state.dbStudents;
     if (typeof studentData !== 'undefined') return studentData;
     return [];
 }
@@ -1854,16 +1856,16 @@ function initDatabase() {
 async function loadStudentsFromDB() {
     try {
         const students = await COTEDB.getStudents();
-        if (students && students.length > 0) {
-            state.dbStudents = students;
-            // Rebuild lookup with Firebase students
-            students.forEach(s => { studentLookup[s.id] = s; });
-            // Re-render OAA if visible
-            if (state.currentScreen === 'oaa-app') {
-                if (state.currentOAAView === 'oaa-dashboard') renderClassCards();
-                else if (state.currentOAAView === 'oaa-class' && state.currentClass) {
-                    showClassView(state.currentClass.year, state.currentClass.className, false);
-                }
+        // Always assign — even an empty array means "Firebase has no students"
+        // and we must reflect that, not silently keep the previous list.
+        state.dbStudents = Array.isArray(students) ? students : [];
+        // Rebuild lookup with Firebase students
+        state.dbStudents.forEach(s => { studentLookup[s.id] = s; });
+        // Re-render OAA if visible
+        if (state.currentScreen === 'oaa-app') {
+            if (state.currentOAAView === 'oaa-dashboard') renderClassCards();
+            else if (state.currentOAAView === 'oaa-class' && state.currentClass) {
+                showClassView(state.currentClass.year, state.currentClass.className, false);
             }
         }
     } catch (err) {
@@ -2609,6 +2611,11 @@ async function loadAdminStudents() {
     try {
         adminState.students = await COTEDB.getStudents();
         // Note: no auto-seeding from local studentData. Deletions must persist.
+        // Keep the OAA-side cache in sync so add/edit/delete from admin
+        // shows up in the OAA app without a full page reload.
+        state.dbStudents = adminState.students;
+        studentLookup = {};
+        state.dbStudents.forEach(s => { studentLookup[s.id] = s; });
     } catch (error) {
         console.warn('Using local student data:', error);
         adminState.students = typeof studentData !== 'undefined' ? [...studentData] : [];
