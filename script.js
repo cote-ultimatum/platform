@@ -1403,7 +1403,7 @@ function showStudentProfile(student, addToHistory = true) {
                 <span class="stat-label">${statNames[i]}</span>
                 <span class="stat-value">${value}/100 <span class="stat-grade">${getGradeFromValue(value)}</span></span>
             </div>
-            <div class="stat-bar"><div class="stat-bar-fill" style="width: 0%"></div></div>
+            <div class="stat-bar"><div class="stat-bar-fill stat-${key}" style="width: 0%"></div></div>
             ${traitHTML}
         `;
         statList.appendChild(row);
@@ -1544,6 +1544,7 @@ function toggleCompareSelection(student) {
         state.compareList.push(student.id);
         playSound('select');
     } else {
+        showErrorToast('Maximum 4 students in comparison');
         playSound('error');
         return;
     }
@@ -2816,6 +2817,8 @@ async function saveStudent() {
     const image = document.getElementById('admin-student-image').value.trim();
 
     if (!name) {
+        showErrorToast('Enter a student name');
+        document.getElementById('admin-student-name')?.focus();
         playSound('error');
         return;
     }
