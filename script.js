@@ -1732,7 +1732,7 @@ function setImageFramerEnabled(controlsId, enabled) {
 // export so html2canvas doesn't have to deal with object-fit or flex
 // centering — both of which it handles unreliably and were causing
 // uploaded images to render off-center / cropped.
-function prerenderContainImage(srcUrl, size, bgColor) {
+function prerenderContainImage(srcUrl, size, bgColor, frame) {
     return new Promise((resolve) => {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -1749,9 +1749,22 @@ function prerenderContainImage(srcUrl, size, bgColor) {
                 const scale = Math.min(size / w, size / h);
                 const dw = w * scale;
                 const dh = h * scale;
-                const dx = (size - dw) / 2;
-                const dy = (size - dh) / 2;
-                ctx.drawImage(img, dx, dy, dw, dh);
+                // Apply imageFrame (CSS: translate(x%,y%) scale(z) around center).
+                // Translate %s are relative to the element size (= `size`),
+                // applied after scale per CSS right-to-left transform order.
+                const z = (frame && typeof frame.zoom === 'number') ? frame.zoom : 1;
+                const fx = (frame && typeof frame.x === 'number') ? frame.x : 0;
+                const fy = (frame && typeof frame.y === 'number') ? frame.y : 0;
+                ctx.save();
+                // Clip to the visible square so zoomed/panned content matches CSS overflow:hidden
+                ctx.beginPath();
+                ctx.rect(0, 0, size, size);
+                ctx.clip();
+                ctx.translate(size / 2, size / 2);
+                ctx.translate((fx / 100) * size, (fy / 100) * size);
+                ctx.scale(z, z);
+                ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
+                ctx.restore();
             }
             resolve(canvas.toDataURL('image/png'));
         };
@@ -4060,7 +4073,7 @@ function exportEnrolledStudent(student) {
         statusColor: '#22c55e',
         statusBg: 'rgba(34,197,94,0.08)',
         statusGlow: 'rgba(34,197,94,0.4)',
-        footerText: `Official student record · <span style="color:#4dc9e6;font-weight:600;">COTE: ULTIMATUM</span> roster`
+        footerText: ''
     });
 }
 
@@ -4088,7 +4101,7 @@ async function exportStudentCard(subject, opts = {}) {
     let prerenderedImage = null;
     if (char.image) {
         try {
-            prerenderedImage = await prerenderContainImage(char.image, 480, '#0f1a2e');
+            prerenderedImage = await prerenderContainImage(char.image, 480, '#0f1a2e', char.imageFrame);
         } catch (e) {
             console.warn('Image pre-render failed:', e);
         }
@@ -4127,7 +4140,8 @@ async function exportStudentCard(subject, opts = {}) {
             const tColor = isPositive ? '#22c55e' : '#ef4444';
             const tBg = isPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
             const tBorder = isPositive ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)';
-            traitHTML = `<div style="margin-top:4px;"><span style="display:inline-block;padding:3px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};background:${tBg};border:1px solid ${tBorder};border-radius:4px;font-family:'Inter',sans-serif;">${trait}</span></div>`;
+            const arrow = isPositive ? '▲' : '▼';
+            traitHTML = `<div style="margin-top:4px;"><span style="display:inline-block;padding:3px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};background:${tBg};border:1px solid ${tBorder};border-radius:4px;font-family:'Inter',sans-serif;"><span style="margin-right:4px;">${arrow}</span>${trait}</span></div>`;
         }
         return `
             <div style="margin-bottom:16px;">
@@ -4204,10 +4218,12 @@ async function exportStudentCard(subject, opts = {}) {
                 </div>
             </div>
 
+            ${footerText ? `
             <div style="margin:0 28px 20px;padding:13px 20px 11px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-size:11px;line-height:1;color:#64748b;font-family:'Inter',sans-serif;">${footerText}</span>
                 <span style="font-size:11px;line-height:1;color:#475569;font-family:'Inter',sans-serif;white-space:nowrap;margin-left:16px;">${appDate}</span>
             </div>
+            ` : '<div style="height:20px;"></div>'}
         </div>
     `;
 
