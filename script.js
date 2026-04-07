@@ -4007,14 +4007,24 @@ function selectQuizOption(btn) {
 function finishQuiz() {
     const { category, traitScores, scoreOrder } = creatorState.quizState;
 
-    // Find the highest score; collect all traits tied at that score
+    // Step 1 — find the highest score; collect all traits tied at that score
     let topScore = -Infinity;
     Object.values(traitScores).forEach(s => { if (s > topScore) topScore = s; });
-    const winners = Object.keys(traitScores).filter(t => traitScores[t] === topScore);
+    let winners = Object.keys(traitScores).filter(t => traitScores[t] === topScore);
 
-    // Deterministic tiebreak: among tied winners, pick the one most recently
-    // incremented in the user's answer sequence. Same answers -> same result,
-    // and the user's most recent choice nudges the verdict on a tie.
+    // Step 2 — among tied winners, prefer the trait the user picked the MOST
+    // times. Picking the same thing twice signals commitment, so a 2-pick
+    // common trait beats a 1-pick rare trait at the same total score.
+    if (winners.length > 1) {
+        const pickCount = {};
+        scoreOrder.forEach(t => { pickCount[t] = (pickCount[t] || 0) + 1; });
+        const maxPicks = Math.max(...winners.map(t => pickCount[t] || 0));
+        winners = winners.filter(t => (pickCount[t] || 0) === maxPicks);
+    }
+
+    // Step 3 — final fallback: among any remaining ties, pick the trait that
+    // was most recently incremented in the user's answer sequence. Same
+    // answers always produce the same result (deterministic).
     let resultTrait = winners[0];
     for (let i = scoreOrder.length - 1; i >= 0; i--) {
         if (winners.includes(scoreOrder[i])) {
