@@ -5371,7 +5371,7 @@ body::before {
 
 .eval-bar-locked-left {
     left: 0;
-    width: 40%;
+    width: 25%;
     border-radius: 4px 0 0 4px;
     opacity: 0.55;
 }
@@ -5404,7 +5404,7 @@ body::before {
 
 .eval-bar-locked-right {
     right: 0;
-    width: 40%;
+    width: 25%;
     border-radius: 0 4px 4px 0;
     background:
         repeating-linear-gradient(
@@ -5492,10 +5492,10 @@ body::before {
     height: 4px;
     background: linear-gradient(to right,
         rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.05) var(--limit-min, 0%),
-        rgba(255, 255, 255, 0.15) var(--limit-min, 0%),
-        rgba(255, 255, 255, 0.15) var(--limit-max, 100%),
-        rgba(255, 255, 255, 0.05) var(--limit-max, 100%),
+        rgba(255, 255, 255, 0.05) var(--limit-min, 25%),
+        rgba(255, 255, 255, 0.15) var(--limit-min, 25%),
+        rgba(255, 255, 255, 0.15) var(--limit-max, 75%),
+        rgba(255, 255, 255, 0.05) var(--limit-max, 75%),
         rgba(255, 255, 255, 0.05) 100%
     );
     border-radius: 2px;
@@ -5522,10 +5522,10 @@ body::before {
     height: 4px;
     background: linear-gradient(to right,
         rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.05) var(--limit-min, 0%),
-        rgba(255, 255, 255, 0.15) var(--limit-min, 0%),
-        rgba(255, 255, 255, 0.15) var(--limit-max, 100%),
-        rgba(255, 255, 255, 0.05) var(--limit-max, 100%),
+        rgba(255, 255, 255, 0.05) var(--limit-min, 25%),
+        rgba(255, 255, 255, 0.15) var(--limit-min, 25%),
+        rgba(255, 255, 255, 0.15) var(--limit-max, 75%),
+        rgba(255, 255, 255, 0.05) var(--limit-max, 75%),
         rgba(255, 255, 255, 0.05) 100%
     );
     border-radius: 2px;
