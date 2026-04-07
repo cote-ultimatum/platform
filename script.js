@@ -1998,11 +1998,13 @@ function initAdminApp() {
         passwordInput.addEventListener('input', () => playSound('type'));
     }
 
-    // Enter key on username field moves to password
+    // Enter key on username field attempts login — handleAdminLogin's
+    // validation will surface the missing-password error and focus the
+    // password field for the user.
     if (usernameInput) {
         usernameInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                passwordInput.focus();
+                handleAdminLogin();
             }
         });
         usernameInput.addEventListener('focus', () => playSound('select'));
