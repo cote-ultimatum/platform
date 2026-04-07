@@ -2802,31 +2802,16 @@ function openStudentModal(student) {
         select.innerHTML =
             `<option value="">No Trait</option>` +
             `<optgroup label="Positive">` +
-            def.positive.map(t => `<option value="${t}" class="trait-opt-positive">▲ ${t}</option>`).join('') +
+            def.positive.map(t => `<option value="${t}">▲ ${t}</option>`).join('') +
             `</optgroup>` +
             `<optgroup label="Negative">` +
-            def.negative.map(t => `<option value="${t}" class="trait-opt-negative">▼ ${t}</option>`).join('') +
+            def.negative.map(t => `<option value="${t}">▼ ${t}</option>`).join('') +
             `</optgroup>`;
         select.value = student?.traits?.[category] || '';
-        updateAdminTraitSelectColor(select, def);
-        // Bind once: re-color whenever the user picks a different option
-        if (!select.dataset.colorBound) {
-            select.dataset.colorBound = '1';
-            select.addEventListener('change', () => {
-                updateAdminTraitSelectColor(select, traitDefinitions[category]);
-            });
-        }
     });
 
     // Show modal
     modal.classList.add('active');
-}
-
-function updateAdminTraitSelectColor(select, def) {
-    select.classList.remove('trait-positive', 'trait-negative');
-    if (!select.value) return;
-    if (def.positive.includes(select.value)) select.classList.add('trait-positive');
-    else if (def.negative.includes(select.value)) select.classList.add('trait-negative');
 }
 
 function closeStudentModal() {

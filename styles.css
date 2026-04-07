@@ -4453,24 +4453,6 @@ body::before {
     align-self: center;
 }
 
-/* Trait dropdown polarity colors — applied to <option> in the open list
-   AND to the closed select via inline class hooks toggled in JS. */
-.admin-trait-select.trait-positive {
-    color: #22c55e;
-    border-color: rgba(34, 197, 94, 0.5);
-}
-.admin-trait-select.trait-negative {
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.5);
-}
-.admin-trait-select option.trait-opt-positive {
-    color: #22c55e;
-    background: #0f1a2e;
-}
-.admin-trait-select option.trait-opt-negative {
-    color: #ef4444;
-    background: #0f1a2e;
-}
 .image-framer-reset {
     padding: 0.35rem 0.65rem;
     font-size: 0.65rem;
