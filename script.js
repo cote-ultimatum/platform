@@ -1417,6 +1417,18 @@ function showStudentProfile(student, addToHistory = true) {
         }, 100 + i * 80);
     });
 
+    // Download button handler
+    const dlBtn = document.getElementById('profile-download-btn');
+    if (dlBtn && !dlBtn.dataset.bound) {
+        dlBtn.dataset.bound = '1';
+        dlBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playSound('click');
+            if (state.currentStudent) exportEnrolledStudent(state.currentStudent);
+        });
+        dlBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+
     // Favorite button handler
     const favBtn = document.querySelector('.favorite-btn');
     if (favBtn) {
@@ -2721,6 +2733,9 @@ function renderAdminStudentList() {
                     <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
                 </div>
                 <div class="admin-student-grade">${overallGrade}</div>
+                <button class="admin-student-download" data-download-key="${student._firebaseKey || student.id}" title="Download student card" aria-label="Download student card">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
                 <button class="admin-student-retire" data-retire-key="${student._firebaseKey || student.id}" title="${retireTitle}" aria-label="${retireTitle}">
                     ${student.retired
                         ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
@@ -2731,10 +2746,25 @@ function renderAdminStudentList() {
         `;
     }).join('');
 
-    // Click on item (excluding retire button) opens edit modal
+    // Download button
+    container.querySelectorAll('.admin-student-download').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.downloadKey;
+            const student = adminState.students.find(s => (s._firebaseKey || s.id) === key);
+            if (student) {
+                playSound('click');
+                exportEnrolledStudent(student);
+            }
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    // Click on item (excluding retire/download button) opens edit modal
     container.querySelectorAll('.admin-student-item').forEach(item => {
         item.addEventListener('click', (e) => {
             if (e.target.closest('.admin-student-retire')) return;
+            if (e.target.closest('.admin-student-download')) return;
             const key = item.dataset.studentKey;
             const student = adminState.students.find(s => (s._firebaseKey || s.id) === key);
             if (student) {
@@ -4024,8 +4054,33 @@ function updateCreatorPreview() {
     `;
 }
 
+function exportEnrolledStudent(student) {
+    return exportStudentCard(student, {
+        status: 'ACCEPTED',
+        statusColor: '#22c55e',
+        statusBg: 'rgba(34,197,94,0.08)',
+        statusGlow: 'rgba(34,197,94,0.4)',
+        footerText: `Official student record · <span style="color:#4dc9e6;font-weight:600;">COTE: ULTIMATUM</span> roster`
+    });
+}
+
 async function exportCharacterPDF() {
-    const char = creatorState.character;
+    return exportStudentCard(creatorState.character, {
+        status: 'PENDING',
+        statusColor: '#f59e0b',
+        statusBg: 'rgba(245,158,11,0.08)',
+        statusGlow: 'rgba(245,158,11,0.4)',
+        footerText: `To apply, post this image in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server.`
+    });
+}
+
+async function exportStudentCard(subject, opts = {}) {
+    const char = subject;
+    const status = opts.status || 'PENDING';
+    const statusColor = opts.statusColor || '#f59e0b';
+    const statusBg = opts.statusBg || 'rgba(245,158,11,0.08)';
+    const statusGlow = opts.statusGlow || 'rgba(245,158,11,0.4)';
+    const footerText = opts.footerText || '';
     // Pre-render the user's photo into a fixed 480x480 canvas (2x the export
     // box for sharpness on the 2x html2canvas scale) with contain semantics.
     // This sidesteps html2canvas's unreliable handling of flex centering and
@@ -4065,7 +4120,7 @@ async function exportCharacterPDF() {
     const statsHTML = statMeta.map(meta => {
         const value = char.stats[meta.key];
         const grade = getGradeFromValue(value);
-        const trait = char.traits[meta.key];
+        const trait = char.traits?.[meta.key];
         let traitHTML = '';
         if (trait) {
             const isPositive = traitDefinitions[meta.key].positive.includes(trait);
@@ -4122,9 +4177,9 @@ async function exportCharacterPDF() {
                     <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1;">${char.name || 'Unnamed'}</div>
                     <div style="font-size:14px;line-height:1;color:#94a3b8;margin-top:8px;">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</div>
                 </div>
-                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid #f59e0b;border-radius:8px;background:rgba(245,158,11,0.08);">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
                     <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">STATUS</div>
-                    <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,0.4);">PENDING</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:${statusColor};text-shadow:0 0 10px ${statusGlow};">${status}</div>
                 </div>
             </div>
 
@@ -4150,7 +4205,7 @@ async function exportCharacterPDF() {
             </div>
 
             <div style="margin:0 28px 20px;padding:13px 20px 11px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:11px;line-height:1;color:#64748b;font-family:'Inter',sans-serif;">To apply, post this image in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server.</span>
+                <span style="font-size:11px;line-height:1;color:#64748b;font-family:'Inter',sans-serif;">${footerText}</span>
                 <span style="font-size:11px;line-height:1;color:#475569;font-family:'Inter',sans-serif;white-space:nowrap;margin-left:16px;">${appDate}</span>
             </div>
         </div>
