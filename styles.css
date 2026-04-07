@@ -4289,6 +4289,8 @@ body::before {
     color: var(--text-primary);
     font-size: 0.9rem;
     cursor: pointer;
+    text-align: center;
+    text-align-last: center;
 }
 
 .admin-form-row input:focus,
