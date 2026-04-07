@@ -2743,7 +2743,7 @@ function renderAdminStudentList() {
                 }
                 <div class="admin-student-info">
                     <div class="admin-student-name">${student.name || 'Unknown'}</div>
-                    <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'} · ${student.id || 'No ID'}</div>
+                    <div class="admin-student-meta">${student.year}${yearSuffix} Year - Class ${student.class || '?'}</div>
                 </div>
                 <div class="admin-student-grade">${overallGrade}</div>
                 <button class="admin-student-download" data-download-key="${student._firebaseKey || student.id}" title="Download student card" aria-label="Download student card">
