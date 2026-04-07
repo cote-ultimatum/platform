@@ -5200,14 +5200,14 @@ body::before {
 .trait-badge.positive,
 .eval-card-trait .trait-badge.positive {
     background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    border: 1px solid rgba(34, 197, 94, 0.4);
     color: #22c55e;
 }
 
 .trait-badge.negative,
 .eval-card-trait .trait-badge.negative {
     background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.4);
     color: #ef4444;
 }
 
