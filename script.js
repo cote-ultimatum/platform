@@ -2926,15 +2926,7 @@ async function saveStudent() {
         if (val) traits[category] = val;
     });
 
-    // Preserve existing id on edit; generate one for new students (and backfill
-    // any legacy student that was added before IDs were auto-assigned). Format
-    // matches the seeded roster: S{YY}T{6 random digits}.
-    const existingId = adminState.editingStudent?.id;
-    const yy = String(year).padStart(2, '0');
-    const studentId = existingId || `S${yy}T${String(Math.floor(Math.random() * 1000000)).padStart(6, '0')}`;
-
     const studentData = {
-        id: studentId,
         name: name,
         year: year,
         class: studentClass,
