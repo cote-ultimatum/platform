@@ -4046,13 +4046,13 @@ function exportCharacterPDF() {
 
             <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);position:relative;">
                 <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
-                <div>
-                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1.2;">${char.name || 'Unnamed'}</div>
-                    <div style="font-size:14px;color:#94a3b8;margin-top:6px;">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</div>
+                <div style="display:flex;flex-direction:column;justify-content:center;">
+                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1;">${char.name || 'Unnamed'}</div>
+                    <div style="font-size:14px;line-height:1;color:#94a3b8;margin-top:8px;">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</div>
                 </div>
-                <div style="text-align:center;padding:10px 18px;border:1px solid #f59e0b;border-radius:8px;background:rgba(245,158,11,0.08);">
-                    <div style="font-size:9px;color:#64748b;letter-spacing:0.1em;margin-bottom:3px;">STATUS</div>
-                    <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,0.4);">PENDING</div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid #f59e0b;border-radius:8px;background:rgba(245,158,11,0.08);">
+                    <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">STATUS</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,0.4);">PENDING</div>
                 </div>
             </div>
 
@@ -4064,9 +4064,9 @@ function exportCharacterPDF() {
                             : `<div style="color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
                         }
                     </div>
-                    <div style="width:240px;text-align:center;padding:16px 0;background:linear-gradient(135deg,#dc2626,#ef4444);border-radius:12px;box-shadow:0 0 20px rgba(231,76,60,0.3);">
-                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.7);font-family:'Orbitron',monospace;">Overall Rating</div>
-                        <div style="font-size:40px;font-weight:900;color:#fff;font-family:'Orbitron',monospace;line-height:1.1;margin-top:6px;text-shadow:0 2px 10px rgba(0,0,0,0.3);">${overallGrade}</div>
+                    <div style="width:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 0 14px;background:linear-gradient(135deg,#dc2626,#ef4444);border-radius:12px;box-shadow:0 0 20px rgba(231,76,60,0.3);">
+                        <div style="font-size:10px;line-height:1;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.7);font-family:'Orbitron',monospace;">Overall Rating</div>
+                        <div style="font-size:40px;font-weight:900;color:#fff;font-family:'Orbitron',monospace;line-height:1;margin-top:8px;text-shadow:0 2px 10px rgba(0,0,0,0.3);">${overallGrade}</div>
                     </div>
                 </div>
 
@@ -4077,9 +4077,9 @@ function exportCharacterPDF() {
                 </div>
             </div>
 
-            <div style="margin:0 28px 20px;padding:12px 20px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:11px;color:#64748b;font-family:'Inter',sans-serif;">To apply, post this image in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server.</span>
-                <span style="font-size:11px;color:#475569;font-family:'Inter',sans-serif;">${appDate}</span>
+            <div style="margin:0 28px 20px;padding:13px 20px 11px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11px;line-height:1;color:#64748b;font-family:'Inter',sans-serif;">To apply, post this image in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server.</span>
+                <span style="font-size:11px;line-height:1;color:#475569;font-family:'Inter',sans-serif;white-space:nowrap;margin-left:16px;">${appDate}</span>
             </div>
         </div>
     `;
