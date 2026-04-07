@@ -5184,6 +5184,7 @@ body::before {
     display: none;
 }
 
+.trait-badge,
 .eval-card-trait .trait-badge {
     display: inline-flex;
     align-items: center;
@@ -5196,29 +5197,40 @@ body::before {
     letter-spacing: 0.03em;
 }
 
+.trait-badge.positive,
 .eval-card-trait .trait-badge.positive {
     background: rgba(34, 197, 94, 0.15);
     border: 1px solid rgba(34, 197, 94, 0.3);
     color: #22c55e;
 }
 
+.trait-badge.negative,
 .eval-card-trait .trait-badge.negative {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.3);
     color: #ef4444;
 }
 
+.trait-icon,
 .eval-card-trait .trait-icon {
     font-size: 0.6rem;
     margin-right: 0.25rem;
 }
 
+.trait-icon.positive,
 .eval-card-trait .trait-icon.positive {
     color: #22c55e;
 }
 
+.trait-icon.negative,
 .eval-card-trait .trait-icon.negative {
     color: #ef4444;
+}
+
+/* Spacing when the badge sits under a stat bar (OAA profile + creator
+   live preview), since the bar leaves no breathing room by default. */
+.stat-row .trait-badge {
+    margin-top: 0.4rem;
 }
 
 .eval-card-trait .trait-badge.clickable {

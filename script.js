@@ -1394,7 +1394,10 @@ function showStudentProfile(student, addToHistory = true) {
         let traitHTML = '';
         if (trait) {
             const isPositive = traitDefinitions[key]?.positive?.includes(trait);
-            traitHTML = `<span class="stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+            const icon = isPositive
+                ? '<span class="trait-icon positive">▲</span>'
+                : '<span class="trait-icon negative">▼</span>';
+            traitHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${icon}<span class="trait-name">${trait}</span></span>`;
         }
         const row = document.createElement('div');
         row.className = 'stat-row';
@@ -3911,7 +3914,10 @@ function updateCreatorPreview() {
         let traitHTML = '';
         if (trait) {
             const isPositive = traitDefinitions[key].positive.includes(trait);
-            traitHTML = `<span class="stat-trait ${isPositive ? 'positive' : 'negative'}">${trait}</span>`;
+            const icon = isPositive
+                ? '<span class="trait-icon positive">▲</span>'
+                : '<span class="trait-icon negative">▼</span>';
+            traitHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${icon}<span class="trait-name">${trait}</span></span>`;
         }
         return `
             <div class="stat-row">
