@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050a12"/>
+      <stop offset="60%" stop-color="#0a1220"/>
+      <stop offset="100%" stop-color="#0f1a2e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#4dc9e6" stop-opacity="0.18"/>
+      <stop offset="60%" stop-color="#4dc9e6" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#4dc9e6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="silhouette" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <ellipse cx="256" cy="256" rx="240" ry="240" fill="url(#glow)"/>
+
+  <!-- Corner brackets -->
+  <path d="M460 30 L482 30 L482 52" stroke="#4dc9e6" stroke-width="3" stroke-opacity="0.45" fill="none" stroke-linecap="round"/>
+  <path d="M30 460 L30 482 L52 482" stroke="#4dc9e6" stroke-width="3" stroke-opacity="0.45" fill="none" stroke-linecap="round"/>
+  <path d="M30 30 L52 30 M30 30 L30 52" stroke="#4dc9e6" stroke-width="3" stroke-opacity="0.45" fill="none" stroke-linecap="round"/>
+  <path d="M482 482 L460 482 M482 482 L482 460" stroke="#4dc9e6" stroke-width="3" stroke-opacity="0.45" fill="none" stroke-linecap="round"/>
+
+  <!-- Silhouette: head + shoulders, centered -->
+  <g transform="translate(256, 256)">
+    <!-- Shoulders / torso curve -->
+    <path d="M -150 180 C -150 70, -90 30, 0 30 C 90 30, 150 70, 150 180 Z" fill="url(#silhouette)" stroke="#1e293b" stroke-width="2"/>
+    <!-- Head -->
+    <circle cx="0" cy="-50" r="80" fill="url(#silhouette)" stroke="#1e293b" stroke-width="2"/>
+    <!-- Subtle inner edge highlight on head -->
+    <circle cx="0" cy="-50" r="80" fill="none" stroke="#4dc9e6" stroke-width="1" stroke-opacity="0.25"/>
+  </g>
+
+  <!-- Question mark inside the head -->
+  <text x="256" y="232" text-anchor="middle" font-family="Orbitron, 'Trebuchet MS', sans-serif" font-size="80" font-weight="900" fill="#4dc9e6" fill-opacity="0.6">?</text>
+
+</svg>

@@ -347,6 +347,23 @@ async function setClassPointsWithLog(pointsData, userName, changes) {
     }
 }
 
+// Add a generic changelog entry (used for non-points admin actions like add/edit/delete/retire)
+async function addChangelogEntry(userName, changes) {
+    if (!dbState.initialized) return false;
+    try {
+        const logEntry = {
+            user: userName,
+            changes: Array.isArray(changes) ? changes : [changes],
+            timestamp: Date.now()
+        };
+        await firebase.database().ref('changelog').push(logEntry);
+        return true;
+    } catch (error) {
+        console.error('Error adding changelog entry:', error);
+        return false;
+    }
+}
+
 // Get recent changelog entries
 async function getChangelog(limit = 10) {
     if (!dbState.initialized) {
@@ -565,6 +582,7 @@ window.COTEDB = {
     // Admin functions
     verifyAdmin: verifyAdmin,
     setClassPointsWithLog: setClassPointsWithLog,
+    addChangelogEntry: addChangelogEntry,
     getChangelog: getChangelog,
     // Student functions
     getStudents: getStudents,

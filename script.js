@@ -2533,6 +2533,12 @@ async function confirmAdminSave() {
     }
 }
 
+// Log a generic admin action to the changelog (add/edit/delete/retire student, etc.)
+function logAdminAction(text) {
+    const userName = adminState.displayName || adminState.currentUser || 'Admin';
+    return COTEDB.addChangelogEntry(userName, [text]);
+}
+
 async function loadAdminChangelog() {
     const container = document.getElementById('admin-changelog');
     if (!container) return;
@@ -2800,6 +2806,7 @@ function renderAdminStudentList() {
                     renderAdminStudentList();
                     // Refresh OAA data so the change reflects there
                     await loadStudentsFromDB();
+                    logAdminAction(`${newRetired ? 'Retired' : 'Reinstated'} student ${student.name} (${student.id})`);
                 }
             } catch (err) {
                 console.error('Retire toggle failed:', err);
@@ -2950,6 +2957,8 @@ async function saveStudent() {
             // Update existing student
             const key = adminState.editingStudent._firebaseKey;
             if (key) {
+                const editedName = adminState.editingStudent.name;
+                const editedId = adminState.editingStudent.id;
                 const [success] = await Promise.all([COTEDB.updateStudent(key, studentData), minDelay]);
                 if (success) {
                     playSound('success');
@@ -2957,6 +2966,7 @@ async function saveStudent() {
                     await loadAdminStudents();
                     // Refresh OAA view if visible
                     renderClassCards();
+                    logAdminAction(`Edited student ${editedName} (${editedId})`);
                 } else {
                     playSound('error');
                 }
@@ -2969,6 +2979,8 @@ async function saveStudent() {
                 closeStudentModal();
                 await loadAdminStudents();
                 renderClassCards();
+                const added = result.student || studentData;
+                logAdminAction(`Added student ${added.name} (${added.id})`);
             } else {
                 playSound('error');
             }
@@ -3018,6 +3030,8 @@ async function confirmDeleteStudent() {
     // Minimum delay so the loading state doesn't flash
     const minDelay = new Promise(resolve => setTimeout(resolve, 600));
 
+    const deletedName = adminState.editingStudent.name;
+    const deletedId = adminState.editingStudent.id;
     try {
         const [success] = await Promise.all([COTEDB.deleteStudent(key), minDelay]);
         if (success) {
@@ -3025,6 +3039,7 @@ async function confirmDeleteStudent() {
             closeStudentModal();
             await loadAdminStudents();
             renderClassCards();
+            logAdminAction(`Deleted student ${deletedName} (${deletedId})`);
         } else {
             showErrorToast('Failed to delete');
         }
