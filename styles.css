@@ -5227,6 +5227,10 @@ body::before {
     border-color: rgba(239, 68, 68, 0.3);
 }
 
+.eval-card.trait-neutral {
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
 /* Card Header */
 .eval-card-header {
     display: flex;
@@ -5276,6 +5280,13 @@ body::before {
     color: #ef4444;
 }
 
+.trait-badge.neutral,
+.eval-card-trait .trait-badge.neutral {
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    color: #94a3b8;
+}
+
 .trait-icon,
 .eval-card-trait .trait-icon {
     font-size: 0.6rem;
@@ -5290,6 +5301,11 @@ body::before {
 .trait-icon.negative,
 .eval-card-trait .trait-icon.negative {
     color: #ef4444;
+}
+
+.trait-icon.neutral,
+.eval-card-trait .trait-icon.neutral {
+    color: #94a3b8;
 }
 
 /* Spacing when the badge sits under a stat bar (OAA profile + creator

@@ -1391,14 +1391,7 @@ function showStudentProfile(student, addToHistory = true) {
     statKeys.forEach((key, i) => {
         const value = student.stats[key] || 50;
         const trait = student.traits?.[key];
-        let traitHTML = '';
-        if (trait) {
-            const isPositive = traitDefinitions[key]?.positive?.includes(trait);
-            const icon = isPositive
-                ? '<span class="trait-icon positive">▲</span>'
-                : '<span class="trait-icon negative">▼</span>';
-            traitHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${icon}<span class="trait-name">${trait}</span></span>`;
-        }
+        const traitHTML = trait ? buildTraitBadgeHTML(key, trait) : '';
         const row = document.createElement('div');
         row.className = 'stat-row';
         row.innerHTML = `
@@ -2863,6 +2856,11 @@ function openStudentModal(student) {
             `<optgroup label="Positive">` +
             def.positive.map(t => `<option value="${t}">▲ ${t}</option>`).join('') +
             `</optgroup>` +
+            (def.neutral && def.neutral.length ? (
+                `<optgroup label="Neutral">` +
+                def.neutral.map(t => `<option value="${t}">◆ ${t}</option>`).join('') +
+                `</optgroup>`
+            ) : '') +
             `<optgroup label="Negative">` +
             def.negative.map(t => `<option value="${t}">▼ ${t}</option>`).join('') +
             `</optgroup>`;
@@ -3081,75 +3079,127 @@ const creatorState = {
 // Trait definitions
 const traitDefinitions = {
     academic: {
-        positive: ['Scholar', 'Prodigy'],
-        negative: ['Slacker', 'Scatterbrained'],
+        positive: ['Scholar', 'Prodigy', 'Curious'],
+        negative: ['Slacker', 'Scatterbrained', 'Procrastinator'],
+        neutral: ['Selective', 'Self-Taught', 'Hands-On'],
         descriptions: {
             'Scholar': 'Dedicated to learning, excels through hard work',
             'Prodigy': 'Natural academic talent, effortless high performance',
+            'Curious': 'Driven by genuine interest, learns broadly across topics',
             'Slacker': 'Avoids academic effort, consistently unprepared',
-            'Scatterbrained': 'Can\'t focus, jumps between interests'
+            'Scatterbrained': 'Can\'t focus, jumps between interests',
+            'Procrastinator': 'Means well but puts everything off until it\'s too late',
+            'Selective': 'Excels in the subjects they care about, ignores the rest',
+            'Self-Taught': 'Learns outside the system, methods are their own',
+            'Hands-On': 'Learns by doing, not by reading'
         }
     },
     intelligence: {
-        positive: ['Genius', 'Perceptive'],
-        negative: ['Oblivious', 'Trusting'],
+        positive: ['Genius', 'Perceptive', 'Cunning'],
+        negative: ['Oblivious', 'Trusting', 'Forgetful'],
+        neutral: ['Intuitive', 'Skeptical', 'Logical'],
         descriptions: {
             'Genius': 'Exceptional problem-solving, complex reasoning',
             'Perceptive': 'Notices details, reads between the lines',
+            'Cunning': 'Sharp and self-serving, finds angles others miss',
             'Oblivious': 'Misses obvious information, poor awareness',
-            'Trusting': 'Believes in people, vulnerable to deception'
+            'Trusting': 'Believes in people, vulnerable to deception',
+            'Forgetful': 'Knows the answer, can\'t recall it when it matters',
+            'Intuitive': 'Trusts gut over logic, often right but can\'t explain',
+            'Skeptical': 'Questions everything, slow to accept new ideas',
+            'Logical': 'Strict reasoning, no shortcuts'
         }
     },
     decision: {
-        positive: ['Tactician', 'Decisive'],
-        negative: ['Impulsive', 'Cautious'],
+        positive: ['Tactician', 'Decisive', 'Practical'],
+        negative: ['Impulsive', 'Cautious', 'Stubborn'],
+        neutral: ['Adaptive', 'Calm', 'Patient'],
         descriptions: {
             'Tactician': 'Plans ahead, outmaneuvers opponents',
             'Decisive': 'Quick confident choices, fully commits',
+            'Practical': 'Picks what works over what feels right',
             'Impulsive': 'Acts on emotion, doesn\'t think ahead',
-            'Cautious': 'Hesitates, struggles to commit under pressure'
+            'Cautious': 'Hesitates, struggles to commit under pressure',
+            'Stubborn': 'Locks in a choice and refuses to pivot, even when wrong',
+            'Adaptive': 'Reads each situation fresh, no fixed playbook',
+            'Calm': 'Unfazed by pressure, makes the same call calm or panicked',
+            'Patient': 'Waits for the right moment to act'
         }
     },
     physical: {
-        positive: ['Athlete', 'Combatant'],
-        negative: ['Frail', 'Sluggish'],
+        positive: ['Athlete', 'Combatant', 'Resilient'],
+        negative: ['Frail', 'Sluggish', 'Clumsy'],
+        neutral: ['Active', 'Coordinated', 'Sturdy'],
         descriptions: {
             'Athlete': 'Peak condition, excels in sports/physical tasks',
             'Combatant': 'Skilled fighter, dominates confrontations',
+            'Resilient': 'Soaks damage and bounces back, hard to wear down',
             'Frail': 'Weak constitution, struggles physically',
-            'Sluggish': 'Slow, avoids physical activity'
+            'Sluggish': 'Slow, avoids physical activity',
+            'Clumsy': 'Uncoordinated, trips over their own feet',
+            'Active': 'Likes movement and physical play, no formal training',
+            'Coordinated': 'Moves with precision and balance',
+            'Sturdy': 'Solid build, baseline durable'
         }
     },
     cooperativeness: {
-        positive: ['Diplomat', 'Loyal'],
-        negative: ['Lone Wolf', 'Two-Faced'],
+        positive: ['Diplomat', 'Loyal', 'Charismatic'],
+        negative: ['Lone Wolf', 'Two-Faced', 'Selfish'],
+        neutral: ['Reserved', 'Independent', 'Observant'],
         descriptions: {
             'Diplomat': 'Mediates conflicts, builds alliances',
             'Loyal': 'Trustworthy, dedicated teammate',
+            'Charismatic': 'Naturally draws people in, easy to follow',
             'Lone Wolf': 'Works alone, unreliable in teams',
-            'Two-Faced': 'Hides true intentions, adapts persona'
+            'Two-Faced': 'Hides true intentions, adapts persona',
+            'Selfish': 'Looks out for themselves first, always',
+            'Reserved': 'Present but holds back, neither warm nor hostile',
+            'Independent': 'Joins teams when it suits them, leaves when it doesn\'t',
+            'Observant': 'Watches the group instead of joining in'
         }
     }
 };
 
+// Get the polarity of a trait within its category: 'positive', 'negative', or 'neutral'.
+// Returns null if the trait is unknown / not set.
+function getTraitPolarity(category, trait) {
+    if (!trait) return null;
+    const def = traitDefinitions[category];
+    if (!def) return null;
+    if (def.positive.includes(trait)) return 'positive';
+    if (def.negative.includes(trait)) return 'negative';
+    if (def.neutral && def.neutral.includes(trait)) return 'neutral';
+    return null;
+}
+
+// Build the trait badge HTML for a given category + trait. Used by OAA profile,
+// creator preview, and the post-quiz reveal so all three render identically.
+function buildTraitBadgeHTML(category, trait, opts = {}) {
+    const polarity = getTraitPolarity(category, trait);
+    if (!polarity) return '';
+    const icon = polarity === 'positive' ? '▲' : polarity === 'negative' ? '▼' : '◆';
+    const extraClass = opts.clickable ? ' clickable' : '';
+    const onclick = opts.clickable ? ` onclick="clearTrait('${category}')" title="Click to remove"` : '';
+    return `<span class="trait-badge ${polarity}${extraClass}"${onclick}><span class="trait-icon ${polarity}">${icon}</span><span class="trait-name">${trait}</span></span>`;
+}
+
 // Get stat limits based on trait
-// No trait = narrow middle (40-60), traits EXPAND the range
+// No trait or neutral trait = default 25-75 band, pos/neg unlock one side
 function getStatLimitsFromTrait(category) {
     const trait = creatorState.character.traits[category];
+    const def = traitDefinitions[category];
 
     if (!trait) {
-        // No trait = narrow safe range in the middle
-        return { min: 40, max: 60 };
+        return { min: 25, max: 75 };
     }
-
-    const isPositive = traitDefinitions[category].positive.includes(trait);
-    if (isPositive) {
-        // Positive trait = expands upward (can reach 100)
-        return { min: 40, max: 100 };
-    } else {
-        // Negative trait = expands downward (can go to 0)
-        return { min: 0, max: 60 };
+    if (def.positive.includes(trait)) {
+        return { min: 50, max: 100 };
     }
+    if (def.negative.includes(trait)) {
+        return { min: 0, max: 50 };
+    }
+    // Neutral trait — same as no trait
+    return { min: 25, max: 75 };
 }
 
 // Apply trait limits to a stat slider
@@ -3204,13 +3254,13 @@ function applyTraitLimits(category) {
 
     // Update card state
     if (card) {
+        card.classList.remove('trait-positive', 'trait-negative', 'trait-neutral');
         if (trait) {
             card.classList.add('has-trait');
-            const isPositive = traitDefinitions[category]?.positive.includes(trait);
-            card.classList.remove('trait-positive', 'trait-negative');
-            card.classList.add(isPositive ? 'trait-positive' : 'trait-negative');
+            const polarity = getTraitPolarity(category, trait);
+            if (polarity) card.classList.add(`trait-${polarity}`);
         } else {
-            card.classList.remove('has-trait', 'trait-positive', 'trait-negative');
+            card.classList.remove('has-trait');
         }
     }
 
@@ -3251,91 +3301,121 @@ function clearTrait(category) {
 }
 
 // Quiz questions for each category
+// Each option awards points to ONE specific trait. Common traits appear in 2
+// options worth 2 pts each, rare traits in 1 option worth 4 pts. Every trait
+// has equal max score (4) per category, so no trait has a winning advantage.
 const quizQuestions = {
     academic: [
         {
-            question: "When you have a difficult exam coming up, you typically...",
+            question: "When a difficult exam is approaching, you typically...",
             options: [
-                { text: "Create a study schedule and stick to it religiously", positive: true, type: 0 },
-                { text: "Already know the material from paying attention in class", positive: true, type: 1 },
-                { text: "Cram the night before and hope for the best", positive: false, type: 0 },
-                { text: "Get distracted by other interests and run out of time", positive: false, type: 1 }
+                { text: "Build a strict schedule and stick to it religiously", trait: 'Scholar', points: 2 },
+                { text: "Trust what you absorbed in class is enough", trait: 'Prodigy', points: 2 },
+                { text: "Dive into the topic because you find it interesting", trait: 'Curious', points: 2 },
+                { text: "Avoid even thinking about it until the last second", trait: 'Slacker', points: 2 }
             ]
         },
         {
-            question: "Your approach to homework is...",
+            question: "Your approach to homework is to...",
             options: [
-                { text: "Complete it thoroughly, often going beyond requirements", positive: true, type: 0 },
-                { text: "Finish quickly because it comes naturally to you", positive: true, type: 1 },
-                { text: "Do the minimum required, if at all", positive: false, type: 0 },
-                { text: "Start multiple assignments but rarely finish any", positive: false, type: 1 }
+                { text: "Do every assignment thoroughly, often beyond requirements", trait: 'Scholar', points: 2 },
+                { text: "Forget what was even assigned half the time", trait: 'Scatterbrained', points: 2 },
+                { text: "Always tell yourself \"I'll start it later\"", trait: 'Procrastinator', points: 2 },
+                { text: "Look up your own materials beyond the textbook", trait: 'Self-Taught', points: 4 }
             ]
         },
         {
-            question: "In group study sessions, you're usually...",
+            question: "When learning a brand new topic, you...",
             options: [
-                { text: "The one organizing notes and explaining concepts", positive: true, type: 0 },
-                { text: "Helping others because you already understand", positive: true, type: 1 },
-                { text: "There for the snacks, not really studying", positive: false, type: 0 },
-                { text: "Jumping between topics without focus", positive: false, type: 1 }
+                { text: "Pick it up effortlessly on the first try", trait: 'Prodigy', points: 2 },
+                { text: "Lose focus halfway through and drift off", trait: 'Scatterbrained', points: 2 },
+                { text: "Engage only with the parts that genuinely matter to you", trait: 'Selective', points: 2 },
+                { text: "Try it hands-on before reading any of the theory", trait: 'Hands-On', points: 4 }
+            ]
+        },
+        {
+            question: "Other students would describe you as...",
+            options: [
+                { text: "The endlessly curious one chasing every topic", trait: 'Curious', points: 2 },
+                { text: "The lazy one who could clearly do more if they tried", trait: 'Slacker', points: 2 },
+                { text: "The one who's always running behind on something", trait: 'Procrastinator', points: 2 },
+                { text: "The picky one who only engages with what they care about", trait: 'Selective', points: 2 }
             ]
         }
     ],
     intelligence: [
         {
-            question: "When someone tells you about an opportunity that sounds too good to be true...",
+            question: "Someone tells you about a deal that sounds too good to be true. You...",
             options: [
-                { text: "Analyze every detail and find the hidden catch", positive: true, type: 0 },
-                { text: "Notice subtle red flags others would miss", positive: true, type: 1 },
-                { text: "Take it at face value without much thought", positive: false, type: 0 },
-                { text: "Give them the benefit of the doubt", positive: false, type: 1 }
+                { text: "Analyze every angle to find the hidden catch", trait: 'Genius', points: 2 },
+                { text: "Pick up on subtle red flags they didn't realize they showed", trait: 'Perceptive', points: 2 },
+                { text: "Find a way to use this to your own advantage", trait: 'Cunning', points: 2 },
+                { text: "Don't notice anything's off", trait: 'Oblivious', points: 2 }
             ]
         },
         {
-            question: "When solving a complex problem, you prefer to...",
+            question: "When studying for tomorrow's quiz, you...",
             options: [
-                { text: "Break it into logical steps and solve systematically", positive: true, type: 0 },
-                { text: "Trust your intuition about what feels off", positive: true, type: 1 },
-                { text: "Let others figure it out while you wait", positive: false, type: 0 },
-                { text: "Believe the first reasonable solution offered", positive: false, type: 1 }
+                { text: "Absorb the material on first read", trait: 'Genius', points: 2 },
+                { text: "Believe whatever the textbook says without checking", trait: 'Trusting', points: 2 },
+                { text: "Just sense which parts will be on the test", trait: 'Intuitive', points: 2 },
+                { text: "Forget half of what you read by morning", trait: 'Forgetful', points: 4 }
             ]
         },
         {
-            question: "In conversations, you tend to...",
+            question: "When solving a complex problem, you tend to...",
             options: [
-                { text: "Analyze what people really mean, not just their words", positive: true, type: 0 },
-                { text: "Pick up on body language and subtle cues", positive: true, type: 1 },
-                { text: "Miss sarcasm or hints others catch easily", positive: false, type: 0 },
-                { text: "Take people's words at face value", positive: false, type: 1 }
+                { text: "Catch the small details others miss", trait: 'Perceptive', points: 2 },
+                { text: "Trust the first reasonable solution that comes up", trait: 'Trusting', points: 2 },
+                { text: "Question every claim in front of you", trait: 'Skeptical', points: 2 },
+                { text: "Work through every step methodically", trait: 'Logical', points: 4 }
+            ]
+        },
+        {
+            question: "In conversation, you usually...",
+            options: [
+                { text: "Find ways to win the argument no matter the topic", trait: 'Cunning', points: 2 },
+                { text: "Take whatever people say at face value", trait: 'Oblivious', points: 2 },
+                { text: "Just sense what they really mean without thinking", trait: 'Intuitive', points: 2 },
+                { text: "Question every assumption they're making", trait: 'Skeptical', points: 2 }
             ]
         }
     ],
     decision: [
         {
-            question: "When faced with an important choice, you usually...",
+            question: "When facing an important choice, you...",
             options: [
-                { text: "Plan out multiple scenarios before deciding", positive: true, type: 0 },
-                { text: "Make a quick decision and commit fully", positive: true, type: 1 },
-                { text: "Go with your gut without thinking it through", positive: false, type: 0 },
-                { text: "Wait as long as possible to avoid deciding", positive: false, type: 1 }
+                { text: "Plan multiple scenarios before deciding", trait: 'Tactician', points: 2 },
+                { text: "Make a quick decision and fully commit", trait: 'Decisive', points: 2 },
+                { text: "Act on emotion without thinking it through", trait: 'Impulsive', points: 2 },
+                { text: "Hesitate, afraid of making the wrong call", trait: 'Cautious', points: 2 }
             ]
         },
         {
-            question: "Under time pressure, you...",
+            question: "When your plan is starting to fail, you...",
             options: [
-                { text: "Fall back on plans you've already prepared", positive: true, type: 0 },
-                { text: "Thrive and make confident calls quickly", positive: true, type: 1 },
-                { text: "Act rashly and often regret it later", positive: false, type: 0 },
-                { text: "Freeze up and struggle to choose", positive: false, type: 1 }
+                { text: "Pivot smoothly because you anticipated this", trait: 'Tactician', points: 2 },
+                { text: "Refuse to change, double down on the original", trait: 'Stubborn', points: 2 },
+                { text: "Adjust your approach to whatever's working", trait: 'Adaptive', points: 2 },
+                { text: "Pick whichever option actually solves the problem", trait: 'Practical', points: 4 }
             ]
         },
         {
-            question: "When your plan starts failing, you...",
+            question: "Under intense pressure, you...",
             options: [
-                { text: "Adapt smoothly because you anticipated this", positive: true, type: 0 },
-                { text: "Pivot immediately to a new approach", positive: true, type: 1 },
-                { text: "Double down emotionally on the original plan", positive: false, type: 0 },
-                { text: "Become paralyzed waiting for more information", positive: false, type: 1 }
+                { text: "Commit to an answer fast and don't look back", trait: 'Decisive', points: 2 },
+                { text: "Lock onto your original choice no matter what", trait: 'Stubborn', points: 2 },
+                { text: "Stay unfazed and think clearly", trait: 'Calm', points: 2 },
+                { text: "Wait for the right moment instead of forcing one", trait: 'Patient', points: 4 }
+            ]
+        },
+        {
+            question: "A friend asks for advice on a tough call. You tell them to...",
+            options: [
+                { text: "Just go with their gut, don't overthink it", trait: 'Impulsive', points: 2 },
+                { text: "Wait and think it through more carefully", trait: 'Cautious', points: 2 },
+                { text: "Try something and adjust as they go", trait: 'Adaptive', points: 2 },
+                { text: "Stay calm and trust the process", trait: 'Calm', points: 2 }
             ]
         }
     ],
@@ -3343,28 +3423,37 @@ const quizQuestions = {
         {
             question: "Your typical morning routine involves...",
             options: [
-                { text: "A workout or training session", positive: true, type: 0 },
-                { text: "Physical activities or martial arts practice", positive: true, type: 1 },
-                { text: "Minimal movement, you tire easily", positive: false, type: 0 },
-                { text: "Sleeping in and avoiding exertion", positive: false, type: 1 }
+                { text: "A serious workout or training session", trait: 'Athlete', points: 2 },
+                { text: "Martial arts or combat practice", trait: 'Combatant', points: 2 },
+                { text: "Pushing through fatigue from yesterday", trait: 'Resilient', points: 2 },
+                { text: "Minimal movement, you tire easily", trait: 'Frail', points: 2 }
             ]
         },
         {
-            question: "In a physical confrontation, you would...",
+            question: "In a long, exhausting school day, you...",
             options: [
-                { text: "Rely on your athletic conditioning and stamina", positive: true, type: 0 },
-                { text: "Use combat skills or fighting experience", positive: true, type: 1 },
-                { text: "Struggle due to lack of strength or endurance", positive: false, type: 0 },
-                { text: "Be too slow to react effectively", positive: false, type: 1 }
+                { text: "Stay energized through the whole thing", trait: 'Athlete', points: 2 },
+                { text: "Can barely stay awake by lunch", trait: 'Sluggish', points: 2 },
+                { text: "Constantly drop or trip over things", trait: 'Clumsy', points: 2 },
+                { text: "Move with precise control through every task", trait: 'Coordinated', points: 4 }
             ]
         },
         {
-            question: "When your class has sports events, you're...",
+            question: "If a fight broke out near you, you would...",
             options: [
-                { text: "One of the top performers across events", positive: true, type: 0 },
-                { text: "The go-to person for competitive matches", positive: true, type: 1 },
-                { text: "Sitting out due to poor physical condition", positive: false, type: 0 },
-                { text: "Participating reluctantly and tiring quickly", positive: false, type: 1 }
+                { text: "Step in and handle it physically", trait: 'Combatant', points: 2 },
+                { text: "Be too slow to even react", trait: 'Sluggish', points: 2 },
+                { text: "Get involved instinctively, no training needed", trait: 'Active', points: 2 },
+                { text: "Take the hit and walk it off", trait: 'Sturdy', points: 4 }
+            ]
+        },
+        {
+            question: "When the class has a sports day, you're...",
+            options: [
+                { text: "The one who outlasts everyone else", trait: 'Resilient', points: 2 },
+                { text: "Sitting out because you're not strong enough", trait: 'Frail', points: 2 },
+                { text: "Tripping over your own feet trying to keep up", trait: 'Clumsy', points: 2 },
+                { text: "Throwing yourself into every event for fun", trait: 'Active', points: 2 }
             ]
         }
     ],
@@ -3372,28 +3461,37 @@ const quizQuestions = {
         {
             question: "When your class has internal conflict, you...",
             options: [
-                { text: "Work to mediate and find common ground", positive: true, type: 0 },
-                { text: "Stand firmly with your allies no matter what", positive: true, type: 1 },
-                { text: "Handle things yourself, teams slow you down", positive: false, type: 0 },
-                { text: "Adapt your position based on who you're with", positive: false, type: 1 }
+                { text: "Mediate between sides to find common ground", trait: 'Diplomat', points: 2 },
+                { text: "Stand firmly with your friends no matter what", trait: 'Loyal', points: 2 },
+                { text: "Calm everyone with your presence", trait: 'Charismatic', points: 2 },
+                { text: "Stay out of it, you handle yourself alone", trait: 'Lone Wolf', points: 2 }
             ]
         },
         {
-            question: "In team assignments, you prefer to...",
+            question: "In a team assignment, you...",
             options: [
-                { text: "Ensure everyone's voice is heard and valued", positive: true, type: 0 },
-                { text: "Support the team leader reliably", positive: true, type: 1 },
-                { text: "Do your part alone and minimize interaction", positive: false, type: 0 },
-                { text: "Tell different team members what they want to hear", positive: false, type: 1 }
+                { text: "Make sure everyone's voice is heard", trait: 'Diplomat', points: 2 },
+                { text: "Tell each person what they want to hear", trait: 'Two-Faced', points: 2 },
+                { text: "Take credit for other people's work", trait: 'Selfish', points: 2 },
+                { text: "Quietly note what each person is good at", trait: 'Observant', points: 4 }
             ]
         },
         {
-            question: "If a classmate needed help that could hurt your own standing, you would...",
+            question: "A friend asks for help that could hurt your own standing. You...",
             options: [
-                { text: "Help them and work to find a win-win solution", positive: true, type: 0 },
-                { text: "Help without hesitation, loyalty comes first", positive: true, type: 1 },
-                { text: "Focus on yourself, you can't risk your position", positive: false, type: 0 },
-                { text: "Appear helpful publicly while protecting yourself privately", positive: false, type: 1 }
+                { text: "Help them no matter the cost", trait: 'Loyal', points: 2 },
+                { text: "Promise to help, then quietly avoid it", trait: 'Two-Faced', points: 2 },
+                { text: "Listen sympathetically but don't commit either way", trait: 'Reserved', points: 2 },
+                { text: "Help if it suits your goals, otherwise no", trait: 'Independent', points: 4 }
+            ]
+        },
+        {
+            question: "Other students would describe you as...",
+            options: [
+                { text: "The one who pulls everyone together", trait: 'Charismatic', points: 2 },
+                { text: "The one who never joins group stuff", trait: 'Lone Wolf', points: 2 },
+                { text: "The one who only thinks about themselves", trait: 'Selfish', points: 2 },
+                { text: "The quiet one in the back", trait: 'Reserved', points: 2 }
             ]
         }
     ]
@@ -3780,9 +3878,7 @@ function openTraitQuiz(category) {
     creatorState.quizState = {
         category: category,
         questionIndex: 0,
-        scores: { positive: 0, negative: 0 },
-        positiveType: 0,
-        negativeType: 0,
+        traitScores: {},
         finished: false
     };
 
@@ -3869,7 +3965,7 @@ function showQuizQuestion() {
     const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
 
     optionsEl.innerHTML = shuffledOptions.map((opt, i) => `
-        <button class="trait-quiz-option" data-index="${i}" data-positive="${opt.positive}" data-type="${opt.type}">
+        <button class="trait-quiz-option" data-index="${i}" data-trait="${opt.trait}" data-points="${opt.points}">
             ${opt.text}
         </button>
     `).join('');
@@ -3886,15 +3982,12 @@ function selectQuizOption(btn) {
 
     playSound('click');
 
-    const isPositive = btn.dataset.positive === 'true';
-    const type = parseInt(btn.dataset.type);
+    const trait = btn.dataset.trait;
+    const points = parseInt(btn.dataset.points) || 0;
 
-    if (isPositive) {
-        creatorState.quizState.scores.positive++;
-        creatorState.quizState.positiveType += type;
-    } else {
-        creatorState.quizState.scores.negative++;
-        creatorState.quizState.negativeType += type;
+    if (trait) {
+        creatorState.quizState.traitScores[trait] =
+            (creatorState.quizState.traitScores[trait] || 0) + points;
     }
 
     creatorState.quizState.questionIndex++;
@@ -3910,26 +4003,14 @@ function selectQuizOption(btn) {
 }
 
 function finishQuiz() {
-    const { category, scores, positiveType, negativeType } = creatorState.quizState;
-    const traits = traitDefinitions[category];
+    const { category, traitScores } = creatorState.quizState;
 
-    let resultTrait;
-    if (scores.positive > scores.negative) {
-        // More positive answers - pick positive trait based on type
-        const typeIndex = positiveType >= 1.5 ? 1 : 0;
-        resultTrait = traits.positive[typeIndex];
-    } else if (scores.negative > scores.positive) {
-        // More negative answers - pick negative trait based on type
-        const typeIndex = negativeType >= 1.5 ? 1 : 0;
-        resultTrait = traits.negative[typeIndex];
-    } else {
-        // Tie - use types to decide
-        if (positiveType > negativeType) {
-            resultTrait = traits.positive[1];
-        } else {
-            resultTrait = traits.negative[1];
-        }
-    }
+    // Find the highest score; collect all traits tied at that score
+    let topScore = -Infinity;
+    Object.values(traitScores).forEach(s => { if (s > topScore) topScore = s; });
+    const winners = Object.keys(traitScores).filter(t => traitScores[t] === topScore);
+    // Random tiebreak among ties
+    const resultTrait = winners[Math.floor(Math.random() * winners.length)];
 
     creatorState.character.traits[category] = resultTrait;
     creatorState.quizState.finished = true;
@@ -3940,19 +4021,10 @@ function finishQuiz() {
         btn.style.pointerEvents = 'none';
     });
 
-    // Determine trait polarity
-    const isPositive = traits.positive.includes(resultTrait);
-
     // Update UI with clickable badge (click to remove)
     const resultEl = document.getElementById(`trait-result-${category}`);
     if (resultEl) {
-        const icon = isPositive
-            ? '<span class="trait-icon positive">▲</span>'
-            : '<span class="trait-icon negative">▼</span>';
-        resultEl.innerHTML = `
-            <span class="trait-badge clickable ${isPositive ? 'positive' : 'negative'}" onclick="clearTrait('${category}')" title="Click to remove">
-                ${icon}<span class="trait-name">${resultTrait}</span>
-            </span>`;
+        resultEl.innerHTML = buildTraitBadgeHTML(category, resultTrait, { clickable: true });
     }
 
     // Update completion counter
@@ -3992,14 +4064,7 @@ function updateCreatorPreview() {
     const statsHTML = statKeys.map((key, i) => {
         const value = char.stats[key];
         const trait = char.traits[key];
-        let traitHTML = '';
-        if (trait) {
-            const isPositive = traitDefinitions[key].positive.includes(trait);
-            const icon = isPositive
-                ? '<span class="trait-icon positive">▲</span>'
-                : '<span class="trait-icon negative">▼</span>';
-            traitHTML = `<span class="trait-badge ${isPositive ? 'positive' : 'negative'}">${icon}<span class="trait-name">${trait}</span></span>`;
-        }
+        const traitHTML = trait ? buildTraitBadgeHTML(key, trait) : '';
         return `
             <div class="stat-row">
                 <div class="stat-header">
@@ -4136,12 +4201,13 @@ async function exportStudentCard(subject, opts = {}) {
         const trait = char.traits?.[meta.key];
         let traitHTML = '';
         if (trait) {
-            const isPositive = traitDefinitions[meta.key].positive.includes(trait);
-            const tColor = isPositive ? '#22c55e' : '#ef4444';
-            const tBg = isPositive ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
-            const tBorder = isPositive ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)';
-            const arrow = isPositive ? '▲' : '▼';
-            traitHTML = `<div style="margin-top:4px;"><span style="display:inline-block;padding:3px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};background:${tBg};border:1px solid ${tBorder};border-radius:4px;font-family:'Inter',sans-serif;"><span style="margin-right:4px;">${arrow}</span>${trait}</span></div>`;
+            const polarity = getTraitPolarity(meta.key, trait);
+            const palette = polarity === 'positive'
+                ? { c: '#22c55e', bg: 'rgba(34,197,94,0.15)', br: 'rgba(34,197,94,0.4)', ic: '▲' }
+                : polarity === 'negative'
+                ? { c: '#ef4444', bg: 'rgba(239,68,68,0.15)', br: 'rgba(239,68,68,0.4)', ic: '▼' }
+                : { c: '#94a3b8', bg: 'rgba(148,163,184,0.15)', br: 'rgba(148,163,184,0.4)', ic: '◆' };
+            traitHTML = `<div style="margin-top:4px;"><span style="display:inline-block;padding:3px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:${palette.c};background:${palette.bg};border:1px solid ${palette.br};border-radius:4px;font-family:'Inter',sans-serif;"><span style="margin-right:4px;">${palette.ic}</span>${trait}</span></div>`;
         }
         return `
             <div style="margin-bottom:16px;">
