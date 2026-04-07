@@ -3879,6 +3879,7 @@ function openTraitQuiz(category) {
         category: category,
         questionIndex: 0,
         traitScores: {},
+        scoreOrder: [],
         finished: false
     };
 
@@ -3988,6 +3989,7 @@ function selectQuizOption(btn) {
     if (trait) {
         creatorState.quizState.traitScores[trait] =
             (creatorState.quizState.traitScores[trait] || 0) + points;
+        creatorState.quizState.scoreOrder.push(trait);
     }
 
     creatorState.quizState.questionIndex++;
@@ -4003,14 +4005,23 @@ function selectQuizOption(btn) {
 }
 
 function finishQuiz() {
-    const { category, traitScores } = creatorState.quizState;
+    const { category, traitScores, scoreOrder } = creatorState.quizState;
 
     // Find the highest score; collect all traits tied at that score
     let topScore = -Infinity;
     Object.values(traitScores).forEach(s => { if (s > topScore) topScore = s; });
     const winners = Object.keys(traitScores).filter(t => traitScores[t] === topScore);
-    // Random tiebreak among ties
-    const resultTrait = winners[Math.floor(Math.random() * winners.length)];
+
+    // Deterministic tiebreak: among tied winners, pick the one most recently
+    // incremented in the user's answer sequence. Same answers -> same result,
+    // and the user's most recent choice nudges the verdict on a tie.
+    let resultTrait = winners[0];
+    for (let i = scoreOrder.length - 1; i >= 0; i--) {
+        if (winners.includes(scoreOrder[i])) {
+            resultTrait = scoreOrder[i];
+            break;
+        }
+    }
 
     creatorState.character.traits[category] = resultTrait;
     creatorState.quizState.finished = true;
