@@ -1704,13 +1704,52 @@ function applyImageFramer(container, zoomInput, frame) {
     }
 }
 
-// Toggle the framer controls (slider/value/reset/hint) on or off based on
-// whether there's actually an image in the preview to frame.
-function setImageFramerEnabled(controlsId, hintId, enabled) {
+// Toggle the framer controls on or off based on whether there's an image
+// in the preview to actually frame.
+function setImageFramerEnabled(controlsId, enabled) {
     const controls = document.getElementById(controlsId);
-    const hint = document.getElementById(hintId);
     if (controls) controls.classList.toggle('is-disabled', !enabled);
-    if (hint) hint.classList.toggle('is-disabled', !enabled);
+}
+
+// Read an image File, downscale it so the longest side is <= maxSide pixels,
+// and return a JPEG dataURL. Used for uploads so huge phone photos don't bloat
+// the page or cause html2canvas to snapshot before decode.
+function downscaleImageFile(file, maxSide, quality) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('FileReader failed'));
+        reader.onload = () => {
+            const img = new Image();
+            img.onerror = () => reject(new Error('Image decode failed'));
+            img.onload = () => {
+                const w = img.naturalWidth, h = img.naturalHeight;
+                const scale = Math.min(1, maxSide / Math.max(w, h));
+                const tw = Math.round(w * scale);
+                const th = Math.round(h * scale);
+                const canvas = document.createElement('canvas');
+                canvas.width = tw;
+                canvas.height = th;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, tw, th);
+                // JPEG keeps file size sane; PNG would balloon for photos.
+                resolve(canvas.toDataURL('image/jpeg', quality || 0.9));
+            };
+            img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Wait for an <img> element to fully decode before we screenshot it.
+// html2canvas does NOT wait for image loading, so big external URLs
+// occasionally render half-blank in the export.
+function awaitImageDecoded(img) {
+    if (!img) return Promise.resolve();
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise((resolve) => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+    });
 }
 
 // Idempotent: first call wires listeners, subsequent calls just re-apply state.
@@ -2804,10 +2843,10 @@ function updateAdminImagePreview(url) {
         preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 64 64\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><circle cx=\\'32\\' cy=\\'24\\' r=\\'12\\'/><path d=\\'M12 56c0-11 9-20 20-20s20 9 20 20\\'/></svg>'">`;
         // Re-apply current framing to the freshly inserted img
         applyImageFramer(preview, document.getElementById('admin-image-zoom'), adminState.editingImageFrame);
-        setImageFramerEnabled('admin-image-framer-controls', 'admin-image-framer-hint', true);
+        setImageFramerEnabled('admin-image-framer-controls', true);
     } else {
         preview.innerHTML = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="32" cy="24" r="12"/><path d="M12 56c0-11 9-20 20-20s20 9 20 20"/></svg>`;
-        setImageFramerEnabled('admin-image-framer-controls', 'admin-image-framer-hint', false);
+        setImageFramerEnabled('admin-image-framer-controls', false);
     }
 }
 
@@ -3385,19 +3424,23 @@ function initCreatorApp() {
     }
     const imageUpload = document.getElementById('creator-image-upload');
     if (imageUpload) {
-        imageUpload.addEventListener('change', (e) => {
+        imageUpload.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const dataUrl = ev.target.result;
+            try {
+                // Downscale to max 1024px on longest side. Big files (5MB+
+                // phone photos) caused html2canvas to snapshot before the
+                // image fully decoded, leading to cropped/missing exports.
+                const dataUrl = await downscaleImageFile(file, 1024, 0.9);
                 creatorState.character.image = dataUrl;
                 updateAvatarPreview(dataUrl);
                 if (imageInput) imageInput.value = '';
                 imageInput.placeholder = file.name;
                 playSound('success');
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                console.error('Image upload failed:', err);
+                playSound('error');
+            }
         });
     }
 
@@ -3540,13 +3583,13 @@ function updateAvatarPreview(url) {
         preview.innerHTML = `<img src="${url}" alt="Avatar" onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 64 64\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><circle cx=\\'32\\' cy=\\'24\\' r=\\'12\\'/><path d=\\'M12 56c0-11 9-20 20-20s20 9 20 20\\'/></svg>'">`;
         // Re-apply current framing to the freshly inserted img
         applyImageFramer(preview, document.getElementById('creator-image-zoom'), creatorState.character.imageFrame);
-        setImageFramerEnabled('creator-image-framer-controls', 'creator-image-framer-hint', true);
+        setImageFramerEnabled('creator-image-framer-controls', true);
     } else {
         preview.innerHTML = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="32" cy="24" r="12"/>
             <path d="M12 56c0-11 9-20 20-20s20 9 20 20"/>
         </svg>`;
-        setImageFramerEnabled('creator-image-framer-controls', 'creator-image-framer-hint', false);
+        setImageFramerEnabled('creator-image-framer-controls', false);
     }
 }
 
@@ -4108,11 +4151,16 @@ function exportCharacterPDF() {
 
     const exportCard = container.querySelector('.export-card');
 
-    html2canvas(exportCard, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#0f1a2e',
-        logging: false
+    // Wait for any embedded images to finish decoding before snapshotting,
+    // otherwise html2canvas may capture them half-rendered.
+    const imgs = Array.from(exportCard.querySelectorAll('img'));
+    Promise.all(imgs.map(awaitImageDecoded)).then(() => {
+        return html2canvas(exportCard, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#0f1a2e',
+            logging: false
+        });
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `ANHS_${(char.name || 'Character').replace(/\s+/g, '_')}.png`;
