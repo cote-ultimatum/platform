@@ -733,38 +733,37 @@
                             <label>Image URL</label>
                             <input type="text" id="admin-student-image" placeholder="https://...">
                             <div class="image-framer-controls" id="admin-image-framer-controls">
-                                <div class="image-framer-slider-wrap">
-                                    <input type="range" id="admin-image-zoom" class="image-framer-zoom" min="1" max="8" step="0.05" value="1" title="Zoom">
-                                </div>
-                                <span class="image-framer-value" id="admin-image-zoom-value">1.0×</span>
+                                <label class="image-framer-zoom-label">Zoom</label>
+                                <input type="number" id="admin-image-zoom" class="image-framer-zoom-input" min="1" step="0.1" value="1">
+                                <span class="image-framer-zoom-suffix">×</span>
                                 <button type="button" id="admin-image-reset" class="image-framer-reset">Reset</button>
                             </div>
-                            <div class="image-framer-hint" id="admin-image-framer-hint">Use the bar to zoom</div>
+                            <div class="image-framer-hint" id="admin-image-framer-hint">Drag preview to pan</div>
                         </div>
                     </div>
                     <div class="admin-form-section-title">OAA Evaluation</div>
                     <div class="admin-form-stats">
-                        <div class="admin-stat-input">
+                        <div class="admin-stat-input stat-academic">
                             <label>Academic Ability</label>
                             <input type="number" id="admin-student-academic" min="0" max="100" value="50">
                             <select id="admin-student-trait-academic" class="admin-trait-select"></select>
                         </div>
-                        <div class="admin-stat-input">
+                        <div class="admin-stat-input stat-intelligence">
                             <label>Intelligence</label>
                             <input type="number" id="admin-student-intelligence" min="0" max="100" value="50">
                             <select id="admin-student-trait-intelligence" class="admin-trait-select"></select>
                         </div>
-                        <div class="admin-stat-input">
+                        <div class="admin-stat-input stat-decision">
                             <label>Decision Making</label>
                             <input type="number" id="admin-student-decision" min="0" max="100" value="50">
                             <select id="admin-student-trait-decision" class="admin-trait-select"></select>
                         </div>
-                        <div class="admin-stat-input">
+                        <div class="admin-stat-input stat-physical">
                             <label>Physical Ability</label>
                             <input type="number" id="admin-student-physical" min="0" max="100" value="50">
                             <select id="admin-student-trait-physical" class="admin-trait-select"></select>
                         </div>
-                        <div class="admin-stat-input">
+                        <div class="admin-stat-input stat-cooperativeness">
                             <label>Cooperativeness</label>
                             <input type="number" id="admin-student-cooperativeness" min="0" max="100" value="50">
                             <select id="admin-student-trait-cooperativeness" class="admin-trait-select"></select>
@@ -903,13 +902,12 @@
                                     <input type="file" id="creator-image-upload" accept="image/*" hidden>
                                 </div>
                                 <div class="image-framer-controls" id="creator-image-framer-controls">
-                                    <div class="image-framer-slider-wrap">
-                                        <input type="range" id="creator-image-zoom" class="image-framer-zoom" min="1" max="8" step="0.05" value="1" title="Zoom">
-                                    </div>
-                                    <span class="image-framer-value" id="creator-image-zoom-value">1.0×</span>
+                                    <label class="image-framer-zoom-label">Zoom</label>
+                                    <input type="number" id="creator-image-zoom" class="image-framer-zoom-input" min="1" step="0.1" value="1">
+                                    <span class="image-framer-zoom-suffix">×</span>
                                     <button type="button" id="creator-image-reset" class="image-framer-reset">Reset</button>
                                 </div>
-                                <div class="image-framer-hint" id="creator-image-framer-hint">Use the bar to zoom</div>
+                                <div class="image-framer-hint" id="creator-image-framer-hint">Drag preview to pan</div>
                             </div>
                         </div>
 

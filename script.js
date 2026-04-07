@@ -1689,7 +1689,7 @@ function getImageFrameStyle(obj) {
     return `transform: translate(${x}%, ${y}%) scale(${zoom}); transform-origin: center;`;
 }
 
-function applyImageFramer(container, zoomSlider, frame) {
+function applyImageFramer(container, zoomInput, frame) {
     if (!container) return;
     const img = container.querySelector('img');
     const f = frame || { zoom: 1, x: 0, y: 0 };
@@ -1697,11 +1697,10 @@ function applyImageFramer(container, zoomSlider, frame) {
         img.style.transform = `translate(${f.x || 0}%, ${f.y || 0}%) scale(${f.zoom || 1})`;
         img.style.transformOrigin = 'center';
     }
-    if (zoomSlider) {
-        zoomSlider.value = f.zoom || 1;
-        // Update the live value label if there's one tied to this slider
-        const valueLabel = document.getElementById(zoomSlider.id + '-value');
-        if (valueLabel) valueLabel.textContent = (f.zoom || 1).toFixed(1) + '×';
+    if (zoomInput) {
+        // Show one decimal so 1 → "1.0" but a typed 2.5 stays "2.5"
+        const z = f.zoom || 1;
+        zoomInput.value = Number.isInteger(z) ? z.toFixed(1) : String(z);
     }
 }
 
@@ -1729,7 +1728,9 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
     if (zoomSlider) {
         zoomSlider.addEventListener('input', () => {
             const f = frameRef();
-            f.zoom = parseFloat(zoomSlider.value);
+            const v = parseFloat(zoomSlider.value);
+            // Guard against empty / NaN while the user is mid-typing
+            if (!isNaN(v) && v >= 1) f.zoom = v;
             apply();
         });
     }

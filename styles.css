@@ -4366,7 +4366,36 @@ body::before {
     transition: border-color var(--transition-fast);
     text-align: center;
     text-align-last: center;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
 }
+/* Firefox: hide the dropdown arrow */
+.admin-trait-select::-ms-expand {
+    display: none;
+}
+
+/* Color the admin stat inputs by category to match the OAA bars */
+.admin-stat-input.stat-academic input { border-color: #9b59b6; box-shadow: inset 0 0 0 1px rgba(155, 89, 182, 0.25); }
+.admin-stat-input.stat-academic input:focus { border-color: #9b59b6; box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.35); }
+.admin-stat-input.stat-academic label { color: #c39bd3; }
+
+.admin-stat-input.stat-intelligence input { border-color: #f1c40f; box-shadow: inset 0 0 0 1px rgba(241, 196, 15, 0.25); }
+.admin-stat-input.stat-intelligence input:focus { border-color: #f1c40f; box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.35); }
+.admin-stat-input.stat-intelligence label { color: #f4d35e; }
+
+.admin-stat-input.stat-decision input { border-color: #e67e22; box-shadow: inset 0 0 0 1px rgba(230, 126, 34, 0.25); }
+.admin-stat-input.stat-decision input:focus { border-color: #e67e22; box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.35); }
+.admin-stat-input.stat-decision label { color: #f0a868; }
+
+.admin-stat-input.stat-physical input { border-color: #2ecc71; box-shadow: inset 0 0 0 1px rgba(46, 204, 113, 0.25); }
+.admin-stat-input.stat-physical input:focus { border-color: #2ecc71; box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.35); }
+.admin-stat-input.stat-physical label { color: #6ee0a0; }
+
+.admin-stat-input.stat-cooperativeness input { border-color: #3498db; box-shadow: inset 0 0 0 1px rgba(52, 152, 219, 0.25); }
+.admin-stat-input.stat-cooperativeness input:focus { border-color: #3498db; box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.35); }
+.admin-stat-input.stat-cooperativeness label { color: #6cb8e7; }
 
 /* ========================================
    IMAGE FRAMER (zoom + drag-to-pan)
@@ -4382,73 +4411,34 @@ body::before {
     opacity: 0.35;
     pointer-events: none;
 }
-.image-framer-value {
-    min-width: 2.6em;
-    text-align: right;
-    font-size: 0.7rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--text-secondary);
+.image-framer-zoom-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+.image-framer-zoom-input {
+    width: 4.5em;
+    padding: 0.4rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-size: 0.8rem;
     font-family: 'Orbitron', monospace;
+    text-align: center;
+    transition: border-color var(--transition-fast);
 }
-/* Wrapper that lets the slider thumb visually reach the track ends.
-   The slider is absolutely positioned with negative left/right so it
-   overhangs the wrap by half a thumb on each side. The browser's natural
-   thumb-clamping happens in the overhang area, so within the visible
-   wrap the thumb appears to span 0%–100%. */
-.image-framer-slider-wrap {
-    flex: 1;
-    min-width: 0;
-    position: relative;
-    height: 14px;
-    overflow: hidden;
+.image-framer-zoom-input:focus {
+    outline: none;
+    border-color: var(--cyan);
 }
-.image-framer-zoom {
-    -webkit-appearance: none;
-    appearance: none;
-    position: absolute;
-    left: -7px;
-    right: -7px;
-    top: 0;
-    bottom: 0;
-    width: auto;
-    height: 14px;
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-}
-.image-framer-zoom::-webkit-slider-runnable-track {
-    height: 6px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--bg-tertiary);
-    border-radius: 999px;
-}
-.image-framer-zoom::-moz-range-track {
-    height: 6px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--bg-tertiary);
-    border-radius: 999px;
-}
-.image-framer-zoom::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--cyan);
-    border: none;
-    margin-top: -5px;
-    cursor: grab;
-    box-shadow: 0 0 6px var(--cyan-dim);
-}
-.image-framer-zoom::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--cyan);
-    border: none;
-    cursor: grab;
-    box-shadow: 0 0 6px var(--cyan-dim);
+.image-framer-zoom-suffix {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'Orbitron', monospace;
+    margin-left: -0.25rem;
+    margin-right: auto;
 }
 .image-framer-reset {
     padding: 0.35rem 0.65rem;
