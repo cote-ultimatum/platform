@@ -732,13 +732,14 @@
                         <div class="admin-image-input">
                             <label>Image URL</label>
                             <input type="text" id="admin-student-image" placeholder="https://...">
-                            <div class="image-framer-controls">
+                            <div class="image-framer-controls" id="admin-image-framer-controls">
                                 <div class="image-framer-slider-wrap">
                                     <input type="range" id="admin-image-zoom" class="image-framer-zoom" min="1" max="8" step="0.05" value="1" title="Zoom">
                                 </div>
+                                <span class="image-framer-value" id="admin-image-zoom-value">1.0×</span>
                                 <button type="button" id="admin-image-reset" class="image-framer-reset">Reset</button>
                             </div>
-                            <div class="image-framer-hint">Use the bar to zoom</div>
+                            <div class="image-framer-hint" id="admin-image-framer-hint">Use the bar to zoom</div>
                         </div>
                     </div>
                     <div class="admin-form-section-title">OAA Evaluation</div>
@@ -901,13 +902,14 @@
                                     </label>
                                     <input type="file" id="creator-image-upload" accept="image/*" hidden>
                                 </div>
-                                <div class="image-framer-controls">
+                                <div class="image-framer-controls" id="creator-image-framer-controls">
                                     <div class="image-framer-slider-wrap">
                                         <input type="range" id="creator-image-zoom" class="image-framer-zoom" min="1" max="8" step="0.05" value="1" title="Zoom">
                                     </div>
+                                    <span class="image-framer-value" id="creator-image-zoom-value">1.0×</span>
                                     <button type="button" id="creator-image-reset" class="image-framer-reset">Reset</button>
                                 </div>
-                                <div class="image-framer-hint">Use the bar to zoom</div>
+                                <div class="image-framer-hint" id="creator-image-framer-hint">Use the bar to zoom</div>
                             </div>
                         </div>
 

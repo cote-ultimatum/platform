@@ -3821,6 +3821,18 @@ body::before {
     #admin-student-modal .admin-modal {
         max-width: 95vw;
     }
+    /* On phones, stack the image preview above the URL input so the
+       preview can take full width and stay big enough to frame on. */
+    .admin-image-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-image-preview {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1/1;
+        max-height: 60vw;
+    }
 }
 
 @keyframes modalSlideIn {
@@ -4239,8 +4251,8 @@ body::before {
 }
 
 .admin-image-preview {
-    width: 80px;
-    height: 80px;
+    width: 140px;
+    height: 140px;
     border-radius: 8px;
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
@@ -4253,8 +4265,8 @@ body::before {
 }
 
 .admin-image-preview svg {
-    width: 40px;
-    height: 40px;
+    width: 56px;
+    height: 56px;
 }
 
 .admin-image-preview img {
@@ -4364,6 +4376,19 @@ body::before {
     gap: 0.5rem;
     align-items: center;
     margin-top: 0.6rem;
+}
+.image-framer-controls.is-disabled,
+.image-framer-hint.is-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+.image-framer-value {
+    min-width: 2.6em;
+    text-align: right;
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-secondary);
+    font-family: 'Orbitron', monospace;
 }
 /* Wrapper that lets the slider thumb visually reach the track ends.
    The slider is absolutely positioned with negative left/right so it

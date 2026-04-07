@@ -1695,7 +1695,21 @@ function applyImageFramer(container, zoomSlider, frame) {
         img.style.transform = `translate(${f.x || 0}%, ${f.y || 0}%) scale(${f.zoom || 1})`;
         img.style.transformOrigin = 'center';
     }
-    if (zoomSlider) zoomSlider.value = f.zoom || 1;
+    if (zoomSlider) {
+        zoomSlider.value = f.zoom || 1;
+        // Update the live value label if there's one tied to this slider
+        const valueLabel = document.getElementById(zoomSlider.id + '-value');
+        if (valueLabel) valueLabel.textContent = (f.zoom || 1).toFixed(1) + '×';
+    }
+}
+
+// Toggle the framer controls (slider/value/reset/hint) on or off based on
+// whether there's actually an image in the preview to frame.
+function setImageFramerEnabled(controlsId, hintId, enabled) {
+    const controls = document.getElementById(controlsId);
+    const hint = document.getElementById(hintId);
+    if (controls) controls.classList.toggle('is-disabled', !enabled);
+    if (hint) hint.classList.toggle('is-disabled', !enabled);
 }
 
 // Idempotent: first call wires listeners, subsequent calls just re-apply state.
@@ -2767,8 +2781,10 @@ function updateAdminImagePreview(url) {
         preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 64 64\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><circle cx=\\'32\\' cy=\\'24\\' r=\\'12\\'/><path d=\\'M12 56c0-11 9-20 20-20s20 9 20 20\\'/></svg>'">`;
         // Re-apply current framing to the freshly inserted img
         applyImageFramer(preview, document.getElementById('admin-image-zoom'), adminState.editingImageFrame);
+        setImageFramerEnabled('admin-image-framer-controls', 'admin-image-framer-hint', true);
     } else {
         preview.innerHTML = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="32" cy="24" r="12"/><path d="M12 56c0-11 9-20 20-20s20 9 20 20"/></svg>`;
+        setImageFramerEnabled('admin-image-framer-controls', 'admin-image-framer-hint', false);
     }
 }
 
@@ -3501,11 +3517,13 @@ function updateAvatarPreview(url) {
         preview.innerHTML = `<img src="${url}" alt="Avatar" onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 64 64\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><circle cx=\\'32\\' cy=\\'24\\' r=\\'12\\'/><path d=\\'M12 56c0-11 9-20 20-20s20 9 20 20\\'/></svg>'">`;
         // Re-apply current framing to the freshly inserted img
         applyImageFramer(preview, document.getElementById('creator-image-zoom'), creatorState.character.imageFrame);
+        setImageFramerEnabled('creator-image-framer-controls', 'creator-image-framer-hint', true);
     } else {
         preview.innerHTML = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="32" cy="24" r="12"/>
             <path d="M12 56c0-11 9-20 20-20s20 9 20 20"/>
         </svg>`;
+        setImageFramerEnabled('creator-image-framer-controls', 'creator-image-framer-hint', false);
     }
 }
 
