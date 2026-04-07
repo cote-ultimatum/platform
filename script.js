@@ -4190,6 +4190,7 @@ async function exportStudentCard(subject, opts = {}) {
                 <div style="display:flex;flex-direction:column;justify-content:center;">
                     <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1;">${char.name || 'Unnamed'}</div>
                     <div style="font-size:14px;line-height:1;color:#94a3b8;margin-top:8px;">${char.year}${yearSuffix} Year - Class ${char.class || '?'}</div>
+                    ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:11px;line-height:1;color:#64748b;letter-spacing:0.15em;margin-top:10px;"><span style="color:#475569;">ID</span> <span style="color:#4dc9e6;margin-left:4px;">${char.id}</span></div>` : ''}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
                     <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">STATUS</div>
