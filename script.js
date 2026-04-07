@@ -1711,46 +1711,6 @@ function setImageFramerEnabled(controlsId, enabled) {
     if (controls) controls.classList.toggle('is-disabled', !enabled);
 }
 
-// Read an image File, downscale it so the longest side is <= maxSide pixels,
-// and return a JPEG dataURL. Used for uploads so huge phone photos don't bloat
-// the page or cause html2canvas to snapshot before decode.
-function downscaleImageFile(file, maxSide, quality) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('FileReader failed'));
-        reader.onload = () => {
-            const img = new Image();
-            img.onerror = () => reject(new Error('Image decode failed'));
-            img.onload = () => {
-                const w = img.naturalWidth, h = img.naturalHeight;
-                const scale = Math.min(1, maxSide / Math.max(w, h));
-                const tw = Math.round(w * scale);
-                const th = Math.round(h * scale);
-                const canvas = document.createElement('canvas');
-                canvas.width = tw;
-                canvas.height = th;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, tw, th);
-                // JPEG keeps file size sane; PNG would balloon for photos.
-                resolve(canvas.toDataURL('image/jpeg', quality || 0.9));
-            };
-            img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-// Wait for an <img> element to fully decode before we screenshot it.
-// html2canvas does NOT wait for image loading, so big external URLs
-// occasionally render half-blank in the export.
-function awaitImageDecoded(img) {
-    if (!img) return Promise.resolve();
-    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-    return new Promise((resolve) => {
-        img.addEventListener('load', resolve, { once: true });
-        img.addEventListener('error', resolve, { once: true });
-    });
-}
 
 // Idempotent: first call wires listeners, subsequent calls just re-apply state.
 // frameRef: getter returning the live frame object to mutate.
@@ -3409,23 +3369,19 @@ function initCreatorApp() {
     }
     const imageUpload = document.getElementById('creator-image-upload');
     if (imageUpload) {
-        imageUpload.addEventListener('change', async (e) => {
+        imageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            try {
-                // Downscale to max 1024px on longest side. Big files (5MB+
-                // phone photos) caused html2canvas to snapshot before the
-                // image fully decoded, leading to cropped/missing exports.
-                const dataUrl = await downscaleImageFile(file, 1024, 0.9);
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const dataUrl = ev.target.result;
                 creatorState.character.image = dataUrl;
                 updateAvatarPreview(dataUrl);
                 if (imageInput) imageInput.value = '';
                 imageInput.placeholder = file.name;
                 playSound('success');
-            } catch (err) {
-                console.error('Image upload failed:', err);
-                playSound('error');
-            }
+            };
+            reader.readAsDataURL(file);
         });
     }
 
@@ -4101,9 +4057,9 @@ function exportCharacterPDF() {
 
             <div style="display:flex;padding:0 28px 24px;gap:28px;">
                 <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;">
-                    <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(255,255,255,0.03);box-shadow:0 0 25px ${classGlow};display:flex;align-items:center;justify-content:center;">
+                    <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(15,26,46,0.6);box-shadow:0 0 25px ${classGlow};display:flex;align-items:center;justify-content:center;">
                         ${char.image
-                            ? `<img src="${char.image}" alt="Student Photo" style="width:100%;height:100%;object-fit:cover;${getImageFrameStyle(char)}">`
+                            ? `<img src="${char.image}" alt="Student Photo" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;">`
                             : `<div style="color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
                         }
                     </div>
@@ -4136,16 +4092,11 @@ function exportCharacterPDF() {
 
     const exportCard = container.querySelector('.export-card');
 
-    // Wait for any embedded images to finish decoding before snapshotting,
-    // otherwise html2canvas may capture them half-rendered.
-    const imgs = Array.from(exportCard.querySelectorAll('img'));
-    Promise.all(imgs.map(awaitImageDecoded)).then(() => {
-        return html2canvas(exportCard, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#0f1a2e',
-            logging: false
-        });
+    html2canvas(exportCard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0f1a2e',
+        logging: false
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `ANHS_${(char.name || 'Character').replace(/\s+/g, '_')}.png`;
