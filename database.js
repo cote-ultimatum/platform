@@ -418,12 +418,12 @@ async function addStudent(student) {
     }
 
     try {
-        // Generate student ID if not provided
+        // Generate student ID if not provided. Canonical COTE format:
+        // S{YY}T{6 digits} — e.g. S01T004801.
         if (!student.id) {
-            const yearNum = student.year || 1;
-            const classLetter = student.class || 'D';
-            const random = Math.floor(Math.random() * 9000) + 1000;
-            student.id = `S${yearNum}${classLetter}${random}`;
+            const yy = String(student.year || 1).padStart(2, '0');
+            const random = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+            student.id = `S${yy}T${random}`;
         }
 
         const newRef = await firebase.database().ref('students').push(student);
