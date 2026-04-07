@@ -2168,8 +2168,16 @@ async function handleAdminLogin() {
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
 
-    if (!username || !password) {
-        showErrorToast('Please enter username and password');
+    if (!username) {
+        showErrorToast('Enter your username');
+        usernameInput.focus();
+        playSound('error');
+        return;
+    }
+    if (!password) {
+        showErrorToast('Enter your password');
+        passwordInput.focus();
+        playSound('error');
         return;
     }
 
@@ -2203,12 +2211,16 @@ async function handleAdminLogin() {
             showErrorToast('Invalid credentials');
             loginBtn.disabled = false;
             loginBtn.textContent = 'Log In';
+            passwordInput.value = '';
+            passwordInput.focus();
+            playSound('error');
         }
     } catch (error) {
         console.error('Login error:', error);
         showErrorToast('Connection error. Try again.');
         loginBtn.disabled = false;
         loginBtn.textContent = 'Log In';
+        playSound('error');
     }
 }
 
