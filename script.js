@@ -1715,6 +1715,40 @@ function setImageFramerEnabled(controlsId, enabled) {
     if (controls) controls.classList.toggle('is-disabled', !enabled);
 }
 
+// Pre-render an image into a fixed-size canvas with contain semantics and
+// a solid background. Returns a dataURL of the result. Used for the PDF
+// export so html2canvas doesn't have to deal with object-fit or flex
+// centering — both of which it handles unreliably and were causing
+// uploaded images to render off-center / cropped.
+function prerenderContainImage(srcUrl, size, bgColor) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        const finish = (success) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            // Background fill so letterbox area looks intentional.
+            ctx.fillStyle = bgColor || 'rgba(15,26,46,0.6)';
+            ctx.fillRect(0, 0, size, size);
+            if (success && img.naturalWidth > 0) {
+                const w = img.naturalWidth, h = img.naturalHeight;
+                const scale = Math.min(size / w, size / h);
+                const dw = w * scale;
+                const dh = h * scale;
+                const dx = (size - dw) / 2;
+                const dy = (size - dh) / 2;
+                ctx.drawImage(img, dx, dy, dw, dh);
+            }
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onload = () => finish(true);
+        img.onerror = () => finish(false);
+        img.src = srcUrl;
+    });
+}
+
 
 // Idempotent: first call wires listeners, subsequent calls just re-apply state.
 // frameRef: getter returning the live frame object to mutate.
@@ -1863,14 +1897,18 @@ async function loadStudentsFromDB() {
         // Always assign — even an empty array means "Firebase has no students"
         // and we must reflect that, not silently keep the previous list.
         state.dbStudents = Array.isArray(students) ? students : [];
-        // Rebuild lookup with Firebase students
+        // Fully rebuild lookup from Firebase only (clear stale local entries
+        // so deletions in admin actually disappear from the lookup).
+        studentLookup = {};
         state.dbStudents.forEach(s => { studentLookup[s.id] = s; });
-        // Re-render OAA if visible
-        if (state.currentScreen === 'oaa-app') {
-            if (state.currentOAAView === 'oaa-dashboard') renderClassCards();
-            else if (state.currentOAAView === 'oaa-class' && state.currentClass) {
-                showClassView(state.currentClass.year, state.currentClass.className, false);
-            }
+        // Always re-render the OAA dashboard, even if not currently visible.
+        // initOAAApp runs before Firebase resolves, so the first render uses
+        // local fallback data; this ensures the dashboard reflects Firebase
+        // as soon as it loads, regardless of which screen the user is on.
+        renderClassCards();
+        if (state.currentScreen === 'oaa-app' &&
+            state.currentOAAView === 'oaa-class' && state.currentClass) {
+            showClassView(state.currentClass.year, state.currentClass.className, false);
         }
     } catch (err) {
         console.warn('Could not load students from DB:', err);
@@ -3986,8 +4024,20 @@ function updateCreatorPreview() {
     `;
 }
 
-function exportCharacterPDF() {
+async function exportCharacterPDF() {
     const char = creatorState.character;
+    // Pre-render the user's photo into a fixed 480x480 canvas (2x the export
+    // box for sharpness on the 2x html2canvas scale) with contain semantics.
+    // This sidesteps html2canvas's unreliable handling of flex centering and
+    // object-fit on plain <img> elements.
+    let prerenderedImage = null;
+    if (char.image) {
+        try {
+            prerenderedImage = await prerenderContainImage(char.image, 480, '#0f1a2e');
+        } catch (e) {
+            console.warn('Image pre-render failed:', e);
+        }
+    }
     const yearSuffix = ['', 'st', 'nd', 'rd'][char.year] || 'th';
     const overallGrade = getGradeFromValue(
         (char.stats.academic + char.stats.intelligence + char.stats.decision +
@@ -4080,10 +4130,10 @@ function exportCharacterPDF() {
 
             <div style="display:flex;padding:0 28px 24px;gap:28px;">
                 <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;">
-                    <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:rgba(15,26,46,0.6);box-shadow:0 0 25px ${classGlow};display:flex;align-items:center;justify-content:center;">
-                        ${char.image
-                            ? `<img src="${char.image}" alt="Student Photo" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;">`
-                            : `<div style="color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;">No Photo<br>Provided</div>`
+                    <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:#0f1a2e;box-shadow:0 0 25px ${classGlow};">
+                        ${prerenderedImage
+                            ? `<img src="${prerenderedImage}" alt="Student Photo" width="240" height="240" style="display:block;width:240px;height:240px;">`
+                            : `<div style="width:240px;height:240px;color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;">No Photo<br>Provided</div>`
                         }
                     </div>
                     <div style="width:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 0 14px;background:linear-gradient(135deg,#dc2626,#ef4444);border-radius:12px;box-shadow:0 0 20px rgba(231,76,60,0.3);">
