@@ -4288,6 +4288,10 @@ body::before {
     border-radius: var(--border-radius-sm);
     color: var(--text-primary);
     font-size: 0.9rem;
+}
+/* Centered + clickable applies only to the year/class selects, not to the
+   name/URL text inputs which should stay left-aligned like the Creator. */
+.admin-form-row select {
     cursor: pointer;
     text-align: center;
     text-align-last: center;
@@ -4347,12 +4351,19 @@ body::before {
     border-radius: var(--border-radius-sm);
     color: var(--text-primary);
     font-size: 0.9rem;
+    -moz-appearance: textfield;
+    appearance: textfield;
     font-weight: 500;
 }
 
 .admin-stat-input input:focus {
     outline: none;
     border-color: var(--cyan);
+}
+.admin-stat-input input::-webkit-outer-spin-button,
+.admin-stat-input input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .admin-trait-select {
