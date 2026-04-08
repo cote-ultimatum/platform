@@ -1201,7 +1201,19 @@ function formatServingSince(value) {
     const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(value || '');
     if (!m) return '';
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    return `${parseInt(m[3], 10)} ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
+    const day = parseInt(m[3], 10);
+    return `the ${day}${ordinalSuffix(day)} of ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
+}
+
+function ordinalSuffix(n) {
+    const v = n % 100;
+    if (v >= 11 && v <= 13) return 'th';
+    switch (n % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+    }
 }
 
 function sortRankedList(members, kind) {
@@ -1569,7 +1581,7 @@ function showStudentProfile(student, addToHistory = true) {
             if (sinceEl) {
                 const formatted = formatServingSince(student.servingSince);
                 if (formatted) {
-                    sinceEl.textContent = `Serving since ${formatted}`;
+                    sinceEl.textContent = `Since ${formatted}`;
                     sinceEl.style.display = '';
                 } else {
                     sinceEl.textContent = '';
@@ -3149,7 +3161,7 @@ function renderAdminStudentList() {
                     renderAdminStudentList();
                     // Refresh OAA data so the change reflects there
                     await loadStudentsFromDB();
-                    logAdminAction(`${newRetired ? 'Retired' : 'Reinstated'} student ${student.name} (${student.id})`);
+                    logAdminAction(`${newRetired ? 'Retired' : 'Reinstated'} student ${student.name} (${student.id || ''})`);
                 }
             } catch (err) {
                 console.error('Retire toggle failed:', err);
@@ -3417,7 +3429,7 @@ function renderAdminFacultyList() {
                     showSuccessToast(newRetired ? 'Faculty retired' : 'Faculty reinstated');
                     renderAdminFacultyList();
                     await loadStudentsFromDB();
-                    logAdminAction(`${newRetired ? 'Retired' : 'Reinstated'} faculty ${faculty.name} (${faculty.facultyRank})`);
+                    logAdminAction(`${newRetired ? 'Retired' : 'Reinstated'} faculty ${faculty.name} (${faculty.id || ''})`);
                 }
             } catch (err) {
                 console.error('Retire toggle failed:', err);
@@ -3541,6 +3553,8 @@ async function saveStudent() {
     }
 
     try {
+        const kind = isFaculty ? 'faculty' : 'student';
+        const Kind = isFaculty ? 'Faculty' : 'Student';
         if (adminState.editingStudent) {
             // Update existing student
             const key = adminState.editingStudent._firebaseKey;
@@ -3550,13 +3564,15 @@ async function saveStudent() {
                 const [success] = await Promise.all([COTEDB.updateStudent(key, studentData), minDelay]);
                 if (success) {
                     playSound('success');
+                    showSuccessToast(`${Kind} updated`);
                     closeStudentModal();
                     await loadAdminStudents();
                     // Refresh OAA view if visible
                     renderClassCards();
-                    logAdminAction(`Edited student ${editedName} (${editedId})`);
+                    logAdminAction(`Edited ${kind} ${editedName} (${editedId})`);
                 } else {
                     playSound('error');
+                    showErrorToast(`Failed to update ${kind}`);
                 }
             }
         } else {
@@ -3564,13 +3580,15 @@ async function saveStudent() {
             const [result] = await Promise.all([COTEDB.addStudent(studentData), minDelay]);
             if (result.success) {
                 playSound('success');
+                showSuccessToast(`${Kind} added`);
                 closeStudentModal();
                 await loadAdminStudents();
                 renderClassCards();
                 const added = result.student || studentData;
-                logAdminAction(`Added student ${added.name} (${added.id})`);
+                logAdminAction(`Added ${kind} ${added.name} (${added.id})`);
             } else {
                 playSound('error');
+                showErrorToast(`Failed to add ${kind}`);
             }
         }
     } catch (error) {
@@ -3620,20 +3638,23 @@ async function confirmDeleteStudent() {
 
     const deletedName = adminState.editingStudent.name;
     const deletedId = adminState.editingStudent.id;
+    const isFaculty = !!adminState.editingStudent.facultyRank;
+    const kind = isFaculty ? 'faculty' : 'student';
+    const Kind = isFaculty ? 'Faculty' : 'Student';
     try {
         const [success] = await Promise.all([COTEDB.deleteStudent(key), minDelay]);
         if (success) {
-            showSuccessToast('Student deleted');
+            showSuccessToast(`${Kind} deleted`);
             closeStudentModal();
             await loadAdminStudents();
             renderClassCards();
-            logAdminAction(`Deleted student ${deletedName} (${deletedId})`);
+            logAdminAction(`Deleted ${kind} ${deletedName} (${deletedId})`);
         } else {
-            showErrorToast('Failed to delete');
+            showErrorToast(`Failed to delete ${kind}`);
         }
     } catch (error) {
         console.error('Error deleting student:', error);
-        showErrorToast(error.message || 'Failed to delete');
+        showErrorToast(error.message || `Failed to delete ${kind}`);
     } finally {
         deleteBtn.disabled = false;
         deleteBtn.textContent = originalText;
