@@ -517,6 +517,20 @@ function triggerQuoteTyping() {
     }, 400);
 }
 
+let rankQuoteTypingTimeout = null;
+function typeRankQuote(el, text) {
+    if (rankQuoteTypingTimeout) clearTimeout(rankQuoteTypingTimeout);
+    el.textContent = '';
+    let i = 0;
+    const step = () => {
+        if (i < text.length) {
+            el.textContent += text.charAt(i++);
+            rankQuoteTypingTimeout = setTimeout(step, 30);
+        }
+    };
+    rankQuoteTypingTimeout = setTimeout(step, 350);
+}
+
 function typeText(element, text, index, onComplete) {
     if (index < text.length) {
         element.textContent += text.charAt(index);
@@ -1600,9 +1614,10 @@ function showStudentProfile(student, addToHistory = true) {
             }
             if (rankQuoteEl) {
                 if (student.rankQuote) {
-                    rankQuoteEl.textContent = student.rankQuote;
                     rankQuoteEl.style.display = '';
+                    typeRankQuote(rankQuoteEl, student.rankQuote);
                 } else {
+                    if (rankQuoteTypingTimeout) clearTimeout(rankQuoteTypingTimeout);
                     rankQuoteEl.textContent = '';
                     rankQuoteEl.style.display = 'none';
                 }
@@ -1612,6 +1627,7 @@ function showStudentProfile(student, addToHistory = true) {
             const insigniaEl = document.getElementById('profile-rank-insignia');
             if (insigniaEl) insigniaEl.innerHTML = '';
             if (rankQuoteEl) {
+                if (rankQuoteTypingTimeout) clearTimeout(rankQuoteTypingTimeout);
                 rankQuoteEl.textContent = '';
                 rankQuoteEl.style.display = 'none';
             }

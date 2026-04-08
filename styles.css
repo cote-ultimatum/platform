@@ -1651,26 +1651,44 @@ body::before {
 }
 .profile-rank-quote {
     position: relative;
-    margin: 0.85rem 0 0 0;
-    padding: 0 0 0 1.6rem;
+    margin: 1.1rem auto 0;
+    padding: 0.4rem 2rem 0.6rem;
+    text-align: center;
     font-family: 'Inter', sans-serif;
     font-style: italic;
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: 1.55;
     color: color-mix(in srgb, var(--rank-color, var(--cyan)) 22%, #c8d2e2);
     max-width: 60ch;
+    min-height: 2.6em;
     letter-spacing: 0.005em;
 }
-.profile-rank-quote::before {
-    content: '\201C'; /* left double quotation mark */
-    position: absolute;
-    left: 0;
-    top: -0.45rem;
-    font-family: 'Georgia', serif;
-    font-size: 2.4rem;
+.profile-rank-quote::before,
+.profile-rank-quote::after {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.6rem;
     line-height: 1;
-    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
-    text-shadow: 0 0 14px color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent);
+    position: absolute;
+    color: var(--rank-color, var(--cyan));
+    opacity: 0.35;
+    text-shadow: 0 0 14px color-mix(in srgb, var(--rank-color, var(--cyan)) 40%, transparent);
+}
+.profile-rank-quote::before {
+    content: '"';
+    top: -0.6rem;
+    left: 0;
+}
+.profile-rank-quote::after {
+    content: '"';
+    bottom: -0.9rem;
+    right: 0;
+}
+
+/* When ranked, align student name + class line with the rank title text
+   (i.e. start them at the same x as the title, past the insignia). */
+.profile-card--ranked #profile-name,
+.profile-card--ranked #profile-class {
+    margin-left: calc(0.9rem + 3px + 56px + 0.85rem);
 }
 
 /* Tab card insignia — small, top-right corner of the member card */
