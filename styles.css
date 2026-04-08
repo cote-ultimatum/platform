@@ -5414,8 +5414,8 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    box-sizing: border-box;
+    padding: 0.5rem;
     flex-shrink: 0;
     background: var(--bg-darker);
     border: 1px solid var(--border-color);
@@ -5439,6 +5439,12 @@ body::before {
 
 .creator-upload-btn:hover svg {
     color: var(--cyan);
+}
+
+/* Creator form has taller inputs — bump button padding so it stays
+   square at the input's height there too. */
+.creator-input-group .creator-upload-btn {
+    padding: 0.75rem;
 }
 
 .creator-input-group input[type="text"],
