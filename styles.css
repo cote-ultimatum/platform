@@ -1485,13 +1485,6 @@ body::before {
     box-shadow: 0 0 0 rgba(0, 0, 0, 0),
                 inset 0 0 24px color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent);
 }
-.member-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% -20%, color-mix(in srgb, var(--rank-color, var(--cyan)) 30%, transparent) 0%, transparent 60%);
-    pointer-events: none;
-}
 .member-card:hover {
     transform: translateY(-3px);
     border-color: var(--rank-color, var(--cyan));
@@ -1709,9 +1702,11 @@ body::before {
 .member-card:hover .member-card-insignia { opacity: 1; }
 
 /* Rank sort row — sits inside the year-section under the header */
-.sort-container.rank-sort {
+.sort-container.rank-sort,
+.sort-container.year-sort {
     margin: 0.4rem 0 0.9rem 0;
     padding: 0 0.25rem;
+    flex-wrap: wrap;
 }
 
 /* Tenure date picker — three fields side-by-side inside the admin modal */
@@ -1733,12 +1728,6 @@ body::before {
 .profile-card.profile-card--ranked {
     border-color: var(--rank-color, var(--cyan));
     background:
-        repeating-linear-gradient(
-            118deg,
-            transparent 0 70px,
-            color-mix(in srgb, var(--rank-color, var(--cyan)) 5%, transparent) 70px 71px,
-            transparent 71px 140px
-        ),
         radial-gradient(ellipse at top left,
             color-mix(in srgb, var(--rank-color, var(--cyan)) 20%, transparent) 0%,
             transparent 55%),
@@ -1806,11 +1795,6 @@ body::before {
         0 0 36px color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent);
 }
 
-/* Bring back rank-color stats title (engraving + watermark already break monotony) */
-.profile-card.profile-card--ranked .stats-title {
-    color: var(--rank-color, var(--cyan));
-    text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
-}
 .profile-card.profile-card--ranked .profile-id {
     border-color: var(--rank-color, var(--cyan));
     background: color-mix(in srgb, var(--rank-color, var(--cyan)) 8%, transparent);

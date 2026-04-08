@@ -1059,18 +1059,23 @@ function initSorting() {
     // Only the stat sort buttons — exclude rank-sort buttons which have their own handler
     document.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
         btn.addEventListener('mouseenter', () => playSound('hover'));
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             playSound('select');
             const sortValue = btn.dataset.sort;
             state.currentSort = sortValue;
             updateAllSortButtons(sortValue);
 
             if (state.currentOAAView === 'oaa-dashboard') {
-                renderClassCards();
+                renderYearSections();
             } else if (state.currentOAAView === 'oaa-class' && state.currentClass) {
                 showClassView(state.currentClass.year, state.currentClass.className, false);
             }
         });
+    });
+    // Don't let clicks inside the per-year sort row collapse the section
+    document.querySelectorAll('.sort-container.year-sort').forEach(c => {
+        c.addEventListener('click', (e) => e.stopPropagation());
     });
 }
 
@@ -1153,7 +1158,10 @@ function filterStudents(query) {
 function renderClassCards() {
     renderCouncilSection();
     renderFacultySection();
+    renderYearSections();
+}
 
+function renderYearSections() {
     const yearConfigs = [
         { year: 1, containerId: 'first-year-classes', countId: 'first-year-count' },
         { year: 2, containerId: 'second-year-classes', countId: 'second-year-count' },
@@ -2026,9 +2034,10 @@ function buildRankInsigniaSVG(rank) {
     } else {
         // Faculty stem
         pieces.push('<path d="M32 54 L32 14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.85"/>');
-        // Top rank: acorn flourish at the top of the stem
+        // Top rank: small crown above the stem
         if (isTop) {
-            pieces.push('<g transform="translate(32 10)"><ellipse cx="0" cy="3" rx="3" ry="4"/><path d="M-3.4 -0.5 Q0 -3.5 3.4 -0.5 Z" opacity="0.75"/></g>');
+            pieces.push('<path d="M22 13 L26 6 L32 11 L38 6 L42 13 Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>');
+            pieces.push('<rect x="22" y="13" width="20" height="2.2" rx="0.6"/>');
         }
         // Oak leaves — lobed shape, alternating sides bottom-up
         const oakPath = 'M0 -7 C2.4 -6.2 4 -3.6 2.4 -1.6 C4.4 -0.6 4.4 1.4 2.4 2.4 C3.6 4.6 1.6 6.8 0 7 C-1.6 6.8 -3.6 4.6 -2.4 2.4 C-4.4 1.4 -4.4 -0.6 -2.4 -1.6 C-4 -3.6 -2.4 -6.2 0 -7 Z';
