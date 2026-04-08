@@ -3237,6 +3237,16 @@ function openStudentModal(student, mode = 'student') {
     }
     document.getElementById('admin-student-rank-quote').value = student?.rankQuote || '';
 
+    // Lock tenure + quote until a valid rank is picked
+    updateRankFieldsLock();
+    ['admin-student-council-rank', 'admin-student-faculty-rank'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel && !sel.dataset.lockBound) {
+            sel.dataset.lockBound = '1';
+            sel.addEventListener('change', updateRankFieldsLock);
+        }
+    });
+
     // Populate + set trait dropdowns (build options from traitDefinitions)
     Object.keys(traitDefinitions).forEach(category => {
         const select = document.getElementById(`admin-student-trait-${category}`);
@@ -3260,6 +3270,30 @@ function openStudentModal(student, mode = 'student') {
 
     // Show modal
     modal.classList.add('active');
+}
+
+function updateRankFieldsLock() {
+    const isFaculty = adminState.modalMode === 'faculty';
+    const rank = isFaculty
+        ? document.getElementById('admin-student-faculty-rank').value
+        : document.getElementById('admin-student-council-rank').value;
+    const locked = !rank;
+    const ids = [
+        'admin-student-tenure-day',
+        'admin-student-tenure-month',
+        'admin-student-tenure-year',
+        'admin-student-rank-quote'
+    ];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.disabled = locked;
+        if (locked) el.value = '';
+    });
+    ['admin-form-tenure-row', 'admin-form-tenure-title', 'admin-form-quote-row', 'admin-form-quote-title'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('admin-form-locked', locked);
+    });
 }
 
 function closeStudentModal() {

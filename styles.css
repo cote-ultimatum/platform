@@ -1693,6 +1693,11 @@ body::before {
 .admin-tenure-fields .admin-tenure-month { flex: 1 1 auto; min-width: 0; }
 .admin-tenure-fields .admin-tenure-year { flex: 0 0 6rem; }
 
+.admin-form-locked {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
 /* ===== Premium ranked profile card — "high-tier credit card" treatment ===== */
 .profile-card.profile-card--ranked {
     border-color: var(--rank-color, var(--cyan));
