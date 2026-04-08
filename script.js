@@ -1368,7 +1368,7 @@ function bindMemberCardClicks(container) {
                 toggleCompareSelection(student);
             } else {
                 playSound('click');
-                state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
+                state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null, scrollTop: document.getElementById('oaa-dashboard')?.scrollTop || 0 });
                 showStudentProfile(student, false);
             }
         });
@@ -1445,7 +1445,7 @@ function createClassCard(year, className, students) {
                     playSound('click');
                     state.currentClass = { year: student.year, className: student.class };
                     // Only push current view to history - back from profile goes directly to dashboard
-                    state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
+                    state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null, scrollTop: document.getElementById('oaa-dashboard')?.scrollTop || 0 });
                     showStudentProfile(student, false);
                 }
             }
@@ -1610,6 +1610,8 @@ function showStudentProfile(student, addToHistory = true) {
             }
             const insigniaEl = document.getElementById('profile-rank-insignia');
             if (insigniaEl) insigniaEl.innerHTML = buildRankInsigniaSVG(rank);
+            const watermarkEl = document.getElementById('profile-rank-watermark');
+            if (watermarkEl) watermarkEl.innerHTML = buildRankInsigniaSVG(rank);
             rankCrest.className = `profile-rank-crest rank-${rankSlug(rank)}`;
             rankCrest.style.setProperty('--rank-color', color);
             rankCrest.style.display = '';
@@ -1632,6 +1634,8 @@ function showStudentProfile(student, addToHistory = true) {
             rankCrest.style.display = 'none';
             const insigniaEl = document.getElementById('profile-rank-insignia');
             if (insigniaEl) insigniaEl.innerHTML = '';
+            const watermarkEl = document.getElementById('profile-rank-watermark');
+            if (watermarkEl) watermarkEl.innerHTML = '';
             if (rankQuoteEl) {
                 if (rankQuoteTypingTimeout) clearTimeout(rankQuoteTypingTimeout);
                 rankQuoteEl.textContent = '';
@@ -2008,23 +2012,26 @@ function buildRankInsigniaSVG(rank) {
         : rank === FACULTY_RANK_ORDER[0];
 
     const pieces = [];
-    // Stem
-    pieces.push('<path d="M32 54 L32 14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.85"/>');
 
     if (isCouncil) {
-        // Top rank: closing wreath behind the sprig
+        // Council = a shield bearing stars. Distinct silhouette from the
+        // organic oak sprig used by faculty.
+        pieces.push('<path d="M32 8 L54 16 L54 34 C54 46 44 54 32 58 C20 54 10 46 10 34 L10 16 Z" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>');
+        // Top rank: laurel halo around the shield
         if (isTop) {
-            pieces.push('<path d="M32 12 C14 12 14 40 32 52 C50 40 50 12 32 12 Z" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.55"/>');
+            pieces.push('<path d="M8 30 Q4 18 14 12" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>');
+            pieces.push('<path d="M56 30 Q60 18 50 12" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>');
         }
-        // Laurel leaves — slim almonds, alternating sides bottom-up
+        // Stars stacked centrally inside the shield (1 = lowest, 5 = president)
+        const starPath = 'M0 -5.2 L1.35 -1.65 L5.2 -1.65 L2.15 0.65 L3.35 4.45 L0 2.2 L-3.35 4.45 L-2.15 0.65 L-5.2 -1.65 L-1.35 -1.65 Z';
+        const startY = 38 - (n - 1) * 4;
         for (let i = 0; i < n; i++) {
-            const y = 46 - i * 7;
-            const side = i % 2 === 0 ? 1 : -1;
-            const x = 32 + side * 5;
-            const rot = side > 0 ? 35 : -35;
-            pieces.push(`<ellipse cx="${x}" cy="${y}" rx="3.2" ry="6.5" transform="rotate(${rot} ${x} ${y})"/>`);
+            const y = startY + i * 8;
+            pieces.push(`<g transform="translate(32 ${y})"><path d="${starPath}"/></g>`);
         }
     } else {
+        // Faculty stem
+        pieces.push('<path d="M32 54 L32 14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.85"/>');
         // Top rank: acorn flourish at the top of the stem
         if (isTop) {
             pieces.push('<g transform="translate(32 10)"><ellipse cx="0" cy="3" rx="3" ry="4"/><path d="M-3.4 -0.5 Q0 -3.5 3.4 -0.5 Z" opacity="0.75"/></g>');
