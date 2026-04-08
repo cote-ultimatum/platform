@@ -873,14 +873,32 @@
                         </select>
                     </div>
                     <div class="admin-form-section-title" id="admin-form-tenure-title" style="display:none;">Tenure</div>
-                    <div class="admin-form-row" id="admin-form-tenure-row" style="display:none;">
-                        <label>Serving since</label>
-                        <input type="number" id="admin-student-serving-since" min="2000" max="2100" step="1" placeholder="When did they take office?">
+                    <div class="admin-form-row admin-form-tenure" id="admin-form-tenure-row" style="display:none;">
+                        <div class="admin-tenure-fields">
+                            <select id="admin-student-tenure-day" class="admin-tenure-day">
+                                <option value="">Day</option>
+                            </select>
+                            <select id="admin-student-tenure-month" class="admin-tenure-month">
+                                <option value="">Month</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <input type="number" id="admin-student-tenure-year" class="admin-tenure-year" min="2000" max="2100" step="1" placeholder="Year">
+                        </div>
                     </div>
                     <div class="admin-form-section-title" id="admin-form-quote-title" style="display:none;">Quote</div>
                     <div class="admin-form-row" id="admin-form-quote-row" style="display:none;">
-                        <label>In-character line</label>
-                        <input type="text" id="admin-student-rank-quote" maxlength="160" placeholder="What would they say about their role?">
+                        <input type="text" id="admin-student-rank-quote" maxlength="160" placeholder="A line they're known for">
                     </div>
                 </div>
                 <div class="admin-modal-actions">

@@ -1664,13 +1664,13 @@ body::before {
 .member-card { position: relative; }
 .member-card-insignia {
     position: absolute;
-    top: 0.55rem;
-    right: 0.55rem;
-    width: 30px;
-    height: 30px;
+    top: 2.55rem;
+    right: 0.6rem;
+    width: 32px;
+    height: 32px;
     color: var(--rank-color, var(--cyan));
-    opacity: 0.85;
-    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent));
+    opacity: 0.7;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, transparent));
     pointer-events: none;
     z-index: 2;
 }
@@ -1682,6 +1682,16 @@ body::before {
     margin: 0.4rem 0 0.9rem 0;
     padding: 0 0.25rem;
 }
+
+/* Tenure date picker — three fields side-by-side inside the admin modal */
+.admin-tenure-fields {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+.admin-tenure-fields .admin-tenure-day { flex: 0 0 5.5rem; }
+.admin-tenure-fields .admin-tenure-month { flex: 1 1 auto; min-width: 0; }
+.admin-tenure-fields .admin-tenure-year { flex: 0 0 6rem; }
 
 /* ===== Premium ranked profile card — "high-tier credit card" treatment ===== */
 .profile-card.profile-card--ranked {

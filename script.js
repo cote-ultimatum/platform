@@ -1042,7 +1042,8 @@ function buildStudentLookup() {
 // ========================================
 
 function initSorting() {
-    document.querySelectorAll('.sort-btn').forEach(btn => {
+    // Only the stat sort buttons — exclude rank-sort buttons which have their own handler
+    document.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
         btn.addEventListener('mouseenter', () => playSound('hover'));
         btn.addEventListener('click', () => {
             playSound('select');
@@ -1060,7 +1061,7 @@ function initSorting() {
 }
 
 function updateAllSortButtons(sortValue) {
-    document.querySelectorAll('.sort-btn').forEach(b => {
+    document.querySelectorAll('.sort-btn[data-sort]').forEach(b => {
         b.classList.toggle('active', b.dataset.sort === sortValue);
     });
 }
@@ -1189,17 +1190,37 @@ function renderClassCards() {
 // Sort modes for council/faculty tabs (persisted across renders within a session)
 const rankSortState = { council: 'rank', faculty: 'rank' };
 
+// Convert servingSince (YYYY-MM-DD string, or legacy plain year number) to a sortable number.
+// Earlier date = smaller number = "longer-serving".
+function tenureSortKey(value) {
+    if (!value) return Infinity;
+    if (typeof value === 'number') return value * 10000;
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(String(value));
+    if (!m) return Infinity;
+    return parseInt(m[1], 10) * 10000 + parseInt(m[2], 10) * 100 + parseInt(m[3], 10);
+}
+
+function formatServingSince(value) {
+    if (!value) return '';
+    if (typeof value === 'number') return String(value);
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(String(value));
+    if (!m) return String(value);
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const monthName = months[parseInt(m[2], 10) - 1] || '';
+    return `${parseInt(m[3], 10)} ${monthName} ${m[1]}`;
+}
+
 function sortRankedList(members, kind) {
     const order = kind === 'council' ? COUNCIL_RANK_ORDER : FACULTY_RANK_ORDER;
     const rankKey = kind === 'council' ? 'councilRank' : 'facultyRank';
     const mode = rankSortState[kind] || 'rank';
     const sorted = members.slice();
     if (mode === 'tenure') {
-        // Longest-serving first; members without a year fall to the bottom.
+        // Longest-serving first; members without a date fall to the bottom.
         sorted.sort((a, b) => {
-            const ya = a.servingSince || Infinity;
-            const yb = b.servingSince || Infinity;
-            if (ya !== yb) return ya - yb;
+            const ka = tenureSortKey(a.servingSince);
+            const kb = tenureSortKey(b.servingSince);
+            if (ka !== kb) return ka - kb;
             return order.indexOf(a[rankKey]) - order.indexOf(b[rankKey]);
         });
     } else {
@@ -1552,8 +1573,9 @@ function showStudentProfile(student, addToHistory = true) {
             rankCrest.querySelector('.profile-rank-title').textContent = rank;
             const sinceEl = rankCrest.querySelector('.profile-rank-since');
             if (sinceEl) {
-                if (student.servingSince) {
-                    sinceEl.textContent = `Serving since ${student.servingSince}`;
+                const formatted = formatServingSince(student.servingSince);
+                if (formatted) {
+                    sinceEl.textContent = `Serving since ${formatted}`;
                     sinceEl.style.display = '';
                 } else {
                     sinceEl.textContent = '';
@@ -3196,7 +3218,29 @@ function openStudentModal(student, mode = 'student') {
     document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
     document.getElementById('admin-student-council-rank').value = student?.councilRank || '';
     document.getElementById('admin-student-faculty-rank').value = student?.facultyRank || '';
-    document.getElementById('admin-student-serving-since').value = student?.servingSince || '';
+    // Tenure: populate Day select once (1–31), then split stored YYYY-MM-DD into the three fields
+    const daySelect = document.getElementById('admin-student-tenure-day');
+    if (daySelect && daySelect.options.length <= 1) {
+        for (let d = 1; d <= 31; d++) {
+            const opt = document.createElement('option');
+            opt.value = String(d);
+            opt.textContent = String(d);
+            daySelect.appendChild(opt);
+        }
+    }
+    const monthSelect = document.getElementById('admin-student-tenure-month');
+    const yearInput = document.getElementById('admin-student-tenure-year');
+    const since = student?.servingSince || '';
+    const dateMatch = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(since);
+    if (dateMatch) {
+        yearInput.value = dateMatch[1];
+        monthSelect.value = String(parseInt(dateMatch[2], 10));
+        daySelect.value = String(parseInt(dateMatch[3], 10));
+    } else {
+        yearInput.value = '';
+        monthSelect.value = '';
+        daySelect.value = '';
+    }
     document.getElementById('admin-student-rank-quote').value = student?.rankQuote || '';
 
     // Populate + set trait dropdowns (build options from traitDefinitions)
@@ -3449,10 +3493,13 @@ async function saveStudent() {
         councilRank: isFaculty ? null : (document.getElementById('admin-student-council-rank').value || null),
         facultyRank: isFaculty ? facultyRankValue : null,
         servingSince: (() => {
-            const raw = document.getElementById('admin-student-serving-since').value.trim();
-            if (!raw) return null;
-            const yr = parseInt(raw, 10);
-            return (isNaN(yr) || yr < 2000 || yr > 2100) ? null : yr;
+            const d = document.getElementById('admin-student-tenure-day').value;
+            const m = document.getElementById('admin-student-tenure-month').value;
+            const y = document.getElementById('admin-student-tenure-year').value.trim();
+            if (!d || !m || !y) return null;
+            const yr = parseInt(y, 10);
+            if (isNaN(yr) || yr < 2000 || yr > 2100) return null;
+            return `${yr}-${String(parseInt(m, 10)).padStart(2, '0')}-${String(parseInt(d, 10)).padStart(2, '0')}`;
         })(),
         rankQuote: document.getElementById('admin-student-rank-quote').value.trim() || null
     };
