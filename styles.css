@@ -5403,9 +5403,11 @@ body::before {
     align-items: stretch;
 }
 
-.creator-image-input-row input[type="url"] {
+.creator-image-input-row input[type="url"],
+.creator-image-input-row input[type="text"] {
     flex: 1;
     min-width: 0;
+    width: auto;
 }
 
 .creator-upload-btn {
