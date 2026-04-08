@@ -2023,9 +2023,6 @@ function buildRankInsigniaSVG(rank) {
     const isFaculty = FACULTY_RANK_ORDER.includes(rank);
     if (!isCouncil && !isFaculty) return '';
     const n = rankPipCount(rank);
-    const isTop = isCouncil
-        ? rank === COUNCIL_RANK_ORDER[0]
-        : rank === FACULTY_RANK_ORDER[0];
 
     const pieces = [];
 
@@ -2033,11 +2030,6 @@ function buildRankInsigniaSVG(rank) {
         // Council = a shield bearing stars. Distinct silhouette from the
         // organic oak sprig used by faculty.
         pieces.push('<path d="M32 8 L54 16 L54 34 C54 46 44 54 32 58 C20 54 10 46 10 34 L10 16 Z" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>');
-        // Top rank: laurel halo around the shield
-        if (isTop) {
-            pieces.push('<path d="M8 30 Q4 18 14 12" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>');
-            pieces.push('<path d="M56 30 Q60 18 50 12" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>');
-        }
         // Stars stacked centrally inside the shield (1 = lowest, 5 = president)
         const starPath = 'M0 -5.2 L1.35 -1.65 L5.2 -1.65 L2.15 0.65 L3.35 4.45 L0 2.2 L-3.35 4.45 L-2.15 0.65 L-5.2 -1.65 L-1.35 -1.65 Z';
         const startY = 38 - (n - 1) * 4;
@@ -2048,10 +2040,6 @@ function buildRankInsigniaSVG(rank) {
     } else {
         // Faculty stem
         pieces.push('<path d="M32 54 L32 14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.85"/>');
-        // Top rank: a clean diamond gem capping the stem
-        if (isTop) {
-            pieces.push('<path d="M32 4 L38 12 L32 20 L26 12 Z"/>');
-        }
         // Oak leaves — lobed shape, alternating sides bottom-up
         const oakPath = 'M0 -7 C2.4 -6.2 4 -3.6 2.4 -1.6 C4.4 -0.6 4.4 1.4 2.4 2.4 C3.6 4.6 1.6 6.8 0 7 C-1.6 6.8 -3.6 4.6 -2.4 2.4 C-4.4 1.4 -4.4 -0.6 -2.4 -1.6 C-4 -3.6 -2.4 -6.2 0 -7 Z';
         for (let i = 0; i < n; i++) {
