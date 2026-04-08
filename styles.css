@@ -1584,23 +1584,111 @@ body::before {
     box-shadow: 0 0 0 2px var(--cyan), 0 0 24px rgba(77, 201, 230, 0.5);
 }
 
-/* Profile rank badge */
-.profile-rank-badge {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.3rem 0.8rem;
+/* ===== Profile rank crest — appears above student name ===== */
+.profile-rank-crest {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.9rem;
+    border-left: 3px solid var(--rank-color, var(--cyan));
+    line-height: 1;
+}
+.profile-rank-crest .profile-rank-kind {
     font-family: 'Orbitron', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 75%, #fff);
+    opacity: 0.9;
+}
+.profile-rank-crest .profile-rank-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rank-color, var(--cyan));
+    text-shadow: 0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent),
+                 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ===== Ranked profile card theming ===== */
+.profile-card.profile-card--ranked {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--rank-color, var(--cyan)) 25%, transparent),
+                0 20px 60px color-mix(in srgb, var(--rank-color, var(--cyan)) 25%, transparent),
+                inset 0 0 120px color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent);
+    overflow: hidden;
+}
+.profile-card.profile-card--ranked::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--rank-color, var(--cyan)) 20%,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, #fff) 50%,
+        var(--rank-color, var(--cyan)) 80%,
+        transparent 100%);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 70%, transparent);
+    pointer-events: none;
+    z-index: 2;
+}
+.profile-card.profile-card--ranked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top left,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 14%, transparent) 0%,
+        transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+}
+.profile-card.profile-card--ranked .profile-header,
+.profile-card.profile-card--ranked .profile-body {
+    position: relative;
+    z-index: 1;
+}
+.profile-card.profile-card--ranked .profile-image-container {
+    box-shadow: 0 0 0 2px var(--rank-color, var(--cyan)),
+                0 0 40px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
+    border-radius: 8px;
+}
+.profile-card.profile-card--ranked .overall-grade-box {
+    border-color: var(--rank-color, var(--cyan));
+    box-shadow: 0 0 16px color-mix(in srgb, var(--rank-color, var(--cyan)) 45%, transparent);
+}
+.profile-card.profile-card--ranked .stats-title {
+    color: var(--rank-color, var(--cyan));
+    text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
+}
+.profile-card.profile-card--faculty .profile-image-container {
+    /* Override class-based glow classes since faculty has no class */
+    box-shadow: 0 0 0 2px var(--rank-color, var(--cyan)),
+                0 0 40px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent) !important;
+}
+
+/* ===== Admin faculty list styling ===== */
+.admin-faculty-item {
+    border-left: 3px solid var(--rank-color, var(--cyan));
+}
+.admin-faculty-rank-pill {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: #fff;
-    background: linear-gradient(90deg,
-        color-mix(in srgb, var(--rank-color, var(--cyan)) 85%, #000) 0%,
-        var(--rank-color, var(--cyan)) 100%);
-    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 70%, #fff);
-    border-radius: 4px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-    box-shadow: 0 0 14px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
+    background: var(--rank-color, var(--cyan));
+    border-radius: 3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .member-grid .empty-class {

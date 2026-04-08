@@ -290,9 +290,12 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="profile-header-info">
+                        <div id="profile-rank-crest" class="profile-rank-crest" style="display:none;">
+                            <span class="profile-rank-kind"></span>
+                            <span class="profile-rank-title"></span>
+                        </div>
                         <h2 id="profile-name">Student Name</h2>
                         <p id="profile-class">1st Year - Class A</p>
-                        <div id="profile-rank-badge" class="profile-rank-badge" style="display:none;"></div>
                     </div>
                     <div class="profile-header-actions">
                         <div class="profile-id">
@@ -725,6 +728,31 @@
                     <!-- Students populated by JS -->
                 </div>
             </div>
+
+            <!-- Faculty Management -->
+            <div class="admin-section">
+                <h3 class="admin-section-title">Faculty Management</h3>
+                <div class="admin-student-controls">
+                    <button class="admin-add-student-btn" id="admin-add-faculty-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Add Faculty
+                    </button>
+                    <div class="admin-student-filter">
+                        <select id="admin-faculty-rank-filter">
+                            <option value="">All Roles</option>
+                            <option value="Chairperson">Chairperson</option>
+                            <option value="Director">Director</option>
+                            <option value="Instructor">Instructor</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="admin-student-list" id="admin-faculty-list">
+                    <!-- Faculty populated by JS -->
+                </div>
+            </div>
         </div>
 
         <!-- Student Edit Modal -->
@@ -739,7 +767,7 @@
                         <label>Full Name</label>
                         <input type="text" id="admin-student-name" placeholder="Student's full name">
                     </div>
-                    <div class="admin-form-row admin-form-row-half">
+                    <div class="admin-form-row admin-form-row-half" id="admin-form-year-class-row">
                         <div>
                             <label>Year</label>
                             <select id="admin-student-year">
@@ -804,29 +832,28 @@
                             <select id="admin-student-trait-cooperativeness" class="admin-trait-select"></select>
                         </div>
                     </div>
-                    <div class="admin-form-section-title">Leadership Role</div>
-                    <div class="admin-form-row admin-form-row-half">
-                        <div>
-                            <label>Student Council</label>
-                            <select id="admin-student-council-rank">
-                                <option value="">— None —</option>
-                                <option value="Representative">Representative</option>
-                                <option value="Treasurer">Treasurer</option>
-                                <option value="Secretary">Secretary</option>
-                                <option value="Vice President">Vice President</option>
-                                <option value="President">President</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Faculty</label>
-                            <select id="admin-student-faculty-rank">
-                                <option value="">— None —</option>
-                                <option value="Staff">Staff</option>
-                                <option value="Instructor">Instructor</option>
-                                <option value="Director">Director</option>
-                                <option value="Chairperson">Chairperson</option>
-                            </select>
-                        </div>
+                    <div class="admin-form-section-title" id="admin-form-council-title">Student Council</div>
+                    <div class="admin-form-row" id="admin-form-council-row">
+                        <label>Council Rank</label>
+                        <select id="admin-student-council-rank">
+                            <option value="">— None (not in council) —</option>
+                            <option value="Representative">Representative</option>
+                            <option value="Treasurer">Treasurer</option>
+                            <option value="Secretary">Secretary</option>
+                            <option value="Vice President">Vice President</option>
+                            <option value="President">President</option>
+                        </select>
+                    </div>
+                    <div class="admin-form-section-title" id="admin-form-faculty-title" style="display:none;">Faculty</div>
+                    <div class="admin-form-row" id="admin-form-faculty-row" style="display:none;">
+                        <label>Faculty Role</label>
+                        <select id="admin-student-faculty-rank">
+                            <option value="">— None —</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Instructor">Instructor</option>
+                            <option value="Director">Director</option>
+                            <option value="Chairperson">Chairperson</option>
+                        </select>
                     </div>
                 </div>
                 <div class="admin-modal-actions">

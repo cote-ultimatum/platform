@@ -1475,24 +1475,40 @@ function showStudentProfile(student, addToHistory = true) {
     const isFavorite = state.favorites.includes(student.id);
 
     document.getElementById('profile-name').innerHTML = `${student.name} <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-student-id="${student.id}">${isFavorite ? '★' : '☆'}</button>`;
-    document.getElementById('profile-class').textContent = student.facultyRank
-        ? 'Faculty'
-        : `${student.year}${getYearSuffix(student.year)} Year - Class ${student.class}`;
+    const profileClassEl = document.getElementById('profile-class');
+    if (student.facultyRank) {
+        profileClassEl.textContent = '';
+        profileClassEl.style.display = 'none';
+    } else {
+        profileClassEl.textContent = `${student.year}${getYearSuffix(student.year)} Year - Class ${student.class}`;
+        profileClassEl.style.display = '';
+    }
     document.getElementById('profile-id').textContent = student.id;
 
-    // Rank badge (Council/Faculty)
-    const rankBadge = document.getElementById('profile-rank-badge');
-    if (rankBadge) {
-        const rank = student.councilRank || student.facultyRank;
+    // Rank crest (Council/Faculty) — strong visual treatment on the whole profile card
+    const rankCrest = document.getElementById('profile-rank-crest');
+    const profileCardEl = document.querySelector('.profile-card');
+    const rank = student.councilRank || student.facultyRank;
+    if (profileCardEl) {
+        profileCardEl.classList.remove('profile-card--ranked', 'profile-card--council', 'profile-card--faculty');
+        profileCardEl.style.removeProperty('--rank-color');
+    }
+    if (rankCrest) {
         if (rank) {
             const kind = student.councilRank ? 'Student Council' : 'Faculty';
-            rankBadge.textContent = `${kind} · ${rank}`;
-            rankBadge.style.setProperty('--rank-color', RANK_COLORS[rank] || 'var(--cyan)');
-            rankBadge.className = `profile-rank-badge rank-${rankSlug(rank)}`;
-            rankBadge.style.display = '';
+            const color = RANK_COLORS[rank] || 'var(--cyan)';
+            rankCrest.querySelector('.profile-rank-kind').textContent = kind;
+            rankCrest.querySelector('.profile-rank-title').textContent = rank;
+            rankCrest.className = `profile-rank-crest rank-${rankSlug(rank)}`;
+            rankCrest.style.setProperty('--rank-color', color);
+            rankCrest.style.display = '';
+            if (profileCardEl) {
+                profileCardEl.classList.add('profile-card--ranked');
+                profileCardEl.classList.add(student.councilRank ? 'profile-card--council' : 'profile-card--faculty');
+                profileCardEl.style.setProperty('--rank-color', color);
+            }
         } else {
-            rankBadge.style.display = 'none';
-            rankBadge.textContent = '';
+            rankCrest.style.display = 'none';
         }
     }
 
@@ -2380,6 +2396,7 @@ function initAdminApp() {
 
     // Student management initialization
     initStudentManagement();
+    initFacultyManagement();
 }
 
 async function handleAdminLogin() {
@@ -2865,14 +2882,15 @@ async function loadAdminStudents() {
     }
 
     renderAdminStudentList();
+    renderAdminFacultyList();
 }
 
 function renderAdminStudentList() {
     const container = document.getElementById('admin-student-list');
     if (!container) return;
 
-    // Filter students
-    let filtered = adminState.students;
+    // Filter students (exclude faculty — they have their own management section)
+    let filtered = adminState.students.filter(s => !s.facultyRank);
 
     if (adminState.yearFilter) {
         filtered = filtered.filter(s => s.year === parseInt(adminState.yearFilter));
@@ -2980,15 +2998,25 @@ function renderAdminStudentList() {
     });
 }
 
-function openStudentModal(student) {
+function openStudentModal(student, mode = 'student') {
     const modal = document.getElementById('admin-student-modal');
     const title = document.getElementById('admin-student-modal-title');
     const deleteBtn = document.getElementById('admin-student-delete');
 
     adminState.editingStudent = student;
+    adminState.modalMode = mode;
+
+    // Toggle fields based on mode (faculty has no year/class/council; student has no faculty rank)
+    const isFaculty = mode === 'faculty';
+    document.getElementById('admin-form-year-class-row').style.display = isFaculty ? 'none' : '';
+    document.getElementById('admin-form-council-title').style.display = isFaculty ? 'none' : '';
+    document.getElementById('admin-form-council-row').style.display = isFaculty ? 'none' : '';
+    document.getElementById('admin-form-faculty-title').style.display = isFaculty ? '' : 'none';
+    document.getElementById('admin-form-faculty-row').style.display = isFaculty ? '' : 'none';
 
     // Set title
-    title.textContent = student ? 'Edit Student' : 'Add Student';
+    const labelKind = isFaculty ? 'Faculty' : 'Student';
+    title.textContent = student ? `Edit ${labelKind}` : `Add ${labelKind}`;
 
     // Show/hide delete button
     deleteBtn.style.display = student ? 'block' : 'none';
@@ -3047,6 +3075,114 @@ function closeStudentModal() {
     const modal = document.getElementById('admin-student-modal');
     modal.classList.remove('active');
     adminState.editingStudent = null;
+    adminState.modalMode = 'student';
+}
+
+// ========================================
+// FACULTY MANAGEMENT
+// ========================================
+
+function initFacultyManagement() {
+    const addBtn = document.getElementById('admin-add-faculty-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            openStudentModal(null, 'faculty');
+            playSound('open');
+        });
+        addBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+    const rankFilter = document.getElementById('admin-faculty-rank-filter');
+    if (rankFilter) {
+        rankFilter.addEventListener('change', () => {
+            adminState.facultyRankFilter = rankFilter.value;
+            renderAdminFacultyList();
+            playSound('select');
+        });
+    }
+}
+
+function renderAdminFacultyList() {
+    const container = document.getElementById('admin-faculty-list');
+    if (!container) return;
+
+    let filtered = (adminState.students || []).filter(s => s.facultyRank);
+    if (adminState.facultyRankFilter) {
+        filtered = filtered.filter(s => s.facultyRank === adminState.facultyRankFilter);
+    }
+    filtered.sort((a, b) => {
+        const ra = FACULTY_RANK_ORDER.indexOf(a.facultyRank);
+        const rb = FACULTY_RANK_ORDER.indexOf(b.facultyRank);
+        if (ra !== rb) return ra - rb;
+        return (a.name || '').localeCompare(b.name || '');
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="admin-student-empty">No faculty found</div>';
+        return;
+    }
+
+    container.innerHTML = filtered.map(f => {
+        const initials = getInitials(f.name || 'Unknown');
+        const retiredClass = f.retired ? ' retired' : '';
+        const retireTitle = f.retired ? 'Reinstate faculty' : 'Retire faculty';
+        const rankColor = RANK_COLORS[f.facultyRank] || 'var(--cyan)';
+        return `
+            <div class="admin-student-item admin-faculty-item${retiredClass}" data-faculty-key="${f._firebaseKey || f.id}" style="--rank-color: ${rankColor};">
+                ${f.image
+                    ? `<span class="admin-student-avatar-frame"><img class="admin-student-avatar" src="${f.image}" alt="${f.name}" style="${getImageFrameStyle(f)}"></span>`
+                    : `<div class="admin-student-avatar-placeholder">${initials}</div>`}
+                <div class="admin-student-info">
+                    <div class="admin-student-name">${f.name || 'Unknown'}</div>
+                    <div class="admin-student-meta"><span class="admin-faculty-rank-pill">${f.facultyRank}</span></div>
+                </div>
+                <button class="admin-student-retire" data-retire-key="${f._firebaseKey || f.id}" title="${retireTitle}" aria-label="${retireTitle}">
+                    ${f.retired
+                        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+                        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`}
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    container.querySelectorAll('.admin-faculty-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.admin-student-retire')) return;
+            const key = item.dataset.facultyKey;
+            const faculty = adminState.students.find(s => (s._firebaseKey || s.id) === key);
+            if (faculty) {
+                openStudentModal(faculty, 'faculty');
+                playSound('click');
+            }
+        });
+        item.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
+    container.querySelectorAll('.admin-student-retire').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.retireKey;
+            const faculty = adminState.students.find(s => (s._firebaseKey || s.id) === key);
+            if (!faculty || !faculty._firebaseKey) {
+                showErrorToast('Cannot retire this faculty');
+                return;
+            }
+            const newRetired = !faculty.retired;
+            try {
+                const success = await COTEDB.updateStudent(faculty._firebaseKey, { retired: newRetired });
+                if (success) {
+                    faculty.retired = newRetired;
+                    showSuccessToast(newRetired ? 'Faculty retired' : 'Faculty reinstated');
+                    renderAdminFacultyList();
+                    await loadStudentsFromDB();
+                    logAdminAction(`${newRetired ? 'Retired' : 'Reinstated'} faculty ${faculty.name} (${faculty.facultyRank})`);
+                }
+            } catch (err) {
+                console.error('Retire toggle failed:', err);
+                showErrorToast('Failed to update');
+            }
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
 }
 
 function updateAdminImagePreview(url) {
@@ -3065,14 +3201,23 @@ function updateAdminImagePreview(url) {
 }
 
 async function saveStudent() {
+    const isFaculty = adminState.modalMode === 'faculty';
     const name = document.getElementById('admin-student-name').value.trim();
-    const year = parseInt(document.getElementById('admin-student-year').value);
-    const studentClass = document.getElementById('admin-student-class').value;
+    const year = isFaculty ? null : parseInt(document.getElementById('admin-student-year').value);
+    const studentClass = isFaculty ? null : document.getElementById('admin-student-class').value;
     const image = document.getElementById('admin-student-image').value.trim();
 
     if (!name) {
-        showErrorToast('Enter a student name');
+        showErrorToast(isFaculty ? 'Enter a faculty name' : 'Enter a student name');
         document.getElementById('admin-student-name')?.focus();
+        playSound('error');
+        return;
+    }
+
+    const facultyRankValue = isFaculty ? document.getElementById('admin-student-faculty-rank').value : '';
+    if (isFaculty && !facultyRankValue) {
+        showErrorToast('Select a faculty role');
+        document.getElementById('admin-student-faculty-rank')?.focus();
         playSound('error');
         return;
     }
@@ -3110,14 +3255,20 @@ async function saveStudent() {
             cooperativeness: parseInt(document.getElementById('admin-student-cooperativeness').value) || 50
         },
         traits: traits,
-        councilRank: document.getElementById('admin-student-council-rank').value || null,
-        facultyRank: document.getElementById('admin-student-faculty-rank').value || null
+        councilRank: isFaculty ? null : (document.getElementById('admin-student-council-rank').value || null),
+        facultyRank: isFaculty ? facultyRankValue : null
     };
 
     // Clamp stats to 0-100
     Object.keys(studentData.stats).forEach(key => {
         studentData.stats[key] = Math.max(0, Math.min(100, studentData.stats[key]));
     });
+
+    // Faculty get a dedicated ID prefix so they don't collide with class-based IDs
+    if (isFaculty && !adminState.editingStudent) {
+        const random = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+        studentData.id = `FAC${random}`;
+    }
 
     try {
         if (adminState.editingStudent) {
