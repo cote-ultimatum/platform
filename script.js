@@ -4780,6 +4780,7 @@ function updateCreatorPreview() {
     const classGlow = classLower ? `class-${classLower}-glow` : '';
 
     preview.innerHTML = `
+        <div class="profile-school-watermark" aria-hidden="true"></div>
         <div class="profile-header">
             <div class="profile-header-info">
                 <h2>${char.name || 'Unnamed Character'}</h2>
@@ -4873,7 +4874,7 @@ function exportRankedCard(student) {
     const tenure = formatServingSince(student.servingSince);
     const yearSuffix = ['', 'st', 'nd', 'rd'][student.year] || 'th';
     const subtitle = isCouncil
-        ? `${student.year}${yearSuffix} Year &middot; Class ${student.class || '?'}`
+        ? `${student.year}${yearSuffix} Year - Class ${student.class || '?'}`
         : '';
     return exportStudentCard(student, {
         ranked: true,
@@ -4899,6 +4900,7 @@ async function exportCharacterPDF() {
         statusColor: '#f59e0b',
         statusBg: 'rgba(245,158,11,0.08)',
         statusGlow: 'rgba(245,158,11,0.4)',
+        showBio: true,
         footerText: `To apply, post this image in the <span style="color:#4dc9e6;font-weight:600;">applications</span> forum on the COTE: ULTIMATUM Discord server.`
     });
 }
@@ -4906,6 +4908,7 @@ async function exportCharacterPDF() {
 async function exportStudentCard(subject, opts = {}) {
     const char = subject;
     const ranked = !!opts.ranked;
+    const showBio = !!opts.showBio;
     const status = opts.status || 'PENDING';
     const statusLabel = opts.statusLabel || 'STATUS';
     const statusColor = opts.statusColor || '#f59e0b';
@@ -4980,7 +4983,7 @@ async function exportStudentCard(subject, opts = {}) {
                 </div>
                 <div style="height:12px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;position:relative;">
                     <div style="width:${value}%;height:100%;background:linear-gradient(90deg,${meta.grad});border-radius:4px;box-shadow:0 0 15px ${meta.glow};"></div>
-                    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(90deg,transparent,transparent 9.8%,rgba(255,255,255,0.06) 9.8%,rgba(255,255,255,0.06) 10%);"></div>
+                    ${[10,20,30,40,50,60,70,80,90].map(p => `<div style="position:absolute;top:0;left:${p}%;width:1px;height:100%;background:rgba(255,255,255,0.18);"></div>`).join('')}
                 </div>
                 ${traitHTML}
             </div>
@@ -4993,7 +4996,7 @@ async function exportStudentCard(subject, opts = {}) {
     if (subtitleOverride) {
         headerSubtitle = subtitleOverride;
     } else if (!ranked) {
-        headerSubtitle = `${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}`;
+        headerSubtitle = `${char.year}${yearSuffix} Year - Class ${char.class || '?'}`;
     } else {
         headerSubtitle = '';
     }
@@ -5054,15 +5057,18 @@ async function exportStudentCard(subject, opts = {}) {
         </div>
     `;
 
-    // Faint giant class letter watermark for non-ranked exports — mirrors the
-    // rank insignia watermark on ranked, gives normal student files class identity.
-    const classLetterWatermark = (!ranked && char.class) ? `
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',monospace;font-size:560px;line-height:1;font-weight:900;color:${classColor};opacity:0.05;pointer-events:none;z-index:0;user-select:none;text-align:center;">${char.class}</div>
+    // Faint school crest watermark for non-ranked exports — mirrors the rank
+    // insignia watermark on ranked exports. Council/faculty keep their own
+    // rank insignia instead. Same image is used on the on-site cards.
+    const schoolLogoWatermark = !ranked ? `
+        <div style="position:absolute;top:50%;left:50%;width:560px;height:560px;transform:translate(-50%,-50%);opacity:0.06;pointer-events:none;z-index:0;">
+            <img src="ESF-LOGO.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block;" crossorigin="anonymous">
+        </div>
     ` : '';
 
-    // Bio + Personality as "FILE NOTE" sections with a left bar divider —
-    // gives the prose blocks the same official-document feel as the rest
-    // of the card. Left bar uses the same color as the Evaluation underline.
+    // Bio + Personality as "FILE NOTE" sections with a left bar divider.
+    // Only the creator export shows these — OAA-accepted students and
+    // ranked members don't carry bio data so there's nothing to render.
     const fileNoteSection = (label, title, body) => `
         <div style="margin-top:26px;border-left:3px solid ${evalBorder};padding:0 0 2px 16px;">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
@@ -5070,14 +5076,14 @@ async function exportStudentCard(subject, opts = {}) {
                 <span style="flex:1;height:1px;background:linear-gradient(90deg, ${hexToRgba(evalBorder, 0.45)}, ${hexToRgba(evalBorder, 0)});"></span>
             </div>
             <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 10px;font-size:15px;letter-spacing:0.04em;">${title}</h3>
-            <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${body}</p>
+            <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;white-space:pre-wrap;word-wrap:break-word;">${body}</p>
         </div>
     `;
     let bioNoteIndex = 0;
-    const bioHTML = `
+    const bioHTML = showBio ? `
         ${char.bio ? fileNoteSection(`File Note 0${++bioNoteIndex}`, 'Background', char.bio) : ''}
         ${char.personality ? fileNoteSection(`File Note 0${++bioNoteIndex}`, 'Personality', char.personality) : ''}
-    `;
+    ` : '';
 
     // Quote block — ranked gets big stylized quotation marks
     const rankQuoteHTML = rankQuote ? (ranked ? `
@@ -5097,7 +5103,7 @@ async function exportStudentCard(subject, opts = {}) {
 
             ${rankBgOverlay}
 
-            ${classLetterWatermark}
+            ${schoolLogoWatermark}
 
             ${watermarkSVG ? `<div style="position:absolute;top:50%;left:50%;width:720px;height:720px;transform:translate(-50%,-50%);opacity:0.05;color:${accentColor || '#4dc9e6'};pointer-events:none;z-index:0;">${watermarkSVG.replace('<svg ', '<svg style="width:100%;height:100%;" ')}</div>` : ''}
 
@@ -5142,9 +5148,8 @@ async function exportStudentCard(subject, opts = {}) {
             </div>
 
             ${footerText ? `
-            <div style="margin:0 28px 20px;padding:13px 20px 11px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:11px;line-height:1;color:#64748b;font-family:'Inter',sans-serif;">${footerText}</span>
-                <span style="font-size:11px;line-height:1;color:#475569;font-family:'Inter',sans-serif;white-space:nowrap;margin-left:16px;">${appDate}</span>
+            <div style="margin:0 28px 20px;padding:13px 20px 12px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;text-align:center;">
+                <span style="font-size:11px;line-height:1.4;color:#94a3b8;font-family:'Inter',sans-serif;">${footerText}</span>
             </div>
             ` : '<div style="height:20px;"></div>'}
         </div>
@@ -5158,12 +5163,17 @@ async function exportStudentCard(subject, opts = {}) {
     document.body.appendChild(container);
 
     const exportCard = container.querySelector('.export-card');
+    // Capture the full element height — without these, html2canvas defaults
+    // to the viewport height and clips long bios off the bottom of the card.
+    const fullHeight = Math.max(exportCard.scrollHeight, exportCard.offsetHeight);
 
     html2canvas(exportCard, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#0f1a2e',
-        logging: false
+        logging: false,
+        height: fullHeight,
+        windowHeight: fullHeight
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `ANHS_${(char.name || 'Character').replace(/\s+/g, '_')}.png`;
