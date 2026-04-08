@@ -240,6 +240,13 @@
                     <span class="year-count" id="council-count">0 total</span>
                     <span class="year-toggle" aria-hidden="true"></span>
                 </div>
+                <div class="sort-container rank-sort" data-rank-sort="council">
+                    <span class="sort-label">Sort:</span>
+                    <div class="sort-buttons">
+                        <button class="sort-btn active" data-rank-sort-btn="rank">Rank</button>
+                        <button class="sort-btn" data-rank-sort-btn="tenure">Tenure</button>
+                    </div>
+                </div>
                 <div class="member-grid" id="council-members">
                     <div class="empty-class">No council members</div>
                 </div>
@@ -250,6 +257,13 @@
                     <h2 class="year-title">Faculty Members</h2>
                     <span class="year-count" id="faculty-count">0 total</span>
                     <span class="year-toggle" aria-hidden="true"></span>
+                </div>
+                <div class="sort-container rank-sort" data-rank-sort="faculty">
+                    <span class="sort-label">Sort:</span>
+                    <div class="sort-buttons">
+                        <button class="sort-btn active" data-rank-sort-btn="rank">Rank</button>
+                        <button class="sort-btn" data-rank-sort-btn="tenure">Tenure</button>
+                    </div>
                 </div>
                 <div class="member-grid" id="faculty-members">
                     <div class="empty-class">No faculty members</div>
@@ -291,9 +305,14 @@
                 <div class="profile-header">
                     <div class="profile-header-info">
                         <div id="profile-rank-crest" class="profile-rank-crest" style="display:none;">
-                            <span class="profile-rank-kind"></span>
-                            <span class="profile-rank-title"></span>
+                            <div class="profile-rank-insignia" id="profile-rank-insignia"></div>
+                            <div class="profile-rank-text">
+                                <span class="profile-rank-kind"></span>
+                                <span class="profile-rank-title"></span>
+                                <span class="profile-rank-since" id="profile-rank-since"></span>
+                            </div>
                         </div>
+                        <p class="profile-rank-quote" id="profile-rank-quote" style="display:none;"></p>
                         <h2 id="profile-name">Student Name</h2>
                         <p id="profile-class">1st Year - Class A</p>
                     </div>
@@ -765,7 +784,7 @@
                 <div class="admin-modal-body">
                     <div class="admin-form-row">
                         <label>Full Name</label>
-                        <input type="text" id="admin-student-name" placeholder="Full name">
+                        <input type="text" id="admin-student-name" placeholder="What is the character's full name?">
                     </div>
                     <div class="admin-form-row admin-form-row-half" id="admin-form-year-class-row">
                         <div>
@@ -795,7 +814,7 @@
                         </div>
                         <div class="admin-image-input">
                             <label>Image URL</label>
-                            <input type="text" id="admin-student-image" placeholder="https://...">
+                            <input type="text" id="admin-student-image" placeholder="Paste URL">
                             <div class="image-framer-controls" id="admin-image-framer-controls">
                                 <label class="image-framer-zoom-label">Zoom</label>
                                 <input type="number" id="admin-image-zoom" class="image-framer-zoom-input" min="1" step="0.1" value="1">
@@ -852,6 +871,16 @@
                             <option value="Director">Director</option>
                             <option value="Chairperson">Chairperson</option>
                         </select>
+                    </div>
+                    <div class="admin-form-section-title" id="admin-form-tenure-title" style="display:none;">Tenure</div>
+                    <div class="admin-form-row" id="admin-form-tenure-row" style="display:none;">
+                        <label>Serving since</label>
+                        <input type="number" id="admin-student-serving-since" min="2000" max="2100" step="1" placeholder="When did they take office?">
+                    </div>
+                    <div class="admin-form-section-title" id="admin-form-quote-title" style="display:none;">Quote</div>
+                    <div class="admin-form-row" id="admin-form-quote-row" style="display:none;">
+                        <label>In-character line</label>
+                        <input type="text" id="admin-student-rank-quote" maxlength="160" placeholder="What would they say about their role?">
                     </div>
                 </div>
                 <div class="admin-modal-actions">

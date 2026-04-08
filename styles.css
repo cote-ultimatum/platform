@@ -1594,13 +1594,33 @@ body::before {
 /* ===== Profile rank crest — appears above student name ===== */
 .profile-rank-crest {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.15rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.85rem;
     margin-bottom: 0.5rem;
     padding-left: 0.9rem;
     border-left: 3px solid var(--rank-color, var(--cyan));
     line-height: 1;
+}
+.profile-rank-insignia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    color: var(--rank-color, var(--cyan));
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent));
+    flex-shrink: 0;
+}
+.profile-rank-insignia .rank-insignia-svg {
+    width: 100%;
+    height: 100%;
+}
+.profile-rank-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    min-width: 0;
 }
 .profile-rank-crest .profile-rank-kind {
     font-family: 'Orbitron', monospace;
@@ -1619,6 +1639,48 @@ body::before {
     color: var(--rank-color, var(--cyan));
     text-shadow: 0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent),
                  0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.profile-rank-crest .profile-rank-since {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, #aab8d4);
+    opacity: 0.85;
+    margin-top: 0.1rem;
+}
+.profile-rank-quote {
+    margin: 0.2rem 0 0.75rem 0;
+    padding-left: 0.9rem;
+    border-left: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent);
+    font-style: italic;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 30%, #d6dde8);
+    max-width: 56ch;
+}
+
+/* Tab card insignia — small, top-right corner of the member card */
+.member-card { position: relative; }
+.member-card-insignia {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    width: 30px;
+    height: 30px;
+    color: var(--rank-color, var(--cyan));
+    opacity: 0.85;
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent));
+    pointer-events: none;
+    z-index: 2;
+}
+.member-card-insignia .rank-insignia-svg { width: 100%; height: 100%; }
+.member-card:hover .member-card-insignia { opacity: 1; }
+
+/* Rank sort row — sits inside the year-section under the header */
+.sort-container.rank-sort {
+    margin: 0.4rem 0 0.9rem 0;
+    padding: 0 0.25rem;
 }
 
 /* ===== Premium ranked profile card — "high-tier credit card" treatment ===== */

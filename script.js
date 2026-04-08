@@ -253,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavButtons();
     initOAAApp();
     initOAASectionToggles();
+    initRankSortToggles();
     initKeyboardNav();
     initKeyboardHintClicks();
     initCollapsibleSections();
@@ -1185,15 +1186,38 @@ function renderClassCards() {
     });
 }
 
+// Sort modes for council/faculty tabs (persisted across renders within a session)
+const rankSortState = { council: 'rank', faculty: 'rank' };
+
+function sortRankedList(members, kind) {
+    const order = kind === 'council' ? COUNCIL_RANK_ORDER : FACULTY_RANK_ORDER;
+    const rankKey = kind === 'council' ? 'councilRank' : 'facultyRank';
+    const mode = rankSortState[kind] || 'rank';
+    const sorted = members.slice();
+    if (mode === 'tenure') {
+        // Longest-serving first; members without a year fall to the bottom.
+        sorted.sort((a, b) => {
+            const ya = a.servingSince || Infinity;
+            const yb = b.servingSince || Infinity;
+            if (ya !== yb) return ya - yb;
+            return order.indexOf(a[rankKey]) - order.indexOf(b[rankKey]);
+        });
+    } else {
+        sorted.sort((a, b) => order.indexOf(a[rankKey]) - order.indexOf(b[rankKey]));
+    }
+    return sorted;
+}
+
 function renderCouncilSection() {
     const container = document.getElementById('council-members');
     const countEl = document.getElementById('council-count');
     if (!container) return;
 
     const allStudents = getAllStudents();
-    const council = allStudents
-        .filter(s => s.councilRank && !s.retired)
-        .sort((a, b) => COUNCIL_RANK_ORDER.indexOf(a.councilRank) - COUNCIL_RANK_ORDER.indexOf(b.councilRank));
+    const council = sortRankedList(
+        allStudents.filter(s => s.councilRank && !s.retired),
+        'council'
+    );
 
     if (countEl) countEl.textContent = `${council.length} total`;
 
@@ -1213,9 +1237,10 @@ function renderFacultySection() {
     if (!container) return;
 
     const allStudents = getAllStudents();
-    const faculty = allStudents
-        .filter(s => s.facultyRank && !s.retired)
-        .sort((a, b) => FACULTY_RANK_ORDER.indexOf(a.facultyRank) - FACULTY_RANK_ORDER.indexOf(b.facultyRank));
+    const faculty = sortRankedList(
+        allStudents.filter(s => s.facultyRank && !s.retired),
+        'faculty'
+    );
 
     if (countEl) countEl.textContent = `${faculty.length} total`;
 
@@ -1227,6 +1252,29 @@ function renderFacultySection() {
     container.innerHTML = faculty.map(s => createMemberCardHTML(s, s.facultyRank)).join('');
     bindMemberCardClicks(container);
     attachHoverSounds(container);
+}
+
+function initRankSortToggles() {
+    document.querySelectorAll('.sort-container.rank-sort').forEach(container => {
+        if (container.dataset.bound) return;
+        container.dataset.bound = '1';
+        const kind = container.dataset.rankSort;
+        container.querySelectorAll('[data-rank-sort-btn]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const mode = btn.dataset.rankSortBtn;
+                if (rankSortState[kind] === mode) return;
+                rankSortState[kind] = mode;
+                container.querySelectorAll('[data-rank-sort-btn]').forEach(b => b.classList.toggle('active', b === btn));
+                playSound('select');
+                if (kind === 'council') renderCouncilSection();
+                else renderFacultySection();
+            });
+            btn.addEventListener('mouseenter', () => playSound('hover'));
+        });
+        // Stop the section toggle from collapsing when clicking the sort row
+        container.addEventListener('click', (e) => e.stopPropagation());
+    });
 }
 
 function createMemberCardHTML(student, rank) {
@@ -1243,8 +1291,10 @@ function createMemberCardHTML(student, rank) {
         return `<div class="stat-mini-bar stat-${stat}" style="--bar-height: ${height}px;"></div>`;
     }).join('');
 
+    const insigniaSVG = buildRankInsigniaSVG(rank);
     return `
         <div class="member-card rank-${slug} ${isComparing ? 'comparing' : ''}" data-student-id="${student.id}" style="--rank-color: ${color};">
+            <div class="member-card-insignia">${insigniaSVG}</div>
             <div class="member-card-ribbon">${rank}</div>
             <div class="member-card-body">
                 ${student.image
@@ -1493,12 +1543,25 @@ function showStudentProfile(student, addToHistory = true) {
         profileCardEl.classList.remove('profile-card--ranked', 'profile-card--council', 'profile-card--faculty');
         profileCardEl.style.removeProperty('--rank-color');
     }
+    const rankQuoteEl = document.getElementById('profile-rank-quote');
     if (rankCrest) {
         if (rank) {
             const kind = student.councilRank ? 'Student Council' : 'Faculty';
             const color = RANK_COLORS[rank] || 'var(--cyan)';
             rankCrest.querySelector('.profile-rank-kind').textContent = kind;
             rankCrest.querySelector('.profile-rank-title').textContent = rank;
+            const sinceEl = rankCrest.querySelector('.profile-rank-since');
+            if (sinceEl) {
+                if (student.servingSince) {
+                    sinceEl.textContent = `Serving since ${student.servingSince}`;
+                    sinceEl.style.display = '';
+                } else {
+                    sinceEl.textContent = '';
+                    sinceEl.style.display = 'none';
+                }
+            }
+            const insigniaEl = document.getElementById('profile-rank-insignia');
+            if (insigniaEl) insigniaEl.innerHTML = buildRankInsigniaSVG(rank);
             rankCrest.className = `profile-rank-crest rank-${rankSlug(rank)}`;
             rankCrest.style.setProperty('--rank-color', color);
             rankCrest.style.display = '';
@@ -1507,8 +1570,23 @@ function showStudentProfile(student, addToHistory = true) {
                 profileCardEl.classList.add(student.councilRank ? 'profile-card--council' : 'profile-card--faculty');
                 profileCardEl.style.setProperty('--rank-color', color);
             }
+            if (rankQuoteEl) {
+                if (student.rankQuote) {
+                    rankQuoteEl.textContent = `“${student.rankQuote}”`;
+                    rankQuoteEl.style.display = '';
+                } else {
+                    rankQuoteEl.textContent = '';
+                    rankQuoteEl.style.display = 'none';
+                }
+            }
         } else {
             rankCrest.style.display = 'none';
+            const insigniaEl = document.getElementById('profile-rank-insignia');
+            if (insigniaEl) insigniaEl.innerHTML = '';
+            if (rankQuoteEl) {
+                rankQuoteEl.textContent = '';
+                rankQuoteEl.style.display = 'none';
+            }
         }
     }
 
@@ -1855,6 +1933,65 @@ const RANK_COLORS = {
     'Chairperson': '#fcd34d'
 };
 function rankSlug(rank) { return (rank || '').toLowerCase().replace(/\s+/g, '-'); }
+
+// ===== Rank insignia (laurel = council, oak = faculty) =====
+// Pip count progresses with rank: lowest = 1 leaf, highest = N leaves.
+// Top rank in each branch gets a flourish (closing wreath / acorn).
+function rankPipCount(rank) {
+    if (COUNCIL_RANK_ORDER.includes(rank)) {
+        return COUNCIL_RANK_ORDER.length - COUNCIL_RANK_ORDER.indexOf(rank);
+    }
+    if (FACULTY_RANK_ORDER.includes(rank)) {
+        return FACULTY_RANK_ORDER.length - FACULTY_RANK_ORDER.indexOf(rank);
+    }
+    return 0;
+}
+
+function buildRankInsigniaSVG(rank) {
+    if (!rank) return '';
+    const isCouncil = COUNCIL_RANK_ORDER.includes(rank);
+    const isFaculty = FACULTY_RANK_ORDER.includes(rank);
+    if (!isCouncil && !isFaculty) return '';
+    const n = rankPipCount(rank);
+    const isTop = isCouncil
+        ? rank === COUNCIL_RANK_ORDER[0]
+        : rank === FACULTY_RANK_ORDER[0];
+
+    const pieces = [];
+    // Stem
+    pieces.push('<path d="M32 54 L32 14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.85"/>');
+
+    if (isCouncil) {
+        // Top rank: closing wreath behind the sprig
+        if (isTop) {
+            pieces.push('<path d="M32 12 C14 12 14 40 32 52 C50 40 50 12 32 12 Z" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.55"/>');
+        }
+        // Laurel leaves — slim almonds, alternating sides bottom-up
+        for (let i = 0; i < n; i++) {
+            const y = 46 - i * 7;
+            const side = i % 2 === 0 ? 1 : -1;
+            const x = 32 + side * 5;
+            const rot = side > 0 ? 35 : -35;
+            pieces.push(`<ellipse cx="${x}" cy="${y}" rx="3.2" ry="6.5" transform="rotate(${rot} ${x} ${y})"/>`);
+        }
+    } else {
+        // Top rank: acorn flourish at the top of the stem
+        if (isTop) {
+            pieces.push('<g transform="translate(32 10)"><ellipse cx="0" cy="3" rx="3" ry="4"/><path d="M-3.4 -0.5 Q0 -3.5 3.4 -0.5 Z" opacity="0.75"/></g>');
+        }
+        // Oak leaves — lobed shape, alternating sides bottom-up
+        const oakPath = 'M0 -7 C2.4 -6.2 4 -3.6 2.4 -1.6 C4.4 -0.6 4.4 1.4 2.4 2.4 C3.6 4.6 1.6 6.8 0 7 C-1.6 6.8 -3.6 4.6 -2.4 2.4 C-4.4 1.4 -4.4 -0.6 -2.4 -1.6 C-4 -3.6 -2.4 -6.2 0 -7 Z';
+        for (let i = 0; i < n; i++) {
+            const y = 46 - i * 8;
+            const side = i % 2 === 0 ? 1 : -1;
+            const x = 32 + side * 6;
+            const rot = side > 0 ? 25 : -25;
+            pieces.push(`<g transform="translate(${x} ${y}) rotate(${rot})"><path d="${oakPath}"/></g>`);
+        }
+    }
+
+    return `<svg viewBox="0 0 64 64" class="rank-insignia-svg" fill="currentColor" aria-hidden="true">${pieces.join('')}</svg>`;
+}
 
 function getClassRank(year, className) {
     const activePoints = getActiveClassPoints();
@@ -3022,6 +3159,11 @@ function openStudentModal(student, mode = 'student') {
     document.getElementById('admin-form-council-row').style.display = isFaculty ? 'none' : '';
     document.getElementById('admin-form-faculty-title').style.display = isFaculty ? '' : 'none';
     document.getElementById('admin-form-faculty-row').style.display = isFaculty ? '' : 'none';
+    // Tenure + Quote rows: shown for both modes (apply to anyone with a rank).
+    ['admin-form-tenure-title', 'admin-form-tenure-row', 'admin-form-quote-title', 'admin-form-quote-row'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = '';
+    });
 
     // Set title
     const labelKind = isFaculty ? 'Faculty' : 'Student';
@@ -3054,6 +3196,8 @@ function openStudentModal(student, mode = 'student') {
     document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
     document.getElementById('admin-student-council-rank').value = student?.councilRank || '';
     document.getElementById('admin-student-faculty-rank').value = student?.facultyRank || '';
+    document.getElementById('admin-student-serving-since').value = student?.servingSince || '';
+    document.getElementById('admin-student-rank-quote').value = student?.rankQuote || '';
 
     // Populate + set trait dropdowns (build options from traitDefinitions)
     Object.keys(traitDefinitions).forEach(category => {
@@ -3303,7 +3447,14 @@ async function saveStudent() {
         },
         traits: traits,
         councilRank: isFaculty ? null : (document.getElementById('admin-student-council-rank').value || null),
-        facultyRank: isFaculty ? facultyRankValue : null
+        facultyRank: isFaculty ? facultyRankValue : null,
+        servingSince: (() => {
+            const raw = document.getElementById('admin-student-serving-since').value.trim();
+            if (!raw) return null;
+            const yr = parseInt(raw, 10);
+            return (isNaN(yr) || yr < 2000 || yr > 2100) ? null : yr;
+        })(),
+        rankQuote: document.getElementById('admin-student-rank-quote').value.trim() || null
     };
 
     // (Stats already validated above to be in 0–100; no clamping needed.)
