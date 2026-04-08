@@ -3018,6 +3018,27 @@ function initStudentManagement() {
         imageInput.addEventListener('focus', () => playSound('select'));
     }
 
+    // Image file upload — mirrors the creator's upload button
+    const adminUploadBtn = document.querySelector('.admin-image-input .creator-upload-btn');
+    if (adminUploadBtn) {
+        adminUploadBtn.addEventListener('click', () => playSound('select'));
+    }
+    const adminImageUpload = document.getElementById('admin-student-image-upload');
+    if (adminImageUpload) {
+        adminImageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const dataUrl = ev.target.result;
+                if (imageInput) imageInput.value = dataUrl;
+                updateAdminImagePreview(dataUrl);
+                playSound('success');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     // Modal buttons
     const modalClose = document.getElementById('admin-student-modal-close');
     const modalCancel = document.getElementById('admin-student-cancel');
