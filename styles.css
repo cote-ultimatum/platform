@@ -1461,25 +1461,28 @@ body::before {
     opacity: 1;
 }
 
-/* Smooth, uniform collapse for both year sections and council/faculty */
+/* Smooth, uniform collapse using grid-template-rows 1fr→0fr so the
+   real content height animates in both directions (no max-height lag). */
+.year-section {
+    display: grid;
+    grid-template-rows: auto 1fr 1fr;
+    transition: grid-template-rows 0.35s ease;
+}
+.year-section.collapsed {
+    grid-template-rows: auto 0fr 0fr;
+}
 .year-section > .class-grid,
 .year-section > .member-grid,
 .year-section > .sort-container {
     overflow: hidden;
-    max-height: 4000px;
+    min-height: 0;
     opacity: 1;
-    transition: max-height 0.35s ease, opacity 0.25s ease,
-                margin 0.3s ease, padding 0.3s ease;
+    transition: opacity 0.25s ease;
 }
 .year-section.collapsed > .class-grid,
 .year-section.collapsed > .member-grid,
 .year-section.collapsed > .sort-container {
-    max-height: 0;
     opacity: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
     pointer-events: none;
 }
 
