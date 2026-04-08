@@ -1693,13 +1693,6 @@ body::before {
 
 .member-grid .empty-class {
     grid-column: 1 / -1;
-    text-align: center;
-    padding: 2rem 1rem;
-    color: var(--text-muted);
-    font-style: italic;
-    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 29, 50, 0.6) 100%);
-    border: 1px solid rgba(77, 201, 230, 0.1);
-    border-radius: 8px;
 }
 
 .year-header::after {
