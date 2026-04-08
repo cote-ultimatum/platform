@@ -1583,6 +1583,16 @@ body::before {
     border-color: var(--cyan);
     box-shadow: 0 0 0 2px var(--cyan), 0 0 24px rgba(77, 201, 230, 0.5);
 }
+/* Compare checkbox sits on the right edge of the member card without resizing it */
+.member-card > .compare-checkbox {
+    position: absolute;
+    top: 50%;
+    right: 0.65rem;
+    transform: translateY(-50%);
+    margin-right: 0;
+    z-index: 2;
+    background: rgba(10, 18, 32, 0.85);
+}
 
 /* ===== Profile rank crest — appears above student name ===== */
 .profile-rank-crest {
@@ -1709,6 +1719,29 @@ body::before {
 .profile-card.profile-card--ranked .stats-title {
     color: var(--rank-color, var(--cyan));
     text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
+}
+
+/* Council and faculty don't display an OAA overall grade — they carry a rank */
+.profile-card.profile-card--ranked .overall-grade-box {
+    display: none;
+}
+
+/* Ranked entry in the comparison modal */
+.comparison-student--ranked {
+    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent) 0%,
+        transparent 100%);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 30%, transparent);
+}
+.comparison-student--ranked h3 {
+    color: var(--rank-color, var(--cyan));
+}
+.comparison-student--ranked .comparison-avatar {
+    border-color: var(--rank-color, var(--cyan)) !important;
+    box-shadow: 0 0 20px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent) !important;
 }
 
 /* ===== Admin faculty list styling ===== */

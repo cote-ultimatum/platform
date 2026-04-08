@@ -1752,16 +1752,25 @@ function showComparison() {
                 <button class="comparison-close">×</button>
             </div>
             <div class="comparison-grid" style="grid-template-columns: repeat(${students.length}, 1fr)">
-                ${students.map(s => `
-                    <div class="comparison-student">
-                        <div class="comparison-avatar class-${s.class.toLowerCase()}-glow">
+                ${students.map(s => {
+                    const rank = s.councilRank || s.facultyRank;
+                    const glowClass = s.class ? `class-${s.class.toLowerCase()}-glow` : '';
+                    const rankStyle = rank ? `style="--rank-color: ${RANK_COLORS[rank] || 'var(--cyan)'};"` : '';
+                    const rankedClass = rank ? 'comparison-student--ranked' : '';
+                    const subtitle = s.facultyRank
+                        ? s.facultyRank
+                        : (s.councilRank ? `${s.councilRank} · Class ${s.class}` : `Class ${s.class}`);
+                    return `
+                    <div class="comparison-student ${rankedClass}" ${rankStyle}>
+                        <div class="comparison-avatar ${glowClass}">
                             ${s.image ? `<img src="${s.image}" alt="${s.name}" style="${getImageFrameStyle(s)}">` : `<div class="avatar-placeholder">${getInitials(s.name)}</div>`}
                         </div>
                         <h3>${s.name}</h3>
-                        <p>Class ${s.class}</p>
+                        <p>${subtitle}</p>
                         <div class="comparison-grade">${calculateOverallGrade(s.stats)}</div>
                     </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
             <div class="comparison-stats">
                 ${['Academic Ability', 'Intelligence', 'Decision Making', 'Physical Ability', 'Cooperativeness'].map((name, i) => {
@@ -3135,6 +3144,9 @@ function renderAdminFacultyList() {
                     <div class="admin-student-name">${f.name || 'Unknown'}</div>
                     <div class="admin-student-meta"><span class="admin-faculty-rank-pill">${f.facultyRank}</span></div>
                 </div>
+                <button class="admin-student-download" data-download-key="${f._firebaseKey || f.id}" title="Download card" aria-label="Download card">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
                 <button class="admin-student-retire" data-retire-key="${f._firebaseKey || f.id}" title="${retireTitle}" aria-label="${retireTitle}">
                     ${f.retired
                         ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
@@ -3144,9 +3156,24 @@ function renderAdminFacultyList() {
         `;
     }).join('');
 
+    // Download button handler
+    container.querySelectorAll('.admin-faculty-item .admin-student-download').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.downloadKey;
+            const faculty = adminState.students.find(s => (s._firebaseKey || s.id) === key);
+            if (faculty) {
+                playSound('click');
+                exportEnrolledStudent(faculty);
+            }
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+
     container.querySelectorAll('.admin-faculty-item').forEach(item => {
         item.addEventListener('click', (e) => {
             if (e.target.closest('.admin-student-retire')) return;
+            if (e.target.closest('.admin-student-download')) return;
             const key = item.dataset.facultyKey;
             const faculty = adminState.students.find(s => (s._firebaseKey || s.id) === key);
             if (faculty) {
