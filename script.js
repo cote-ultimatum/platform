@@ -5120,7 +5120,7 @@ async function exportStudentCard(subject, opts = {}) {
             ${rankQuoteHTML ? `<div style="padding:0 28px 6px;position:relative;z-index:1;">${rankQuoteHTML}</div>` : ''}
 
             <div style="display:flex;padding:0 28px 24px;gap:28px;position:relative;z-index:1;">
-                <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;justify-content:center;">
+                <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;">
                     <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:#0f1a2e;box-shadow:0 0 25px ${classGlow};">
                         ${prerenderedImage
                             ? `<img src="${prerenderedImage}" alt="Student Photo" width="240" height="240" style="display:block;width:240px;height:240px;">`
