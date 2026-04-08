@@ -4987,21 +4987,6 @@ async function exportStudentCard(subject, opts = {}) {
         `;
     }).join('');
 
-    const bioHTML = `
-        ${char.bio ? `
-            <div style="margin-top:24px;">
-                <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 14px;font-size:16px;padding-bottom:10px;border-bottom:2px solid #7a2438;">Background</h3>
-                <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.bio}</p>
-            </div>
-        ` : ''}
-        ${char.personality ? `
-            <div style="margin-top:24px;">
-                <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 14px;font-size:16px;padding-bottom:10px;border-bottom:2px solid #7a2438;">Personality</h3>
-                <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${char.personality}</p>
-            </div>
-        ` : ''}
-    `;
-
     const appDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     let headerSubtitle;
@@ -5063,10 +5048,35 @@ async function exportStudentCard(subject, opts = {}) {
     ` : '';
 
     const statusBoxHTML = ranked ? rankCrestHTML : `
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
-            <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">${statusLabel}</div>
-            <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:${statusColor};text-shadow:0 0 10px ${statusGlow};">${status}</div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 24px 12px;border:2px solid ${statusColor};border-radius:10px;background:${statusBg};box-shadow:0 0 22px ${statusGlow};">
+            <div style="font-family:'Orbitron',monospace;font-size:10px;line-height:1;color:rgba(255,255,255,0.55);letter-spacing:0.18em;margin-bottom:7px;text-transform:uppercase;">${statusLabel}</div>
+            <div style="font-family:'Orbitron',monospace;font-size:18px;line-height:1;font-weight:800;color:${statusColor};text-shadow:0 0 14px ${statusGlow};letter-spacing:0.1em;">${status}</div>
         </div>
+    `;
+
+    // Faint giant class letter watermark for non-ranked exports — mirrors the
+    // rank insignia watermark on ranked, gives normal student files class identity.
+    const classLetterWatermark = (!ranked && char.class) ? `
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',monospace;font-size:560px;line-height:1;font-weight:900;color:${classColor};opacity:0.05;pointer-events:none;z-index:0;user-select:none;text-align:center;">${char.class}</div>
+    ` : '';
+
+    // Bio + Personality as "FILE NOTE" sections with a left bar divider —
+    // gives the prose blocks the same official-document feel as the rest
+    // of the card. Left bar uses the same color as the Evaluation underline.
+    const fileNoteSection = (label, title, body) => `
+        <div style="margin-top:26px;border-left:3px solid ${evalBorder};padding:0 0 2px 16px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                <span style="font-family:'Orbitron',monospace;font-size:9px;line-height:1;letter-spacing:0.22em;color:${mixHexWithWhite(evalBorder, 0.4)};text-transform:uppercase;">${label}</span>
+                <span style="flex:1;height:1px;background:linear-gradient(90deg, ${hexToRgba(evalBorder, 0.45)}, ${hexToRgba(evalBorder, 0)});"></span>
+            </div>
+            <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 10px;font-size:15px;letter-spacing:0.04em;">${title}</h3>
+            <p style="font-size:13px;line-height:1.7;color:#94a3b8;font-family:'Inter',sans-serif;margin:0;">${body}</p>
+        </div>
+    `;
+    let bioNoteIndex = 0;
+    const bioHTML = `
+        ${char.bio ? fileNoteSection(`File Note 0${++bioNoteIndex}`, 'Background', char.bio) : ''}
+        ${char.personality ? fileNoteSection(`File Note 0${++bioNoteIndex}`, 'Personality', char.personality) : ''}
     `;
 
     // Quote block — ranked gets big stylized quotation marks
@@ -5086,6 +5096,8 @@ async function exportStudentCard(subject, opts = {}) {
         <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:${cardBg};color:#fff;position:relative;overflow:hidden;box-shadow:${cardShadow};">
 
             ${rankBgOverlay}
+
+            ${classLetterWatermark}
 
             ${watermarkSVG ? `<div style="position:absolute;top:50%;left:50%;width:720px;height:720px;transform:translate(-50%,-50%);opacity:0.05;color:${accentColor || '#4dc9e6'};pointer-events:none;z-index:0;">${watermarkSVG.replace('<svg ', '<svg style="width:100%;height:100%;" ')}</div>` : ''}
 
