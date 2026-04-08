@@ -5026,9 +5026,12 @@ async function exportStudentCard(subject, opts = {}) {
     const cardBg = ranked
         ? `#0a1220`
         : `linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%)`;
+    // Physically size and position the tint overlays so html2canvas can't
+    // bleed them across the whole card. Each overlay is a small box in a
+    // corner, with a single radial gradient inside it.
     const rankBgOverlay = ranked ? `
-        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top left, ${hexToRgba(accentColor, 0.22)} 0%, ${hexToRgba(accentColor, 0)} 55%);pointer-events:none;z-index:0;"></div>
-        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at bottom right, ${hexToRgba(accentColor, 0.12)} 0%, ${hexToRgba(accentColor, 0)} 60%);pointer-events:none;z-index:0;"></div>
+        <div style="position:absolute;top:0;left:0;width:520px;height:420px;background:radial-gradient(circle at 0% 0%, ${hexToRgba(accentColor, 0.22)} 0%, ${hexToRgba(accentColor, 0)} 70%);pointer-events:none;z-index:0;"></div>
+        <div style="position:absolute;bottom:0;right:0;width:440px;height:360px;background:radial-gradient(circle at 100% 100%, ${hexToRgba(accentColor, 0.12)} 0%, ${hexToRgba(accentColor, 0)} 75%);pointer-events:none;z-index:0;"></div>
     ` : '';
     const cardShadow = ranked
         ? `inset 0 0 0 1px ${hexToRgba(accentColor, 0.4)}, 0 0 30px ${hexToRgba(accentColor, 0.32)}`
