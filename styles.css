@@ -5400,7 +5400,7 @@ body::before {
 .creator-image-input-row {
     display: flex;
     gap: 0.5rem;
-    align-items: stretch;
+    align-items: center;
 }
 
 .creator-image-input-row input[type="url"],
@@ -5414,7 +5414,8 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1;
+    width: 42px;
+    height: 42px;
     flex-shrink: 0;
     background: var(--bg-darker);
     border: 1px solid var(--border-color);
