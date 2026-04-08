@@ -1797,10 +1797,19 @@ body::before {
         transparent 100%);
 }
 
-/* Name + ID + download in rank color */
+/* Student name stays white, but glows in the rank color so it reads as
+   the focal anchor and breaks up the wall of rank-tinted text. */
 .profile-card.profile-card--ranked .profile-header-info h2 {
+    color: var(--text-primary);
+    text-shadow:
+        0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 75%, transparent),
+        0 0 36px color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent);
+}
+
+/* Bring back rank-color stats title (engraving + watermark already break monotony) */
+.profile-card.profile-card--ranked .stats-title {
     color: var(--rank-color, var(--cyan));
-    text-shadow: 0 0 20px color-mix(in srgb, var(--rank-color, var(--cyan)) 70%, transparent);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
 }
 .profile-card.profile-card--ranked .profile-id {
     border-color: var(--rank-color, var(--cyan));
@@ -1825,7 +1834,7 @@ body::before {
     display: none;
 }
 
-/* Large faint watermark of the rank insignia, anchored to the card itself */
+/* Large faint watermark of the rank insignia — centered engraving on the card */
 .profile-rank-watermark {
     display: none;
 }
@@ -1833,12 +1842,12 @@ body::before {
     display: block;
     position: absolute;
     top: 50%;
-    right: -60px;
-    transform: translateY(-50%);
-    width: 420px;
-    height: 420px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(80%, 720px);
+    aspect-ratio: 1 / 1;
     color: var(--rank-color, var(--cyan));
-    opacity: 0.07;
+    opacity: 0.05;
     filter: drop-shadow(0 0 40px color-mix(in srgb, var(--rank-color, var(--cyan)) 45%, transparent));
     pointer-events: none;
     z-index: 0;
@@ -1847,10 +1856,8 @@ body::before {
     width: 100%;
     height: 100%;
 }
-/* Ensure card content sits above the watermark */
-.profile-card.profile-card--ranked .profile-header,
-.profile-card.profile-card--ranked .profile-stats,
-.profile-card.profile-card--ranked .profile-tabs {
+/* Ensure every card section sits above the watermark engraving */
+.profile-card.profile-card--ranked > *:not(.profile-rank-watermark) {
     position: relative;
     z-index: 1;
 }

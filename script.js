@@ -596,10 +596,6 @@ function goBack() {
             } else {
                 showOAAView(prev.oaaView, false);
             }
-            if (prev.scrollTop != null) {
-                const restoredEl = document.getElementById(prev.oaaView);
-                if (restoredEl) restoredEl.scrollTop = prev.scrollTop;
-            }
         } else {
             showScreen(prev.screen, false);
         }
@@ -1026,12 +1022,10 @@ function initOAAApp() {
 
 function showOAAView(viewId, addToHistory = true) {
     if (addToHistory && state.currentOAAView !== viewId) {
-        const prevEl = document.getElementById(state.currentOAAView);
         state.navigationHistory.push({
             screen: 'oaa-app',
             oaaView: state.currentOAAView,
-            classData: state.currentClass ? { ...state.currentClass } : null,
-            scrollTop: prevEl ? prevEl.scrollTop : 0
+            classData: state.currentClass ? { ...state.currentClass } : null
         });
     }
 
@@ -1368,7 +1362,7 @@ function bindMemberCardClicks(container) {
                 toggleCompareSelection(student);
             } else {
                 playSound('click');
-                state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null, scrollTop: document.getElementById('oaa-dashboard')?.scrollTop || 0 });
+                state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
                 showStudentProfile(student, false);
             }
         });
@@ -1445,7 +1439,7 @@ function createClassCard(year, className, students) {
                     playSound('click');
                     state.currentClass = { year: student.year, className: student.class };
                     // Only push current view to history - back from profile goes directly to dashboard
-                    state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null, scrollTop: document.getElementById('oaa-dashboard')?.scrollTop || 0 });
+                    state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
                     showStudentProfile(student, false);
                 }
             }
