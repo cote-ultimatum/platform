@@ -1614,64 +1614,101 @@ body::before {
                  0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-/* ===== Ranked profile card theming ===== */
+/* ===== Premium ranked profile card — "high-tier credit card" treatment ===== */
 .profile-card.profile-card--ranked {
-    position: relative;
-    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--rank-color, var(--cyan)) 25%, transparent),
-                0 20px 60px color-mix(in srgb, var(--rank-color, var(--cyan)) 25%, transparent),
-                inset 0 0 120px color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent);
-    overflow: hidden;
+    border-color: var(--rank-color, var(--cyan));
+    background:
+        repeating-linear-gradient(
+            118deg,
+            transparent 0 70px,
+            color-mix(in srgb, var(--rank-color, var(--cyan)) 5%, transparent) 70px 71px,
+            transparent 71px 140px
+        ),
+        radial-gradient(ellipse at top left,
+            color-mix(in srgb, var(--rank-color, var(--cyan)) 20%, transparent) 0%,
+            transparent 55%),
+        radial-gradient(ellipse at bottom right,
+            color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent) 0%,
+            transparent 60%),
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--rank-color, var(--cyan)) 7%, var(--bg-card)) 0%,
+            rgba(10, 18, 32, 0.95) 100%);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--rank-color, var(--cyan)) 40%, transparent),
+        0 0 30px color-mix(in srgb, var(--rank-color, var(--cyan)) 32%, transparent),
+        0 20px 60px rgba(0, 0, 0, 0.6);
+    transition: box-shadow 0.3s ease;
 }
+
+/* Hover AMPLIFIES rank presence (never dims it) */
+.profile-card.profile-card--ranked:hover {
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--rank-color, var(--cyan)) 65%, transparent),
+        0 0 48px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent),
+        0 0 90px color-mix(in srgb, var(--rank-color, var(--cyan)) 22%, transparent),
+        0 24px 70px rgba(0, 0, 0, 0.65);
+}
+
+/* Override base cyan accent bar */
 .profile-card.profile-card--ranked::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
     background: linear-gradient(90deg,
         transparent 0%,
-        var(--rank-color, var(--cyan)) 20%,
-        color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, #fff) 50%,
-        var(--rank-color, var(--cyan)) 80%,
+        var(--rank-color, var(--cyan)) 18%,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, #fff) 50%,
+        var(--rank-color, var(--cyan)) 82%,
         transparent 100%);
     box-shadow: 0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 70%, transparent);
-    pointer-events: none;
-    z-index: 2;
 }
+
+/* Override base cyan corner decoration */
 .profile-card.profile-card--ranked::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at top left,
-        color-mix(in srgb, var(--rank-color, var(--cyan)) 14%, transparent) 0%,
-        transparent 45%);
-    pointer-events: none;
-    z-index: 0;
+    border-top-color: color-mix(in srgb, var(--rank-color, var(--cyan)) 65%, transparent);
+    border-right-color: color-mix(in srgb, var(--rank-color, var(--cyan)) 65%, transparent);
 }
-.profile-card.profile-card--ranked .profile-header,
-.profile-card.profile-card--ranked .profile-body {
-    position: relative;
-    z-index: 1;
+
+/* Ring the image frame only — never the container (don't box it with overall-grade) */
+.profile-card.profile-card--ranked .profile-image-frame,
+.profile-card.profile-card--ranked .profile-image-placeholder {
+    border-color: var(--rank-color, var(--cyan)) !important;
+    box-shadow: 0 0 25px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent) !important;
 }
-.profile-card.profile-card--ranked .profile-image-container {
-    box-shadow: 0 0 0 2px var(--rank-color, var(--cyan)),
-                0 0 40px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
-    border-radius: 8px;
-}
+
+/* Overall grade box — its own themed element */
 .profile-card.profile-card--ranked .overall-grade-box {
     border-color: var(--rank-color, var(--cyan));
     box-shadow: 0 0 16px color-mix(in srgb, var(--rank-color, var(--cyan)) 45%, transparent);
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 14%, transparent) 0%,
+        transparent 100%);
 }
+
+/* Name + ID + download in rank color */
+.profile-card.profile-card--ranked .profile-header-info h2 {
+    color: var(--rank-color, var(--cyan));
+    text-shadow: 0 0 20px color-mix(in srgb, var(--rank-color, var(--cyan)) 70%, transparent);
+}
+.profile-card.profile-card--ranked .profile-id {
+    border-color: var(--rank-color, var(--cyan));
+    background: color-mix(in srgb, var(--rank-color, var(--cyan)) 8%, transparent);
+}
+.profile-card.profile-card--ranked .id-value {
+    color: var(--rank-color, var(--cyan));
+    text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, transparent);
+}
+.profile-card.profile-card--ranked .profile-download-btn {
+    border-color: var(--rank-color, var(--cyan));
+    color: var(--rank-color, var(--cyan));
+    background: color-mix(in srgb, var(--rank-color, var(--cyan)) 6%, transparent);
+}
+.profile-card.profile-card--ranked .profile-download-btn:hover {
+    background: color-mix(in srgb, var(--rank-color, var(--cyan)) 18%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--rank-color, var(--cyan)) 65%, transparent);
+}
+
+/* Stats title in rank color */
 .profile-card.profile-card--ranked .stats-title {
     color: var(--rank-color, var(--cyan));
     text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
-}
-.profile-card.profile-card--faculty .profile-image-container {
-    /* Override class-based glow classes since faculty has no class */
-    box-shadow: 0 0 0 2px var(--rank-color, var(--cyan)),
-                0 0 40px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent) !important;
 }
 
 /* ===== Admin faculty list styling ===== */
