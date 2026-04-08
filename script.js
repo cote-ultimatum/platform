@@ -681,14 +681,14 @@ function playWhenReady(audio, onPlaying) {
     attempt();
 }
 
-// Start both tracks playing — admin silent, main at target volume
-function startBothTracks(targetVolume, duration) {
+// Start ONLY the active track playing. The inactive track stays paused.
+// Mobile browsers (iOS Safari, some Android) ignore programmatic volume
+// changes, so we can't rely on volume crossfading both at once — that
+// would play both tracks audibly. Pause/play the inactive track instead.
+function startActiveTrack(targetVolume, duration) {
     const main = getTrack('main');
-    const admin = getTrack('admin');
     main.volume = 0;
-    admin.volume = 0;
     playWhenReady(main, () => fadeMusic(main, 0, targetVolume, duration));
-    playWhenReady(admin, () => {});  // play silently
 }
 
 function switchTrack(trackName) {
@@ -700,8 +700,15 @@ function switchTrack(trackName) {
 
     if (musicState.muted) return;  // both already paused; unmute will play correct one
 
-    fadeMusic(oldAudio, oldAudio.volume, 0, musicState.crossfadeDuration);
-    fadeMusic(newAudio, newAudio.volume, musicState.maxVolume, musicState.crossfadeDuration);
+    // Fade old track down, then PAUSE it (so mobile doesn't keep playing it).
+    fadeMusic(oldAudio, oldAudio.volume, 0, musicState.crossfadeDuration, () => {
+        oldAudio.pause();
+    });
+    // Start new track from 0 and fade up.
+    newAudio.volume = 0;
+    playWhenReady(newAudio, () => {
+        fadeMusic(newAudio, 0, musicState.maxVolume, musicState.crossfadeDuration);
+    });
 }
 
 function startMusic() {
@@ -717,10 +724,10 @@ function startMusic() {
     getTrack('main').load();
     getTrack('admin').load();
 
-    // Start both tracks after short delay (avoid competing with boot sound)
+    // Start the active track after a short delay (avoid competing with boot sound)
     setTimeout(() => {
         if (!musicState.muted) {
-            startBothTracks(musicState.maxVolume, musicState.startupDuration);
+            startActiveTrack(musicState.maxVolume, musicState.startupDuration);
         }
     }, 500);
 
@@ -730,19 +737,17 @@ function startMusic() {
         const main = getTrack('main');
         const admin = getTrack('admin');
         const activeAudio = getTrack(musicState.activeTrack);
-        const inactiveAudio = activeAudio === main ? admin : main;
 
         if (musicState.muted) {
-            // Unmute — resume both, fade up active
+            // Unmute — resume only the active track
             musicState.muted = false;
             toggle.classList.remove('muted');
-            inactiveAudio.volume = 0;
-            playWhenReady(inactiveAudio, () => {});
+            activeAudio.volume = 0;
             playWhenReady(activeAudio, () => {
                 fadeMusic(activeAudio, 0, musicState.maxVolume, musicState.toggleDuration);
             });
         } else {
-            // Mute — fade down active, pause both at end
+            // Mute — fade down active, pause both (defensive — only one should be playing)
             musicState.muted = true;
             toggle.classList.add('muted');
             fadeMusic(activeAudio, activeAudio.volume, 0, musicState.toggleDuration, () => {
@@ -1188,12 +1193,10 @@ function renderCouncilSection() {
     const allStudents = getAllStudents();
     const council = allStudents.filter(s => s.inCouncil && !s.retired);
 
-    if (countEl) {
-        countEl.textContent = `${council.length} member${council.length === 1 ? '' : 's'}`;
-    }
+    if (countEl) countEl.textContent = `${council.length} total`;
 
     if (council.length === 0) {
-        container.innerHTML = '<div class="empty-class">No council members yet</div>';
+        container.innerHTML = '<div class="empty-class">No council members</div>';
         return;
     }
 
@@ -1207,8 +1210,8 @@ function renderFacultySection() {
     if (!container) return;
 
     // Faculty data model not yet built — placeholder for now.
-    if (countEl) countEl.textContent = '0 members';
-    container.innerHTML = '<div class="empty-class">No faculty members yet</div>';
+    if (countEl) countEl.textContent = '0 total';
+    container.innerHTML = '<div class="empty-class">No faculty members</div>';
 }
 
 function initOAASectionToggles() {
@@ -2591,9 +2594,12 @@ async function confirmAdminSave() {
 }
 
 // Log a generic admin action to the changelog (add/edit/delete/retire student, etc.)
-function logAdminAction(text) {
+async function logAdminAction(text) {
     const userName = adminState.displayName || adminState.currentUser || 'Admin';
-    return COTEDB.addChangelogEntry(userName, [text]);
+    await COTEDB.addChangelogEntry(userName, [text]);
+    // Refresh the on-screen changelog so the new entry appears immediately
+    // instead of only after re-entering the admin panel.
+    loadAdminChangelog();
 }
 
 async function loadAdminChangelog() {

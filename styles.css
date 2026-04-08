@@ -1461,15 +1461,9 @@ body::before {
     opacity: 1;
 }
 
-.year-section .class-grid,
-.year-section .member-grid {
-    transition: opacity 0.25s ease;
-}
-
 .year-section.collapsed .class-grid,
 .year-section.collapsed .member-grid {
     display: none;
-    opacity: 0;
 }
 
 .member-grid {
