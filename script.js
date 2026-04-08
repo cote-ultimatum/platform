@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initHomeScreen();
     initNavButtons();
     initOAAApp();
+    initOAASectionToggles();
     initKeyboardNav();
     initKeyboardHintClicks();
     initCollapsibleSections();
@@ -1129,6 +1130,9 @@ function filterStudents(query) {
 // ========================================
 
 function renderClassCards() {
+    renderCouncilSection();
+    renderFacultySection();
+
     const yearConfigs = [
         { year: 1, containerId: 'first-year-classes', countId: 'first-year-count' },
         { year: 2, containerId: 'second-year-classes', countId: 'second-year-count' },
@@ -1173,6 +1177,59 @@ function renderClassCards() {
 
         // Reattach hover sounds to new elements
         attachHoverSounds(container);
+    });
+}
+
+function renderCouncilSection() {
+    const container = document.getElementById('council-members');
+    const countEl = document.getElementById('council-count');
+    if (!container) return;
+
+    const allStudents = getAllStudents();
+    const council = allStudents.filter(s => s.inCouncil && !s.retired);
+
+    if (countEl) {
+        countEl.textContent = `${council.length} member${council.length === 1 ? '' : 's'}`;
+    }
+
+    if (council.length === 0) {
+        container.innerHTML = '<div class="empty-class">No council members yet</div>';
+        return;
+    }
+
+    container.innerHTML = council.map(s => createStudentPreviewHTML(s)).join('');
+    attachHoverSounds(container);
+}
+
+function renderFacultySection() {
+    const container = document.getElementById('faculty-members');
+    const countEl = document.getElementById('faculty-count');
+    if (!container) return;
+
+    // Faculty data model not yet built — placeholder for now.
+    if (countEl) countEl.textContent = '0 members';
+    container.innerHTML = '<div class="empty-class">No faculty members yet</div>';
+}
+
+function initOAASectionToggles() {
+    const sections = document.querySelectorAll('#oaa-dashboard .year-section[data-section-id]');
+    sections.forEach(section => {
+        const id = section.dataset.sectionId;
+        const stored = localStorage.getItem(`oaa-section-${id}`);
+        if (stored === 'collapsed') section.classList.add('collapsed');
+        else if (stored === 'expanded') section.classList.remove('collapsed');
+
+        const header = section.querySelector('.year-header');
+        if (!header || header.dataset.toggleBound) return;
+        header.dataset.toggleBound = '1';
+
+        header.addEventListener('click', () => {
+            const wasCollapsed = section.classList.contains('collapsed');
+            section.classList.toggle('collapsed');
+            playSound(wasCollapsed ? 'open' : 'back');
+            localStorage.setItem(`oaa-section-${id}`, wasCollapsed ? 'expanded' : 'collapsed');
+        });
+        header.addEventListener('mouseenter', () => playSound('hover'));
     });
 }
 

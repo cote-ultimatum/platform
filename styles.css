@@ -1418,6 +1418,11 @@ body::before {
 
 .year-section {
     margin-bottom: 3rem;
+    transition: margin-bottom 0.3s ease;
+}
+
+.year-section.collapsed {
+    margin-bottom: 1.5rem;
 }
 
 .year-header {
@@ -1428,6 +1433,60 @@ body::before {
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(77, 201, 230, 0.15);
     position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition: margin-bottom 0.3s ease;
+}
+
+.year-section.collapsed .year-header {
+    margin-bottom: 0;
+}
+
+.year-toggle {
+    margin-left: auto;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--cyan);
+    border-bottom: 2px solid var(--cyan);
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+    opacity: 0.8;
+}
+
+.year-section.collapsed .year-toggle {
+    transform: rotate(-45deg);
+}
+
+.year-header:hover .year-toggle {
+    opacity: 1;
+}
+
+.year-section .class-grid,
+.year-section .member-grid {
+    transition: opacity 0.25s ease;
+}
+
+.year-section.collapsed .class-grid,
+.year-section.collapsed .member-grid {
+    display: none;
+    opacity: 0;
+}
+
+.member-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.member-grid .empty-class {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 29, 50, 0.6) 100%);
+    border: 1px solid rgba(77, 201, 230, 0.1);
+    border-radius: 8px;
 }
 
 .year-header::after {
