@@ -5019,23 +5019,16 @@ async function exportStudentCard(subject, opts = {}) {
     const evalBorder = accentColor || '#7a2438';
     const idColor = accentColor || '#4dc9e6';
 
-    // Background, accent bar, and shadow stack — ranked gets the premium "credit card" treatment.
-    // We keep the card's actual background SOLID (html2canvas mishandles stacked
-    // multi-radial gradients and bleeds the rank color across the whole card),
-    // and paint the ranked tint via two single-gradient overlay divs below.
+    // Ranked cards get a SOLID dark base. We learned the hard way that
+    // html2canvas mishandles radial gradients (it bleeds the start color
+    // across the whole element regardless of declared size), so all the
+    // ranked "warmth" now comes from individual themed elements below
+    // rather than a background tint layer.
     const cardBg = ranked
         ? `#0a1220`
         : `linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%)`;
-    // Physically size and position the tint overlays so html2canvas can't
-    // bleed them across the whole card. Each overlay is a small box in a
-    // corner, with a single radial gradient inside it.
-    const rankBgOverlay = ranked ? `
-        <div style="position:absolute;top:0;left:0;width:520px;height:420px;background:radial-gradient(circle at 0% 0%, ${hexToRgba(accentColor, 0.22)} 0%, ${hexToRgba(accentColor, 0)} 70%);pointer-events:none;z-index:0;"></div>
-        <div style="position:absolute;bottom:0;right:0;width:440px;height:360px;background:radial-gradient(circle at 100% 100%, ${hexToRgba(accentColor, 0.12)} 0%, ${hexToRgba(accentColor, 0)} 75%);pointer-events:none;z-index:0;"></div>
-    ` : '';
-    const cardShadow = ranked
-        ? `inset 0 0 0 1px ${hexToRgba(accentColor, 0.4)}, 0 0 30px ${hexToRgba(accentColor, 0.32)}`
-        : 'none';
+    const rankBgOverlay = '';
+    const cardShadow = 'none';
     const accentBar = ranked
         ? `linear-gradient(90deg, transparent 0%, ${accentColor} 18%, ${mixHexWithWhite(accentColor, 0.55)} 50%, ${accentColor} 82%, transparent 100%)`
         : `linear-gradient(90deg,${evalBorder},#4dc9e6,${evalBorder})`;
