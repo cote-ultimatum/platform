@@ -1837,41 +1837,6 @@ body::before {
     display: none;
 }
 
-/* School crest watermark — large, faint, centered behind the card content.
-   Shown on normal student cards (OAA + creator preview). Hidden on ranked
-   cards because they show the rank insignia watermark instead. */
-.profile-school-watermark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(70%, 560px);
-    aspect-ratio: 1 / 1;
-    background-image: url('ESF-LOGO.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    opacity: 0.15;
-    pointer-events: none;
-    z-index: 0;
-}
-.profile-card--ranked .profile-school-watermark {
-    display: none;
-}
-/* Make sure all card content sits above the school watermark, the same
-   way ranked cards lift content above their rank insignia watermark. */
-.profile-card > *:not(.profile-school-watermark):not(.profile-rank-watermark) {
-    position: relative;
-    z-index: 1;
-}
-.creator-preview-card {
-    position: relative;
-}
-.creator-preview-card > *:not(.profile-school-watermark) {
-    position: relative;
-    z-index: 1;
-}
-
 /* Large faint watermark of the rank insignia — centered engraving on the card */
 .profile-rank-watermark {
     display: none;

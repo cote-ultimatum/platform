@@ -4780,7 +4780,6 @@ function updateCreatorPreview() {
     const classGlow = classLower ? `class-${classLower}-glow` : '';
 
     preview.innerHTML = `
-        <div class="profile-school-watermark" aria-hidden="true"></div>
         <div class="profile-header">
             <div class="profile-header-info">
                 <h2>${char.name || 'Unnamed Character'}</h2>
@@ -5057,14 +5056,7 @@ async function exportStudentCard(subject, opts = {}) {
         </div>
     `;
 
-    // Faint school crest watermark for non-ranked exports — mirrors the rank
-    // insignia watermark on ranked exports. Council/faculty keep their own
-    // rank insignia instead. Same image is used on the on-site cards.
-    const schoolLogoWatermark = !ranked ? `
-        <div style="position:absolute;top:50%;left:50%;width:560px;height:560px;transform:translate(-50%,-50%);opacity:0.15;pointer-events:none;z-index:0;">
-            <img src="ESF-LOGO.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block;">
-        </div>
-    ` : '';
+    const schoolLogoWatermark = '';
 
     // Bio + Personality as "FILE NOTE" sections with a left bar divider.
     // Only the creator export shows these — OAA-accepted students and
@@ -5166,11 +5158,15 @@ async function exportStudentCard(subject, opts = {}) {
     // Capture the full element height — without these, html2canvas defaults
     // to the viewport height and clips long bios off the bottom of the card.
     const fullHeight = Math.max(exportCard.scrollHeight, exportCard.offsetHeight);
+    // Match canvas fill to the actual card background. Ranked uses #0a1220
+    // (slightly darker than non-ranked #0f1a2e) — if these don't match,
+    // any one-pixel discrepancy at the bottom shows as a lighter band.
+    const canvasBg = ranked ? '#0a1220' : '#0f1a2e';
 
     html2canvas(exportCard, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#0f1a2e',
+        backgroundColor: canvasBg,
         logging: false,
         height: fullHeight,
         windowHeight: fullHeight
