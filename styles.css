@@ -1593,8 +1593,8 @@ body::before {
 
 /* ===== Profile rank crest — appears above student name ===== */
 .profile-rank-crest {
-    display: flex;
-    flex-direction: row;
+    display: inline-flex;
+    flex-direction: row-reverse;
     align-items: center;
     gap: 0.85rem;
     margin-bottom: 0.5rem;
@@ -1688,7 +1688,7 @@ body::before {
    (i.e. start them at the same x as the title, past the insignia). */
 .profile-card--ranked #profile-name,
 .profile-card--ranked #profile-class {
-    margin-left: calc(0.9rem + 3px + 56px + 0.85rem);
+    margin-left: calc(0.9rem + 3px);
 }
 
 /* Tab card insignia — small, top-right corner of the member card */
