@@ -1678,6 +1678,9 @@ body::before {
 .admin-faculty-item {
     border-left: 3px solid var(--rank-color, var(--cyan));
 }
+.admin-faculty-item .admin-student-meta {
+    margin-top: 0.35rem;
+}
 .admin-faculty-rank-pill {
     display: inline-block;
     padding: 0.15rem 0.55rem;
