@@ -4851,6 +4851,17 @@ function hexToRgba(hex, alpha) {
     return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// Lightens a hex color toward white. ratio 0 = original, 1 = pure white.
+// Used in the ranked export to brighten the rank color for the top accent bar.
+function mixHexWithWhite(hex, ratio) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+    if (!m) return hex || '#ffffff';
+    const r = Math.round(parseInt(m[1], 16) * (1 - ratio) + 255 * ratio);
+    const g = Math.round(parseInt(m[2], 16) * (1 - ratio) + 255 * ratio);
+    const b = Math.round(parseInt(m[3], 16) * (1 - ratio) + 255 * ratio);
+    return `rgb(${r},${g},${b})`;
+}
+
 function exportRankedCard(student) {
     const rank = student.councilRank || student.facultyRank;
     const isCouncil = !!student.councilRank;
@@ -4858,21 +4869,24 @@ function exportRankedCard(student) {
     const glow = hexToRgba(color, 0.45);
     const bg = hexToRgba(color, 0.10);
     const kindLabel = isCouncil ? 'Student Council' : 'Faculty';
+    const dossierLine = isCouncil ? 'Student Council Dossier' : 'Faculty Dossier';
     const tenure = formatServingSince(student.servingSince);
     const yearSuffix = ['', 'st', 'nd', 'rd'][student.year] || 'th';
     const subtitle = isCouncil
-        ? `${student.year}${yearSuffix} Year &middot; Class ${student.class || '?'} &middot; ${kindLabel}`
-        : kindLabel;
+        ? `${student.year}${yearSuffix} Year &middot; Class ${student.class || '?'}`
+        : '';
     return exportStudentCard(student, {
-        status: rank.toUpperCase(),
-        statusLabel: kindLabel.toUpperCase(),
+        ranked: true,
+        rankTitle: rank.toUpperCase(),
+        rankKindLabel: kindLabel.toUpperCase(),
+        rankSinceLine: tenure ? `Serving since ${tenure}` : '',
+        dossierLine: dossierLine,
         statusColor: color,
         statusBg: bg,
         statusGlow: glow,
         accentColor: color,
         accentGlow: glow,
         subtitleOverride: subtitle,
-        extraHeaderLine: tenure ? `Serving since ${tenure}` : '',
         rankQuote: student.rankQuote || '',
         watermarkSVG: buildRankInsigniaSVG(rank),
         footerText: ''
@@ -4891,6 +4905,7 @@ async function exportCharacterPDF() {
 
 async function exportStudentCard(subject, opts = {}) {
     const char = subject;
+    const ranked = !!opts.ranked;
     const status = opts.status || 'PENDING';
     const statusLabel = opts.statusLabel || 'STATUS';
     const statusColor = opts.statusColor || '#f59e0b';
@@ -4903,6 +4918,10 @@ async function exportStudentCard(subject, opts = {}) {
     const extraHeaderLine = opts.extraHeaderLine || '';
     const rankQuote = opts.rankQuote || '';
     const watermarkSVG = opts.watermarkSVG || '';
+    const rankTitle = opts.rankTitle || '';
+    const rankKindLabel = opts.rankKindLabel || '';
+    const rankSinceLine = opts.rankSinceLine || '';
+    const dossierLine = opts.dossierLine || '';
     // Pre-render the user's photo into a fixed 480x480 canvas (2x the export
     // box for sharpness on the 2x html2canvas scale) with contain semantics.
     // This sidesteps html2canvas's unreliable handling of flex centering and
@@ -4987,34 +5006,94 @@ async function exportStudentCard(subject, opts = {}) {
 
     const headerSubtitle = subtitleOverride
         || `${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}`;
-    const nameColor = accentColor || '#4dc9e6';
-    const nameGlow = accentGlow || 'rgba(77,201,230,0.3)';
+    const nameColor = ranked ? '#ffffff' : (accentColor || '#4dc9e6');
+    const nameGlow = ranked
+        ? `0 0 18px ${hexToRgba(accentColor || '#4dc9e6', 0.75)}, 0 0 36px ${hexToRgba(accentColor || '#4dc9e6', 0.35)}`
+        : `0 0 20px ${accentGlow || 'rgba(77,201,230,0.3)'}`;
     const evalBorder = accentColor || '#7a2438';
+    const idColor = accentColor || '#4dc9e6';
+
+    // Background, accent bar, and shadow stack — ranked gets the premium "credit card" treatment
+    const cardBg = ranked
+        ? `radial-gradient(ellipse at top left, ${hexToRgba(accentColor, 0.20)} 0%, transparent 55%), radial-gradient(ellipse at bottom right, ${hexToRgba(accentColor, 0.10)} 0%, transparent 60%), linear-gradient(135deg, ${hexToRgba(accentColor, 0.07)} 0%, rgba(10,18,32,0.95) 100%), #0f1a2e`
+        : `linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%)`;
+    const cardShadow = ranked
+        ? `inset 0 0 0 1px ${hexToRgba(accentColor, 0.4)}, 0 0 30px ${hexToRgba(accentColor, 0.32)}`
+        : 'none';
+    const accentBar = ranked
+        ? `linear-gradient(90deg, transparent 0%, ${accentColor} 18%, ${mixHexWithWhite(accentColor, 0.55)} 50%, ${accentColor} 82%, transparent 100%)`
+        : `linear-gradient(90deg,${evalBorder},#4dc9e6,${evalBorder})`;
+    const schoolNameColor = ranked ? mixHexWithWhite(accentColor, 0.35) : '#4dc9e6';
+    const schoolNameGlow = ranked ? hexToRgba(accentColor, 0.4) : 'rgba(77,201,230,0.3)';
+    const subLineText = ranked && dossierLine ? dossierLine : 'Student Application File';
+    const cornerColor = ranked ? hexToRgba(accentColor, 0.65) : 'rgba(0,245,255,0.3)';
+
+    const overallGradeBoxBg = ranked
+        ? `linear-gradient(135deg, ${hexToRgba(accentColor, 0.22)} 0%, ${hexToRgba(accentColor, 0.06)} 100%)`
+        : `linear-gradient(135deg,#dc2626,#ef4444)`;
+    const overallGradeBoxBorder = ranked ? `2px solid ${accentColor}` : 'none';
+    const overallGradeBoxShadow = ranked
+        ? `0 0 20px ${hexToRgba(accentColor, 0.45)}`
+        : `0 0 20px rgba(231,76,60,0.3)`;
+    const overallGradeLabelColor = ranked ? hexToRgba(accentColor, 0.85) : 'rgba(255,255,255,0.7)';
+    const overallGradeNumberColor = ranked ? '#ffffff' : '#ffffff';
+    const overallGradeNumberShadow = ranked
+        ? `0 0 24px ${hexToRgba(accentColor, 0.7)}, 0 2px 10px rgba(0,0,0,0.3)`
+        : `0 2px 10px rgba(0,0,0,0.3)`;
+
+    // Rank crest — replaces the STATUS box on ranked exports
+    const rankCrestHTML = ranked && rankTitle ? `
+        <div style="display:flex;align-items:stretch;gap:14px;padding:6px 0;">
+            <div style="width:3px;background:${accentColor};border-radius:2px;box-shadow:0 0 10px ${hexToRgba(accentColor, 0.7)};"></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;text-align:left;">
+                ${rankKindLabel ? `<div style="font-family:'Orbitron',monospace;font-size:10px;line-height:1;letter-spacing:0.28em;color:${mixHexWithWhite(accentColor, 0.45)};text-transform:uppercase;">${rankKindLabel}</div>` : ''}
+                <div style="font-family:'Orbitron',monospace;font-size:26px;line-height:1;font-weight:700;letter-spacing:0.08em;color:${accentColor};text-shadow:0 0 18px ${hexToRgba(accentColor, 0.55)}, 0 2px 6px rgba(0,0,0,0.6);margin-top:8px;text-transform:uppercase;">${rankTitle}</div>
+                ${rankSinceLine ? `<div style="font-family:'Orbitron',monospace;font-size:9px;line-height:1;letter-spacing:0.22em;color:${mixHexWithWhite(accentColor, 0.55)};text-transform:uppercase;margin-top:8px;">${rankSinceLine}</div>` : ''}
+            </div>
+        </div>
+    ` : '';
+
+    const statusBoxHTML = ranked ? rankCrestHTML : `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
+            <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">${statusLabel}</div>
+            <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:${statusColor};text-shadow:0 0 10px ${statusGlow};">${status}</div>
+        </div>
+    `;
+
+    // Quote block — ranked gets big stylized quotation marks
+    const rankQuoteHTML = rankQuote ? (ranked ? `
+        <div style="position:relative;margin:24px 8px 0;padding:8px 36px 14px;text-align:center;">
+            <span style="position:absolute;top:-14px;left:0;font-family:'Orbitron',monospace;font-size:48px;line-height:1;color:${hexToRgba(accentColor, 0.4)};text-shadow:0 0 14px ${hexToRgba(accentColor, 0.4)};">&ldquo;</span>
+            <p style="margin:0;font-family:'Inter',sans-serif;font-style:italic;font-size:14px;line-height:1.6;color:#cbd5e1;">${rankQuote}</p>
+            <span style="position:absolute;bottom:-26px;right:0;font-family:'Orbitron',monospace;font-size:48px;line-height:1;color:${hexToRgba(accentColor, 0.4)};text-shadow:0 0 14px ${hexToRgba(accentColor, 0.4)};">&rdquo;</span>
+        </div>
+    ` : `
+        <div style="margin-top:22px;padding:14px 22px;border-left:3px solid ${nameColor};background:${hexToRgba(accentColor || '#4dc9e6', 0.06)};border-radius:0 8px 8px 0;">
+            <p style="margin:0;font-family:'Inter',sans-serif;font-style:italic;font-size:13px;line-height:1.6;color:#cbd5e1;">&ldquo;${rankQuote}&rdquo;</p>
+        </div>
+    `) : '';
 
     const printContent = `
-        <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%);color:#fff;position:relative;overflow:hidden;">
+        <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:${cardBg};color:#fff;position:relative;overflow:hidden;box-shadow:${cardShadow};">
 
-            ${watermarkSVG ? `<div style="position:absolute;top:50%;left:50%;width:720px;height:720px;transform:translate(-50%,-50%);opacity:0.05;color:${nameColor};pointer-events:none;z-index:0;">${watermarkSVG.replace('<svg ', '<svg style="width:100%;height:100%;" ')}</div>` : ''}
+            ${watermarkSVG ? `<div style="position:absolute;top:50%;left:50%;width:720px;height:720px;transform:translate(-50%,-50%);opacity:0.05;color:${accentColor || '#4dc9e6'};pointer-events:none;z-index:0;">${watermarkSVG.replace('<svg ', '<svg style="width:100%;height:100%;" ')}</div>` : ''}
 
-            <div style="height:4px;background:linear-gradient(90deg,${evalBorder},#4dc9e6,${evalBorder});position:relative;z-index:1;"></div>
+            <div style="height:4px;background:${accentBar};position:relative;z-index:1;box-shadow:${ranked ? `0 0 18px ${hexToRgba(accentColor, 0.7)}` : 'none'};"></div>
 
-            <div style="padding:18px 28px;text-align:center;border-bottom:1px solid rgba(77,201,230,0.1);position:relative;z-index:1;">
-                <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#4dc9e6;letter-spacing:3px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>
-                <div style="font-size:11px;color:#64748b;letter-spacing:4px;text-transform:uppercase;margin-top:4px;">Student Application File</div>
+            <div style="padding:18px 28px;text-align:center;border-bottom:1px solid ${ranked ? hexToRgba(accentColor, 0.18) : 'rgba(77,201,230,0.1)'};position:relative;z-index:1;">
+                <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:${schoolNameColor};letter-spacing:3px;text-shadow:0 0 20px ${schoolNameGlow};">ADVANCED NURTURING HIGH SCHOOL</div>
+                <div style="font-size:11px;color:${ranked ? mixHexWithWhite(accentColor, 0.4) : '#64748b'};letter-spacing:4px;text-transform:uppercase;margin-top:4px;">${subLineText}</div>
             </div>
 
-            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);position:relative;z-index:1;">
-                <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
+            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,${ranked ? hexToRgba(accentColor, 0.05) : 'rgba(0,245,255,0.03)'} 0%,transparent 100%);position:relative;z-index:1;">
+                <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:2px solid ${cornerColor};border-right:2px solid ${cornerColor};pointer-events:none;"></div>
                 <div style="display:flex;flex-direction:column;justify-content:center;">
-                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:${nameColor};text-shadow:0 0 20px ${nameGlow};line-height:1;">${char.name || 'Unnamed'}</div>
-                    <div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:8px;letter-spacing:0.1em;">${headerSubtitle}</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:${nameColor};text-shadow:${nameGlow};line-height:1;">${char.name || 'Unnamed'}</div>
+                    ${headerSubtitle ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:8px;letter-spacing:0.1em;">${headerSubtitle}</div>` : ''}
                     ${extraHeaderLine ? `<div style="font-family:'Inter',sans-serif;font-style:italic;font-size:12px;line-height:1;color:#94a3b8;margin-top:6px;">${extraHeaderLine}</div>` : ''}
-                    ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:${nameColor};margin-left:6px;">${char.id}</span></div>` : ''}
+                    ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:${idColor};margin-left:6px;text-shadow:${ranked ? `0 0 10px ${hexToRgba(accentColor, 0.6)}` : 'none'};">${char.id}</span></div>` : ''}
                 </div>
-                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
-                    <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">${statusLabel}</div>
-                    <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:${statusColor};text-shadow:0 0 10px ${statusGlow};">${status}</div>
-                </div>
+                ${statusBoxHTML}
             </div>
 
             <div style="display:flex;padding:0 28px 24px;gap:28px;position:relative;z-index:1;">
@@ -5025,16 +5104,16 @@ async function exportStudentCard(subject, opts = {}) {
                             : `<div style="width:240px;height:240px;color:#334155;font-size:12px;text-align:center;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;">No Photo<br>Provided</div>`
                         }
                     </div>
-                    <div style="width:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 0 14px;background:linear-gradient(135deg,#dc2626,#ef4444);border-radius:12px;box-shadow:0 0 20px rgba(231,76,60,0.3);">
-                        <div style="font-size:10px;line-height:1;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.7);font-family:'Orbitron',monospace;">Overall Rating</div>
-                        <div style="font-size:40px;font-weight:900;color:#fff;font-family:'Orbitron',monospace;line-height:1;margin-top:8px;text-shadow:0 2px 10px rgba(0,0,0,0.3);">${overallGrade}</div>
+                    <div style="width:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 0 14px;background:${overallGradeBoxBg};border:${overallGradeBoxBorder};border-radius:12px;box-shadow:${overallGradeBoxShadow};box-sizing:border-box;">
+                        <div style="font-size:10px;line-height:1;text-transform:uppercase;letter-spacing:0.15em;color:${overallGradeLabelColor};font-family:'Orbitron',monospace;">Overall Rating</div>
+                        <div style="font-size:40px;font-weight:900;color:${overallGradeNumberColor};font-family:'Orbitron',monospace;line-height:1;margin-top:8px;text-shadow:${overallGradeNumberShadow};">${overallGrade}</div>
                     </div>
                 </div>
 
                 <div style="flex:1;min-width:0;">
                     <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 18px;font-size:16px;padding-bottom:10px;border-bottom:2px solid ${evalBorder};">Evaluation</h3>
                     ${statsHTML}
-                    ${rankQuote ? `<div style="margin-top:22px;padding:14px 22px;border-left:3px solid ${nameColor};background:${hexToRgba(accentColor || '#4dc9e6', 0.06)};border-radius:0 8px 8px 0;"><p style="margin:0;font-family:'Inter',sans-serif;font-style:italic;font-size:13px;line-height:1.6;color:#cbd5e1;">&ldquo;${rankQuote}&rdquo;</p></div>` : ''}
+                    ${rankQuoteHTML}
                     ${bioHTML}
                 </div>
             </div>
