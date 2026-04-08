@@ -5004,8 +5004,14 @@ async function exportStudentCard(subject, opts = {}) {
 
     const appDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    const headerSubtitle = subtitleOverride
-        || `${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}`;
+    let headerSubtitle;
+    if (subtitleOverride) {
+        headerSubtitle = subtitleOverride;
+    } else if (!ranked) {
+        headerSubtitle = `${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}`;
+    } else {
+        headerSubtitle = '';
+    }
     const nameColor = ranked ? '#ffffff' : (accentColor || '#4dc9e6');
     const nameGlow = ranked
         ? `0 0 18px ${hexToRgba(accentColor || '#4dc9e6', 0.75)}, 0 0 36px ${hexToRgba(accentColor || '#4dc9e6', 0.35)}`
@@ -5013,10 +5019,17 @@ async function exportStudentCard(subject, opts = {}) {
     const evalBorder = accentColor || '#7a2438';
     const idColor = accentColor || '#4dc9e6';
 
-    // Background, accent bar, and shadow stack — ranked gets the premium "credit card" treatment
+    // Background, accent bar, and shadow stack — ranked gets the premium "credit card" treatment.
+    // We keep the card's actual background SOLID (html2canvas mishandles stacked
+    // multi-radial gradients and bleeds the rank color across the whole card),
+    // and paint the ranked tint via two single-gradient overlay divs below.
     const cardBg = ranked
-        ? `radial-gradient(ellipse at top left, ${hexToRgba(accentColor, 0.20)} 0%, transparent 55%), radial-gradient(ellipse at bottom right, ${hexToRgba(accentColor, 0.10)} 0%, transparent 60%), linear-gradient(135deg, ${hexToRgba(accentColor, 0.07)} 0%, rgba(10,18,32,0.95) 100%), #0f1a2e`
+        ? `#0a1220`
         : `linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%)`;
+    const rankBgOverlay = ranked ? `
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top left, ${hexToRgba(accentColor, 0.22)} 0%, ${hexToRgba(accentColor, 0)} 55%);pointer-events:none;z-index:0;"></div>
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at bottom right, ${hexToRgba(accentColor, 0.12)} 0%, ${hexToRgba(accentColor, 0)} 60%);pointer-events:none;z-index:0;"></div>
+    ` : '';
     const cardShadow = ranked
         ? `inset 0 0 0 1px ${hexToRgba(accentColor, 0.4)}, 0 0 30px ${hexToRgba(accentColor, 0.32)}`
         : 'none';
@@ -5075,6 +5088,8 @@ async function exportStudentCard(subject, opts = {}) {
 
     const printContent = `
         <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:${cardBg};color:#fff;position:relative;overflow:hidden;box-shadow:${cardShadow};">
+
+            ${rankBgOverlay}
 
             ${watermarkSVG ? `<div style="position:absolute;top:50%;left:50%;width:720px;height:720px;transform:translate(-50%,-50%);opacity:0.05;color:${accentColor || '#4dc9e6'};pointer-events:none;z-index:0;">${watermarkSVG.replace('<svg ', '<svg style="width:100%;height:100%;" ')}</div>` : ''}
 
