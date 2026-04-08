@@ -1190,24 +1190,18 @@ function renderClassCards() {
 // Sort modes for council/faculty tabs (persisted across renders within a session)
 const rankSortState = { council: 'rank', faculty: 'rank' };
 
-// Convert servingSince (YYYY-MM-DD string, or legacy plain year number) to a sortable number.
-// Earlier date = smaller number = "longer-serving".
+// Convert servingSince (YYYY-MM-DD) to a sortable number. Earlier = smaller = "longer-serving".
 function tenureSortKey(value) {
-    if (!value) return Infinity;
-    if (typeof value === 'number') return value * 10000;
-    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(String(value));
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(value || '');
     if (!m) return Infinity;
     return parseInt(m[1], 10) * 10000 + parseInt(m[2], 10) * 100 + parseInt(m[3], 10);
 }
 
 function formatServingSince(value) {
-    if (!value) return '';
-    if (typeof value === 'number') return String(value);
-    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(String(value));
-    if (!m) return String(value);
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(value || '');
+    if (!m) return '';
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const monthName = months[parseInt(m[2], 10) - 1] || '';
-    return `${parseInt(m[3], 10)} ${monthName} ${m[1]}`;
+    return `${parseInt(m[3], 10)} ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
 }
 
 function sortRankedList(members, kind) {
