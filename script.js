@@ -596,6 +596,10 @@ function goBack() {
             } else {
                 showOAAView(prev.oaaView, false);
             }
+            if (prev.scrollTop != null) {
+                const restoredEl = document.getElementById(prev.oaaView);
+                if (restoredEl) restoredEl.scrollTop = prev.scrollTop;
+            }
         } else {
             showScreen(prev.screen, false);
         }
@@ -1022,10 +1026,12 @@ function initOAAApp() {
 
 function showOAAView(viewId, addToHistory = true) {
     if (addToHistory && state.currentOAAView !== viewId) {
+        const prevEl = document.getElementById(state.currentOAAView);
         state.navigationHistory.push({
             screen: 'oaa-app',
             oaaView: state.currentOAAView,
-            classData: state.currentClass ? { ...state.currentClass } : null
+            classData: state.currentClass ? { ...state.currentClass } : null,
+            scrollTop: prevEl ? prevEl.scrollTop : 0
         });
     }
 
