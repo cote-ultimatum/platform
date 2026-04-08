@@ -4804,7 +4804,8 @@ async function exportStudentCard(subject, opts = {}) {
                 <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
                 <div style="display:flex;flex-direction:column;justify-content:center;">
                     <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1;">${char.name || 'Unnamed'}</div>
-                    <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;color:#94a3b8;margin-top:8px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:#4dc9e6;margin-left:6px;">${char.id || `${char.year}${yearSuffix} Year - Class ${char.class || '?'}`}</span></div>
+                    <div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:8px;letter-spacing:0.1em;">${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}</div>
+                    ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:#4dc9e6;margin-left:6px;">${char.id}</span></div>` : ''}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
                     <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">STATUS</div>
