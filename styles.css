@@ -1461,27 +1461,26 @@ body::before {
     opacity: 1;
 }
 
-/* Smooth, uniform collapse using grid-template-rows 1fr→0fr so the
-   real content height animates in both directions (no max-height lag). */
-.year-section {
+/* Smooth, uniform collapse using a wrapper grid + 1fr→0fr trick.
+   Keeps .year-section as a normal block (so hover translateY on
+   member cards doesn't get clipped by the year layout) and only
+   the inner wrapper does the animated clipping. */
+.year-collapse {
     display: grid;
-    grid-template-rows: auto 1fr 1fr;
+    grid-template-rows: 1fr;
     transition: grid-template-rows 0.35s ease;
 }
-.year-section.collapsed {
-    grid-template-rows: auto 0fr 0fr;
+.year-section.collapsed .year-collapse {
+    grid-template-rows: 0fr;
 }
-.year-section > .class-grid,
-.year-section > .member-grid,
-.year-section > .sort-container {
-    overflow: hidden;
+.year-collapse-inner {
     min-height: 0;
+    overflow: clip;
+    overflow-clip-margin: 8px; /* let hover lift breathe past the edge */
     opacity: 1;
     transition: opacity 0.25s ease;
 }
-.year-section.collapsed > .class-grid,
-.year-section.collapsed > .member-grid,
-.year-section.collapsed > .sort-container {
+.year-section.collapsed .year-collapse-inner {
     opacity: 0;
     pointer-events: none;
 }
