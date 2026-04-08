@@ -12,7 +12,6 @@ const state = {
     currentClass: null,
     currentStudent: null,
     currentOAAView: 'oaa-dashboard',
-    currentSort: 'default',
     navigationHistory: [],
     keysHeld: {},
     mouseX: 0,
@@ -1055,33 +1054,43 @@ function buildStudentLookup() {
 // SORTING
 // ========================================
 
-function initSorting() {
-    // Only the stat sort buttons — exclude rank-sort buttons which have their own handler
-    document.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
-        btn.addEventListener('mouseenter', () => playSound('hover'));
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playSound('select');
-            const sortValue = btn.dataset.sort;
-            state.currentSort = sortValue;
-            updateAllSortButtons(sortValue);
+// Independent sort state per dashboard year + class view
+const yearSortState = { 1: 'default', 2: 'default', 3: 'default' };
+let classViewSort = 'default';
 
-            if (state.currentOAAView === 'oaa-dashboard') {
-                renderYearSections();
-            } else if (state.currentOAAView === 'oaa-class' && state.currentClass) {
+function initSorting() {
+    // Per-year sort rows on the dashboard — each year keeps its own state
+    document.querySelectorAll('.sort-container.year-sort').forEach(container => {
+        const year = parseInt(container.dataset.yearSort, 10);
+        container.addEventListener('click', (e) => e.stopPropagation());
+        container.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
+            btn.addEventListener('mouseenter', () => playSound('hover'));
+            btn.addEventListener('click', () => {
+                const sortValue = btn.dataset.sort;
+                if (yearSortState[year] === sortValue) return;
+                yearSortState[year] = sortValue;
+                container.querySelectorAll('.sort-btn[data-sort]').forEach(b =>
+                    b.classList.toggle('active', b.dataset.sort === sortValue));
+                playSound('select');
+                renderYearSection(year);
+            });
+        });
+    });
+
+    // Class view sort — independent of any year sort
+    document.querySelectorAll('#class-sort-buttons .sort-btn[data-sort]').forEach(btn => {
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+        btn.addEventListener('click', () => {
+            const sortValue = btn.dataset.sort;
+            if (classViewSort === sortValue) return;
+            classViewSort = sortValue;
+            document.querySelectorAll('#class-sort-buttons .sort-btn[data-sort]').forEach(b =>
+                b.classList.toggle('active', b.dataset.sort === sortValue));
+            playSound('select');
+            if (state.currentClass) {
                 showClassView(state.currentClass.year, state.currentClass.className, false);
             }
         });
-    });
-    // Don't let clicks inside the per-year sort row collapse the section
-    document.querySelectorAll('.sort-container.year-sort').forEach(c => {
-        c.addEventListener('click', (e) => e.stopPropagation());
-    });
-}
-
-function updateAllSortButtons(sortValue) {
-    document.querySelectorAll('.sort-btn[data-sort]').forEach(b => {
-        b.classList.toggle('active', b.dataset.sort === sortValue);
     });
 }
 
@@ -1162,51 +1171,52 @@ function renderClassCards() {
 }
 
 function renderYearSections() {
-    const yearConfigs = [
-        { year: 1, containerId: 'first-year-classes', countId: 'first-year-count' },
-        { year: 2, containerId: 'second-year-classes', countId: 'second-year-count' },
-        { year: 3, containerId: 'third-year-classes', countId: 'third-year-count' }
-    ];
+    [1, 2, 3].forEach(renderYearSection);
+}
 
-    yearConfigs.forEach(({ year, containerId, countId }) => {
-        const container = document.getElementById(containerId);
-        if (!container) return;
+const YEAR_SECTION_IDS = {
+    1: { container: 'first-year-classes', count: 'first-year-count' },
+    2: { container: 'second-year-classes', count: 'second-year-count' },
+    3: { container: 'third-year-classes', count: 'third-year-count' }
+};
 
-        container.innerHTML = '';
-        let totalStudents = 0;
-        let displayedStudents = 0;
+function renderYearSection(year) {
+    const ids = YEAR_SECTION_IDS[year];
+    if (!ids) return;
+    const container = document.getElementById(ids.container);
+    if (!container) return;
 
-        // Sort classes by rank (1st to 4th based on points)
-        const classes = ['A', 'B', 'C', 'D'].sort((a, b) => {
-            const rankA = getClassRank(year, a);
-            const rankB = getClassRank(year, b);
-            return rankA - rankB;
-        });
+    let totalStudents = 0;
+    let displayedStudents = 0;
 
-        classes.forEach(className => {
-            let students = getStudentsByClass(year, className);
-            totalStudents += students.length;
-
-            // Filter by favorites if enabled
-            if (state.showFavoritesOnly) {
-                students = students.filter(s => state.favorites.includes(s.id));
-            }
-            displayedStudents += students.length;
-
-            const card = createClassCard(year, className, getSortedStudents(students, state.currentSort));
-            container.appendChild(card);
-        });
-
-        const countEl = document.getElementById(countId);
-        if (countEl) {
-            countEl.textContent = state.showFavoritesOnly
-                ? `${displayedStudents} favorites`
-                : `${totalStudents} total`;
-        }
-
-        // Reattach hover sounds to new elements
-        attachHoverSounds(container);
+    // Sort classes by rank (1st to 4th based on points)
+    const classes = ['A', 'B', 'C', 'D'].sort((a, b) => {
+        const rankA = getClassRank(year, a);
+        const rankB = getClassRank(year, b);
+        return rankA - rankB;
     });
+
+    const newCards = [];
+    classes.forEach(className => {
+        let students = getStudentsByClass(year, className);
+        totalStudents += students.length;
+        if (state.showFavoritesOnly) {
+            students = students.filter(s => state.favorites.includes(s.id));
+        }
+        displayedStudents += students.length;
+        newCards.push(createClassCard(year, className, getSortedStudents(students, yearSortState[year])));
+    });
+
+    // Single-step swap avoids the empty-frame flicker that innerHTML='' caused
+    container.replaceChildren(...newCards);
+
+    const countEl = document.getElementById(ids.count);
+    if (countEl) {
+        countEl.textContent = state.showFavoritesOnly
+            ? `${displayedStudents} favorites`
+            : `${totalStudents} total`;
+    }
+    attachHoverSounds(container);
 }
 
 // Sort modes for council/faculty tabs (persisted across renders within a session)
@@ -1275,7 +1285,9 @@ function renderCouncilSection() {
         return;
     }
 
-    container.innerHTML = council.map(s => createMemberCardHTML(s, s.councilRank)).join('');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = council.map(s => createMemberCardHTML(s, s.councilRank)).join('');
+    container.replaceChildren(...tmp.children);
     bindMemberCardClicks(container);
     attachHoverSounds(container);
 }
@@ -1298,7 +1310,9 @@ function renderFacultySection() {
         return;
     }
 
-    container.innerHTML = faculty.map(s => createMemberCardHTML(s, s.facultyRank)).join('');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = faculty.map(s => createMemberCardHTML(s, s.facultyRank)).join('');
+    container.replaceChildren(...tmp.children);
     bindMemberCardClicks(container);
     attachHoverSounds(container);
 }
@@ -1497,7 +1511,7 @@ function createStudentPreviewHTML(student) {
 
 function showClassView(year, className, addToHistory = true) {
     state.currentClass = { year, className };
-    const students = getSortedStudents(getStudentsByClass(year, className), state.currentSort);
+    const students = getSortedStudents(getStudentsByClass(year, className), classViewSort);
 
     const badge = document.getElementById('class-badge');
     if (badge) {
@@ -2034,10 +2048,9 @@ function buildRankInsigniaSVG(rank) {
     } else {
         // Faculty stem
         pieces.push('<path d="M32 54 L32 14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.85"/>');
-        // Top rank: small crown above the stem
+        // Top rank: a clean diamond gem capping the stem
         if (isTop) {
-            pieces.push('<path d="M22 13 L26 6 L32 11 L38 6 L42 13 Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>');
-            pieces.push('<rect x="22" y="13" width="20" height="2.2" rx="0.6"/>');
+            pieces.push('<path d="M32 4 L38 12 L32 20 L26 12 Z"/>');
         }
         // Oak leaves — lobed shape, alternating sides bottom-up
         const oakPath = 'M0 -7 C2.4 -6.2 4 -3.6 2.4 -1.6 C4.4 -0.6 4.4 1.4 2.4 2.4 C3.6 4.6 1.6 6.8 0 7 C-1.6 6.8 -3.6 4.6 -2.4 2.4 C-4.4 1.4 -4.4 -0.6 -2.4 -1.6 C-4 -3.6 -2.4 -6.2 0 -7 Z';

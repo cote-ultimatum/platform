@@ -1462,7 +1462,8 @@ body::before {
 }
 
 .year-section.collapsed .class-grid,
-.year-section.collapsed .member-grid {
+.year-section.collapsed .member-grid,
+.year-section.collapsed .sort-container {
     display: none;
 }
 
