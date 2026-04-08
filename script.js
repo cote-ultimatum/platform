@@ -1600,7 +1600,7 @@ function showStudentProfile(student, addToHistory = true) {
             }
             if (rankQuoteEl) {
                 if (student.rankQuote) {
-                    rankQuoteEl.textContent = `“${student.rankQuote}”`;
+                    rankQuoteEl.textContent = student.rankQuote;
                     rankQuoteEl.style.display = '';
                 } else {
                     rankQuoteEl.textContent = '';

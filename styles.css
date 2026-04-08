@@ -1650,14 +1650,27 @@ body::before {
     margin-top: 0.1rem;
 }
 .profile-rank-quote {
-    margin: 0.2rem 0 0.75rem 0;
-    padding-left: 0.9rem;
-    border-left: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent);
+    position: relative;
+    margin: 0.85rem 0 0 0;
+    padding: 0 0 0 1.6rem;
+    font-family: 'Inter', sans-serif;
     font-style: italic;
-    font-size: 0.92rem;
-    line-height: 1.45;
-    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 30%, #d6dde8);
-    max-width: 56ch;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 22%, #c8d2e2);
+    max-width: 60ch;
+    letter-spacing: 0.005em;
+}
+.profile-rank-quote::before {
+    content: '\201C'; /* left double quotation mark */
+    position: absolute;
+    left: 0;
+    top: -0.45rem;
+    font-family: 'Georgia', serif;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
+    text-shadow: 0 0 14px color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent);
 }
 
 /* Tab card insignia — small, top-right corner of the member card */
@@ -2686,13 +2699,7 @@ body::before {
     border-radius: var(--border-radius);
     padding: 1.25rem;
     text-align: center;
-    box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
-    animation: gradePulse 3s ease-in-out infinite;
-}
-
-@keyframes gradePulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.3); }
-    50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.4), 0 0 50px rgba(231, 76, 60, 0.2); }
+    box-shadow: 0 0 24px rgba(231, 76, 60, 0.32);
 }
 
 .overall-label {
