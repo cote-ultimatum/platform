@@ -1583,15 +1583,12 @@ body::before {
     border-color: var(--cyan);
     box-shadow: 0 0 0 2px var(--cyan), 0 0 24px rgba(77, 201, 230, 0.5);
 }
-/* Compare checkbox sits on the right edge of the member card without resizing it */
-.member-card > .compare-checkbox {
-    position: absolute;
-    top: 50%;
-    right: 0.65rem;
-    transform: translateY(-50%);
+/* Compare checkbox sits inline at the end of the member card body, like the student preview */
+.member-card .member-card-body > .compare-checkbox {
     margin-right: 0;
-    z-index: 2;
-    background: rgba(10, 18, 32, 0.85);
+    margin-left: 0.25rem;
+    align-self: center;
+    flex-shrink: 0;
 }
 
 /* ===== Profile rank crest — appears above student name ===== */
@@ -1721,27 +1718,17 @@ body::before {
     text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
 }
 
-/* Council and faculty don't display an OAA overall grade — they carry a rank */
-.profile-card.profile-card--ranked .overall-grade-box {
-    display: none;
-}
 
-/* Ranked entry in the comparison modal */
-.comparison-student--ranked {
-    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
-    border-radius: 8px;
-    padding: 0.75rem;
-    background: linear-gradient(135deg,
-        color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent) 0%,
-        transparent 100%);
-    box-shadow: 0 0 18px color-mix(in srgb, var(--rank-color, var(--cyan)) 30%, transparent);
-}
+/* Ranked entry in the comparison modal — visual treatment must NOT change layout
+   (no border/padding) so ranked and non-ranked entries align identically */
 .comparison-student--ranked h3 {
     color: var(--rank-color, var(--cyan));
+    text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
 }
 .comparison-student--ranked .comparison-avatar {
-    border-color: var(--rank-color, var(--cyan)) !important;
-    box-shadow: 0 0 20px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent) !important;
+    box-shadow: 0 0 22px color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent),
+                inset 0 0 15px color-mix(in srgb, var(--rank-color, var(--cyan)) 25%, transparent),
+                0 0 0 2px var(--rank-color, var(--cyan)) !important;
 }
 
 /* ===== Admin faculty list styling ===== */

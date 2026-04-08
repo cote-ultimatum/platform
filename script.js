@@ -1255,8 +1255,8 @@ function createMemberCardHTML(student, rank) {
                     <div class="member-card-id">${student.id}</div>
                     <div class="member-card-stats">${miniStatsHTML}</div>
                 </div>
+                ${state.compareMode ? `<div class="compare-checkbox ${isComparing ? 'checked' : ''}"></div>` : ''}
             </div>
-            ${state.compareMode ? `<div class="compare-checkbox ${isComparing ? 'checked' : ''}"></div>` : ''}
         </div>
     `;
 }
@@ -1748,7 +1748,7 @@ function showComparison() {
     modal.innerHTML = `
         <div class="comparison-content">
             <div class="comparison-header">
-                <h2>Student Comparison</h2>
+                <h2>Comparison</h2>
                 <button class="comparison-close">×</button>
             </div>
             <div class="comparison-grid" style="grid-template-columns: repeat(${students.length}, 1fr)">
@@ -3061,7 +3061,7 @@ function openStudentModal(student, mode = 'student') {
         if (!select) return;
         const def = traitDefinitions[category];
         select.innerHTML =
-            `<option value="">No Trait</option>` +
+            `<option value="">None</option>` +
             `<optgroup label="Positive">` +
             def.positive.map(t => `<option value="${t}">▲ ${t}</option>`).join('') +
             `</optgroup>` +
@@ -3249,6 +3249,26 @@ async function saveStudent() {
         return;
     }
 
+    // Validate stat ranges (0–100). Reject out-of-range instead of silently clamping.
+    const statFields = [
+        ['academic', 'Academic Ability'],
+        ['intelligence', 'Intelligence'],
+        ['decision', 'Decision Making'],
+        ['physical', 'Physical Ability'],
+        ['cooperativeness', 'Cooperativeness']
+    ];
+    for (const [key, label] of statFields) {
+        const input = document.getElementById(`admin-student-${key}`);
+        const raw = input.value;
+        const val = parseInt(raw, 10);
+        if (raw === '' || isNaN(val) || val < 0 || val > 100) {
+            showErrorToast(`${label} must be between 0 and 100`);
+            input?.focus();
+            playSound('error');
+            return;
+        }
+    }
+
     const saveBtn = document.getElementById('admin-student-save');
     if (saveBtn.disabled) return; // Prevent double-click
 
@@ -3286,15 +3306,12 @@ async function saveStudent() {
         facultyRank: isFaculty ? facultyRankValue : null
     };
 
-    // Clamp stats to 0-100
-    Object.keys(studentData.stats).forEach(key => {
-        studentData.stats[key] = Math.max(0, Math.min(100, studentData.stats[key]));
-    });
+    // (Stats already validated above to be in 0–100; no clamping needed.)
 
     // Faculty get a dedicated ID prefix so they don't collide with class-based IDs
     if (isFaculty && !adminState.editingStudent) {
         const random = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
-        studentData.id = `FAC${random}`;
+        studentData.id = `F${random}`;
     }
 
     try {
