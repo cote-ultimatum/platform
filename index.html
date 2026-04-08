@@ -292,6 +292,7 @@
                     <div class="profile-header-info">
                         <h2 id="profile-name">Student Name</h2>
                         <p id="profile-class">1st Year - Class A</p>
+                        <div id="profile-rank-badge" class="profile-rank-badge" style="display:none;"></div>
                     </div>
                     <div class="profile-header-actions">
                         <div class="profile-id">
@@ -801,6 +802,30 @@
                             <label>Cooperativeness</label>
                             <input type="number" id="admin-student-cooperativeness" min="0" max="100" value="50">
                             <select id="admin-student-trait-cooperativeness" class="admin-trait-select"></select>
+                        </div>
+                    </div>
+                    <div class="admin-form-section-title">Leadership Role</div>
+                    <div class="admin-form-row admin-form-row-half">
+                        <div>
+                            <label>Student Council</label>
+                            <select id="admin-student-council-rank">
+                                <option value="">— None —</option>
+                                <option value="Representative">Representative</option>
+                                <option value="Treasurer">Treasurer</option>
+                                <option value="Secretary">Secretary</option>
+                                <option value="Vice President">Vice President</option>
+                                <option value="President">President</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Faculty</label>
+                            <select id="admin-student-faculty-rank">
+                                <option value="">— None —</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Instructor">Instructor</option>
+                                <option value="Director">Director</option>
+                                <option value="Chairperson">Chairperson</option>
+                            </select>
                         </div>
                     </div>
                 </div>

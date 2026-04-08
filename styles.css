@@ -1468,8 +1468,139 @@ body::before {
 
 .member-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ===== Council / Faculty member cards ===== */
+.member-card {
+    position: relative;
+    background: linear-gradient(160deg, rgba(16, 29, 50, 0.95) 0%, rgba(10, 18, 32, 0.95) 100%);
+    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
+    border-radius: 10px;
+    padding: 2.25rem 1rem 1rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0),
+                inset 0 0 24px color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent);
+}
+.member-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% -20%, color-mix(in srgb, var(--rank-color, var(--cyan)) 30%, transparent) 0%, transparent 60%);
+    pointer-events: none;
+}
+.member-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--rank-color, var(--cyan));
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--rank-color, var(--cyan)) 35%, transparent),
+                inset 0 0 32px color-mix(in srgb, var(--rank-color, var(--cyan)) 18%, transparent);
+}
+.member-card-ribbon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.35rem 0.75rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 85%, #000) 0%,
+        var(--rank-color, var(--cyan)) 50%,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 85%, #000) 100%);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--rank-color, var(--cyan)) 45%, transparent);
+}
+.member-card-body {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    position: relative;
+}
+.member-avatar-frame {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--rank-color, var(--cyan));
+    box-shadow: 0 0 12px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
+    display: inline-block;
+}
+.member-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.member-avatar-placeholder {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--rank-color, var(--cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    color: var(--rank-color, var(--cyan));
+    background: rgba(0, 0, 0, 0.3);
+}
+.member-card-info {
+    flex: 1;
+    min-width: 0;
+}
+.member-card-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.member-card-id {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+    letter-spacing: 0.05em;
+}
+.member-card-stats {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 16px;
+    margin-top: 0.5rem;
+}
+.member-card.comparing {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 2px var(--cyan), 0 0 24px rgba(77, 201, 230, 0.5);
+}
+
+/* Profile rank badge */
+.profile-rank-badge {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.8rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #fff;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--rank-color, var(--cyan)) 85%, #000) 0%,
+        var(--rank-color, var(--cyan)) 100%);
+    border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 70%, #fff);
+    border-radius: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--rank-color, var(--cyan)) 50%, transparent);
 }
 
 .member-grid .empty-class {

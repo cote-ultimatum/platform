@@ -1191,7 +1191,9 @@ function renderCouncilSection() {
     if (!container) return;
 
     const allStudents = getAllStudents();
-    const council = allStudents.filter(s => s.inCouncil && !s.retired);
+    const council = allStudents
+        .filter(s => s.councilRank && !s.retired)
+        .sort((a, b) => COUNCIL_RANK_ORDER.indexOf(a.councilRank) - COUNCIL_RANK_ORDER.indexOf(b.councilRank));
 
     if (countEl) countEl.textContent = `${council.length} total`;
 
@@ -1200,7 +1202,8 @@ function renderCouncilSection() {
         return;
     }
 
-    container.innerHTML = council.map(s => createStudentPreviewHTML(s)).join('');
+    container.innerHTML = council.map(s => createMemberCardHTML(s, s.councilRank)).join('');
+    bindMemberCardClicks(container);
     attachHoverSounds(container);
 }
 
@@ -1209,9 +1212,70 @@ function renderFacultySection() {
     const countEl = document.getElementById('faculty-count');
     if (!container) return;
 
-    // Faculty data model not yet built — placeholder for now.
-    if (countEl) countEl.textContent = '0 total';
-    container.innerHTML = '<div class="empty-class">No faculty members</div>';
+    const allStudents = getAllStudents();
+    const faculty = allStudents
+        .filter(s => s.facultyRank && !s.retired)
+        .sort((a, b) => FACULTY_RANK_ORDER.indexOf(a.facultyRank) - FACULTY_RANK_ORDER.indexOf(b.facultyRank));
+
+    if (countEl) countEl.textContent = `${faculty.length} total`;
+
+    if (faculty.length === 0) {
+        container.innerHTML = '<div class="empty-class">No faculty members</div>';
+        return;
+    }
+
+    container.innerHTML = faculty.map(s => createMemberCardHTML(s, s.facultyRank)).join('');
+    bindMemberCardClicks(container);
+    attachHoverSounds(container);
+}
+
+function createMemberCardHTML(student, rank) {
+    const initials = getInitials(student.name);
+    const isFavorite = state.favorites.includes(student.id);
+    const isComparing = state.compareList.includes(student.id);
+    const slug = rankSlug(rank);
+    const color = RANK_COLORS[rank] || 'var(--cyan)';
+
+    const statKeys = ['academic', 'intelligence', 'decision', 'physical', 'cooperativeness'];
+    const miniStatsHTML = statKeys.map(stat => {
+        const value = student.stats[stat] || 50;
+        const height = Math.round((value / 100) * 14);
+        return `<div class="stat-mini-bar stat-${stat}" style="--bar-height: ${height}px;"></div>`;
+    }).join('');
+
+    return `
+        <div class="member-card rank-${slug} ${isComparing ? 'comparing' : ''}" data-student-id="${student.id}" style="--rank-color: ${color};">
+            <div class="member-card-ribbon">${rank}</div>
+            <div class="member-card-body">
+                ${student.image
+                    ? `<span class="member-avatar-frame"><img class="member-avatar" src="${student.image}" alt="${student.name}" style="${getImageFrameStyle(student)}"></span>`
+                    : `<div class="member-avatar-placeholder">${initials}</div>`}
+                <div class="member-card-info">
+                    <div class="member-card-name">${student.name} ${isFavorite ? '<span class="favorite-star">★</span>' : ''}</div>
+                    <div class="member-card-id">${student.id}</div>
+                    <div class="member-card-stats">${miniStatsHTML}</div>
+                </div>
+            </div>
+            ${state.compareMode ? `<div class="compare-checkbox ${isComparing ? 'checked' : ''}"></div>` : ''}
+        </div>
+    `;
+}
+
+function bindMemberCardClicks(container) {
+    container.querySelectorAll('.member-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const student = studentLookup[card.dataset.studentId];
+            if (!student) return;
+            if (state.compareMode) {
+                toggleCompareSelection(student);
+            } else {
+                playSound('click');
+                state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
+                showStudentProfile(student, false);
+            }
+        });
+    });
 }
 
 function initOAASectionToggles() {
@@ -1411,8 +1475,26 @@ function showStudentProfile(student, addToHistory = true) {
     const isFavorite = state.favorites.includes(student.id);
 
     document.getElementById('profile-name').innerHTML = `${student.name} <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-student-id="${student.id}">${isFavorite ? '★' : '☆'}</button>`;
-    document.getElementById('profile-class').textContent = `${student.year}${getYearSuffix(student.year)} Year - Class ${student.class}`;
+    document.getElementById('profile-class').textContent = student.facultyRank
+        ? 'Faculty'
+        : `${student.year}${getYearSuffix(student.year)} Year - Class ${student.class}`;
     document.getElementById('profile-id').textContent = student.id;
+
+    // Rank badge (Council/Faculty)
+    const rankBadge = document.getElementById('profile-rank-badge');
+    if (rankBadge) {
+        const rank = student.councilRank || student.facultyRank;
+        if (rank) {
+            const kind = student.councilRank ? 'Student Council' : 'Faculty';
+            rankBadge.textContent = `${kind} · ${rank}`;
+            rankBadge.style.setProperty('--rank-color', RANK_COLORS[rank] || 'var(--cyan)');
+            rankBadge.className = `profile-rank-badge rank-${rankSlug(rank)}`;
+            rankBadge.style.display = '';
+        } else {
+            rankBadge.style.display = 'none';
+            rankBadge.textContent = '';
+        }
+    }
 
     const profileImage = document.getElementById('profile-image');
     const profilePlaceholder = document.getElementById('profile-placeholder');
@@ -1421,7 +1503,9 @@ function showStudentProfile(student, addToHistory = true) {
     // Add class-specific glow to profile image
     if (profileImageContainer) {
         profileImageContainer.classList.remove('class-a-glow', 'class-b-glow', 'class-c-glow', 'class-d-glow');
-        profileImageContainer.classList.add(`class-${student.class.toLowerCase()}-glow`);
+        if (student.class) {
+            profileImageContainer.classList.add(`class-${student.class.toLowerCase()}-glow`);
+        }
     }
 
     const profileImageFrame = document.getElementById('profile-image-frame');
@@ -1728,8 +1812,24 @@ function getAllStudents() {
 }
 
 function getStudentsByClass(year, className) {
-    return getAllStudents().filter(s => s.year === year && s.class === className && !s.retired);
+    return getAllStudents().filter(s => s.year === year && s.class === className && !s.retired && !s.facultyRank);
 }
+
+// Rank hierarchies (lower index = higher rank, displayed first)
+const COUNCIL_RANK_ORDER = ['President', 'Vice President', 'Secretary', 'Treasurer', 'Representative'];
+const FACULTY_RANK_ORDER = ['Chairperson', 'Director', 'Instructor', 'Staff'];
+const RANK_COLORS = {
+    'Representative': '#c4b5fd',
+    'Treasurer': '#a78bfa',
+    'Secretary': '#7c3aed',
+    'Vice President': '#5b21b6',
+    'President': '#3b0764',
+    'Staff': '#78350f',
+    'Instructor': '#b45309',
+    'Director': '#f59e0b',
+    'Chairperson': '#fcd34d'
+};
+function rankSlug(rank) { return (rank || '').toLowerCase().replace(/\s+/g, '-'); }
 
 function getClassRank(year, className) {
     const activePoints = getActiveClassPoints();
@@ -2915,6 +3015,8 @@ function openStudentModal(student) {
     document.getElementById('admin-student-decision').value = student?.stats?.decision || 50;
     document.getElementById('admin-student-physical').value = student?.stats?.physical || 50;
     document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
+    document.getElementById('admin-student-council-rank').value = student?.councilRank || '';
+    document.getElementById('admin-student-faculty-rank').value = student?.facultyRank || '';
 
     // Populate + set trait dropdowns (build options from traitDefinitions)
     Object.keys(traitDefinitions).forEach(category => {
@@ -3007,7 +3109,9 @@ async function saveStudent() {
             physical: parseInt(document.getElementById('admin-student-physical').value) || 50,
             cooperativeness: parseInt(document.getElementById('admin-student-cooperativeness').value) || 50
         },
-        traits: traits
+        traits: traits,
+        councilRank: document.getElementById('admin-student-council-rank').value || null,
+        facultyRank: document.getElementById('admin-student-faculty-rank').value || null
     };
 
     // Clamp stats to 0-100
