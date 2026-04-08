@@ -5061,8 +5061,8 @@ async function exportStudentCard(subject, opts = {}) {
     // insignia watermark on ranked exports. Council/faculty keep their own
     // rank insignia instead. Same image is used on the on-site cards.
     const schoolLogoWatermark = !ranked ? `
-        <div style="position:absolute;top:50%;left:50%;width:560px;height:560px;transform:translate(-50%,-50%);opacity:0.06;pointer-events:none;z-index:0;">
-            <img src="ESF-LOGO.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block;" crossorigin="anonymous">
+        <div style="position:absolute;top:50%;left:50%;width:560px;height:560px;transform:translate(-50%,-50%);opacity:0.15;pointer-events:none;z-index:0;">
+            <img src="ESF-LOGO.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block;">
         </div>
     ` : '';
 
@@ -5151,7 +5151,7 @@ async function exportStudentCard(subject, opts = {}) {
             <div style="margin:0 28px 20px;padding:13px 20px 12px;background:rgba(77,201,230,0.04);border:1px solid rgba(77,201,230,0.12);border-radius:8px;text-align:center;">
                 <span style="font-size:11px;line-height:1.4;color:#94a3b8;font-family:'Inter',sans-serif;">${footerText}</span>
             </div>
-            ` : '<div style="height:20px;"></div>'}
+            ` : ''}
         </div>
     `;
 

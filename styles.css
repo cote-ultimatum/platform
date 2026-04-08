@@ -1851,7 +1851,7 @@ body::before {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    opacity: 0.06;
+    opacity: 0.15;
     pointer-events: none;
     z-index: 0;
 }
@@ -2713,7 +2713,7 @@ body::before {
 
 .profile-body {
     display: grid;
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 240px minmax(0, 1fr);
     gap: 2.5rem;
     padding: 0 2rem 2rem;
 }
@@ -6397,7 +6397,11 @@ body::before {
 
 /* Creator preview overrides for OAA profile classes */
 .creator-preview-card .profile-body {
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 200px minmax(0, 1fr);
+}
+.creator-preview-card .preview-bio-item p {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .preview-pending-id {
