@@ -5410,12 +5410,15 @@ body::before {
     width: auto;
 }
 
+.creator-image-input-row .creator-upload-btn,
 .creator-upload-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
     padding: 0.5rem;
+    margin: 0;
+    text-transform: none;
     flex-shrink: 0;
     background: var(--bg-darker);
     border: 1px solid var(--border-color);
