@@ -4811,11 +4811,49 @@ function updateCreatorPreview() {
 }
 
 function exportEnrolledStudent(student) {
+    if (student.councilRank || student.facultyRank) {
+        return exportRankedCard(student);
+    }
     return exportStudentCard(student, {
         status: 'ACCEPTED',
         statusColor: '#22c55e',
         statusBg: 'rgba(34,197,94,0.08)',
         statusGlow: 'rgba(34,197,94,0.4)',
+        footerText: ''
+    });
+}
+
+function hexToRgba(hex, alpha) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+    if (!m) return `rgba(77,201,230,${alpha})`;
+    const r = parseInt(m[1], 16), g = parseInt(m[2], 16), b = parseInt(m[3], 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function exportRankedCard(student) {
+    const rank = student.councilRank || student.facultyRank;
+    const isCouncil = !!student.councilRank;
+    const color = RANK_COLORS[rank] || '#4dc9e6';
+    const glow = hexToRgba(color, 0.45);
+    const bg = hexToRgba(color, 0.10);
+    const kindLabel = isCouncil ? 'Student Council' : 'Faculty';
+    const tenure = formatServingSince(student.servingSince);
+    const yearSuffix = ['', 'st', 'nd', 'rd'][student.year] || 'th';
+    const subtitle = isCouncil
+        ? `${student.year}${yearSuffix} Year &middot; Class ${student.class || '?'} &middot; ${kindLabel}`
+        : kindLabel;
+    return exportStudentCard(student, {
+        status: rank.toUpperCase(),
+        statusLabel: kindLabel.toUpperCase(),
+        statusColor: color,
+        statusBg: bg,
+        statusGlow: glow,
+        accentColor: color,
+        accentGlow: glow,
+        subtitleOverride: subtitle,
+        extraHeaderLine: tenure ? `Serving since ${tenure}` : '',
+        rankQuote: student.rankQuote || '',
+        watermarkSVG: buildRankInsigniaSVG(rank),
         footerText: ''
     });
 }
@@ -4833,10 +4871,17 @@ async function exportCharacterPDF() {
 async function exportStudentCard(subject, opts = {}) {
     const char = subject;
     const status = opts.status || 'PENDING';
+    const statusLabel = opts.statusLabel || 'STATUS';
     const statusColor = opts.statusColor || '#f59e0b';
     const statusBg = opts.statusBg || 'rgba(245,158,11,0.08)';
     const statusGlow = opts.statusGlow || 'rgba(245,158,11,0.4)';
     const footerText = opts.footerText || '';
+    const accentColor = opts.accentColor || null;
+    const accentGlow = opts.accentGlow || null;
+    const subtitleOverride = opts.subtitleOverride || '';
+    const extraHeaderLine = opts.extraHeaderLine || '';
+    const rankQuote = opts.rankQuote || '';
+    const watermarkSVG = opts.watermarkSVG || '';
     // Pre-render the user's photo into a fixed 480x480 canvas (2x the export
     // box for sharpness on the 2x html2canvas scale) with contain semantics.
     // This sidesteps html2canvas's unreliable handling of flex centering and
@@ -4862,8 +4907,8 @@ async function exportStudentCard(subject, opts = {}) {
         'A': 'rgba(254, 205, 211, 0.4)', 'B': 'rgba(253, 164, 175, 0.4)',
         'C': 'rgba(225, 29, 72, 0.4)', 'D': 'rgba(136, 19, 55, 0.4)'
     };
-    const classColor = classColors[char.class] || '#9a2e48';
-    const classGlow = classGlows[char.class] || 'rgba(154, 46, 72, 0.4)';
+    const classColor = accentColor || classColors[char.class] || '#9a2e48';
+    const classGlow = accentGlow || classGlows[char.class] || 'rgba(154, 46, 72, 0.4)';
 
     const statMeta = [
         { key: 'academic',        label: 'Academic Ability',  color: '#9b59b6', grad: '#8e44ad, #9b59b6', glow: 'rgba(155,89,182,0.4)' },
@@ -4919,30 +4964,39 @@ async function exportStudentCard(subject, opts = {}) {
 
     const appDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+    const headerSubtitle = subtitleOverride
+        || `${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}`;
+    const nameColor = accentColor || '#4dc9e6';
+    const nameGlow = accentGlow || 'rgba(77,201,230,0.3)';
+    const evalBorder = accentColor || '#7a2438';
+
     const printContent = `
         <div class="export-card" style="width:1000px;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f1a2e 0%,rgba(16,29,50,0.95) 100%);color:#fff;position:relative;overflow:hidden;">
 
-            <div style="height:4px;background:linear-gradient(90deg,#7a2438,#4dc9e6,#7a2438);"></div>
+            ${watermarkSVG ? `<div style="position:absolute;top:50%;left:50%;width:720px;height:720px;transform:translate(-50%,-50%);opacity:0.05;color:${nameColor};pointer-events:none;z-index:0;">${watermarkSVG.replace('<svg ', '<svg style="width:100%;height:100%;" ')}</div>` : ''}
 
-            <div style="padding:18px 28px;text-align:center;border-bottom:1px solid rgba(77,201,230,0.1);">
+            <div style="height:4px;background:linear-gradient(90deg,${evalBorder},#4dc9e6,${evalBorder});position:relative;z-index:1;"></div>
+
+            <div style="padding:18px 28px;text-align:center;border-bottom:1px solid rgba(77,201,230,0.1);position:relative;z-index:1;">
                 <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#4dc9e6;letter-spacing:3px;text-shadow:0 0 20px rgba(77,201,230,0.3);">ADVANCED NURTURING HIGH SCHOOL</div>
                 <div style="font-size:11px;color:#64748b;letter-spacing:4px;text-transform:uppercase;margin-top:4px;">Student Application File</div>
             </div>
 
-            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);position:relative;">
+            <div style="padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,rgba(0,245,255,0.03) 0%,transparent 100%);position:relative;z-index:1;">
                 <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:2px solid rgba(0,245,255,0.3);border-right:2px solid rgba(0,245,255,0.3);pointer-events:none;"></div>
                 <div style="display:flex;flex-direction:column;justify-content:center;">
-                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:#4dc9e6;text-shadow:0 0 20px rgba(77,201,230,0.3);line-height:1;">${char.name || 'Unnamed'}</div>
-                    <div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:8px;letter-spacing:0.1em;">${char.year}${yearSuffix} Year &middot; Class ${char.class || '?'}</div>
-                    ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:#4dc9e6;margin-left:6px;">${char.id}</span></div>` : ''}
+                    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:${nameColor};text-shadow:0 0 20px ${nameGlow};line-height:1;">${char.name || 'Unnamed'}</div>
+                    <div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:8px;letter-spacing:0.1em;">${headerSubtitle}</div>
+                    ${extraHeaderLine ? `<div style="font-family:'Inter',sans-serif;font-style:italic;font-size:12px;line-height:1;color:#94a3b8;margin-top:6px;">${extraHeaderLine}</div>` : ''}
+                    ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:${nameColor};margin-left:6px;">${char.id}</span></div>` : ''}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:11px 18px 9px;border:1px solid ${statusColor};border-radius:8px;background:${statusBg};">
-                    <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">STATUS</div>
+                    <div style="font-size:9px;line-height:1;color:#64748b;letter-spacing:0.1em;margin-bottom:5px;">${statusLabel}</div>
                     <div style="font-family:'Orbitron',monospace;font-size:14px;line-height:1;font-weight:700;color:${statusColor};text-shadow:0 0 10px ${statusGlow};">${status}</div>
                 </div>
             </div>
 
-            <div style="display:flex;padding:0 28px 24px;gap:28px;">
+            <div style="display:flex;padding:0 28px 24px;gap:28px;position:relative;z-index:1;">
                 <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;">
                     <div style="width:240px;height:240px;border-radius:12px;border:2px solid ${classColor};overflow:hidden;background:#0f1a2e;box-shadow:0 0 25px ${classGlow};">
                         ${prerenderedImage
@@ -4957,8 +5011,9 @@ async function exportStudentCard(subject, opts = {}) {
                 </div>
 
                 <div style="flex:1;min-width:0;">
-                    <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 18px;font-size:16px;padding-bottom:10px;border-bottom:2px solid #7a2438;">Evaluation</h3>
+                    <h3 style="font-family:'Orbitron',monospace;color:#fff;margin:0 0 18px;font-size:16px;padding-bottom:10px;border-bottom:2px solid ${evalBorder};">Evaluation</h3>
                     ${statsHTML}
+                    ${rankQuote ? `<div style="margin-top:22px;padding:14px 22px;border-left:3px solid ${nameColor};background:${hexToRgba(accentColor || '#4dc9e6', 0.06)};border-radius:0 8px 8px 0;"><p style="margin:0;font-family:'Inter',sans-serif;font-style:italic;font-size:13px;line-height:1.6;color:#cbd5e1;">&ldquo;${rankQuote}&rdquo;</p></div>` : ''}
                     ${bioHTML}
                 </div>
             </div>
