@@ -3486,7 +3486,7 @@ body::before {
    ======================================== */
 
 .favorite-star {
-    color: var(--class-a);
+    color: #fbbf24;
     font-size: 0.9em;
     margin-left: 0.25rem;
 }
@@ -3504,14 +3504,14 @@ body::before {
 }
 
 .favorite-btn:hover {
-    color: var(--class-a);
-    background: rgba(212, 175, 55, 0.1);
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
     transform: scale(1.1);
 }
 
 .favorite-btn.active {
-    color: var(--class-a);
-    text-shadow: 0 0 10px var(--class-a-glow);
+    color: #fbbf24;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.55);
 }
 
 /* ========================================
