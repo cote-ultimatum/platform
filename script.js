@@ -2325,7 +2325,7 @@ function showDbFailureMessage() {
     state.dbStudents = null; // keep null so the message shows correctly
     document.querySelectorAll('.empty-class').forEach(el => {
         if (el.textContent === 'Connecting...') {
-            el.textContent = 'Connection failed. Try disabling ad blockers.';
+            el.textContent = 'Could not load students';
         }
     });
 }
