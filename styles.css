@@ -1719,6 +1719,9 @@ body::before {
 }
 .member-card-insignia .rank-insignia-svg { width: 100%; height: 100%; }
 .member-card:hover .member-card-insignia { opacity: 1; }
+/* In compare mode, the checkbox sits where the insignia would be — hide the
+   crest so the two don't collide in the bottom-right corner. */
+.compare-mode .member-card .member-card-insignia { display: none; }
 
 /* Rank sort row — sits inside the year-section under the header */
 .sort-container.rank-sort,
@@ -2185,26 +2188,9 @@ body::before {
     position: relative;
 }
 
-.student-preview::after {
-    content: '›';
-    position: absolute;
-    right: 0.5rem;
-    font-size: 1.2rem;
-    color: var(--text-muted);
-    opacity: 0;
-    transform: translateX(-5px);
-    transition: all 0.2s ease;
-}
-
 .student-preview:hover {
     background: rgba(255, 255, 255, 0.08);
     padding-left: 0.75rem;
-}
-
-.student-preview:hover::after {
-    opacity: 1;
-    transform: translateX(0);
-    color: var(--cyan);
 }
 
 .student-avatar {
