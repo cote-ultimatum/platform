@@ -1273,15 +1273,22 @@ function renderCouncilSection() {
     if (!container) return;
 
     const allStudents = getAllStudents();
-    const council = sortRankedList(
+    let council = sortRankedList(
         allStudents.filter(s => s.councilRank && !s.retired),
         'council'
     );
+    if (state.showFavoritesOnly) {
+        council = council.filter(s => state.favorites.includes(s.id));
+    }
 
-    if (countEl) countEl.textContent = `${council.length} total`;
+    if (countEl) {
+        countEl.textContent = state.showFavoritesOnly
+            ? `${council.length} favorites`
+            : `${council.length} total`;
+    }
 
     if (council.length === 0) {
-        container.innerHTML = '<div class="empty-class">No council members</div>';
+        container.innerHTML = `<div class="empty-class">${state.showFavoritesOnly ? 'No favorite council members' : 'No council members'}</div>`;
         return;
     }
 
@@ -1298,15 +1305,22 @@ function renderFacultySection() {
     if (!container) return;
 
     const allStudents = getAllStudents();
-    const faculty = sortRankedList(
+    let faculty = sortRankedList(
         allStudents.filter(s => s.facultyRank && !s.retired),
         'faculty'
     );
+    if (state.showFavoritesOnly) {
+        faculty = faculty.filter(s => state.favorites.includes(s.id));
+    }
 
-    if (countEl) countEl.textContent = `${faculty.length} total`;
+    if (countEl) {
+        countEl.textContent = state.showFavoritesOnly
+            ? `${faculty.length} favorites`
+            : `${faculty.length} total`;
+    }
 
     if (faculty.length === 0) {
-        container.innerHTML = '<div class="empty-class">No faculty members</div>';
+        container.innerHTML = `<div class="empty-class">${state.showFavoritesOnly ? 'No favorite faculty members' : 'No faculty members'}</div>`;
         return;
     }
 
@@ -1790,6 +1804,8 @@ function toggleFavoritesFilter() {
     playSound('select');
     updateFavoritesUI();
     renderClassCards();
+    renderCouncilSection();
+    renderFacultySection();
 }
 
 // ========================================
