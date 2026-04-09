@@ -5035,9 +5035,9 @@ body::before {
     border-radius: 8px;
 }
 .student-card-avatar-frame {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 84px;
+    height: 84px;
+    border-radius: 14px;
 }
 .admin-student-avatar-frame {
     width: 40px;
