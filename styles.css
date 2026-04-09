@@ -1702,14 +1702,6 @@ body::before {
 .profile-card--ranked #profile-class {
     margin-left: calc(0.9rem + 3px);
 }
-/* Council cards show year/class unlike faculty — shrink it so it doesn't
-   crowd the space between the name and the rank quote. */
-.profile-card--council #profile-class {
-    font-size: 0.82rem;
-    opacity: 0.55;
-    margin-top: -0.1rem;
-    letter-spacing: 0.04em;
-}
 
 /* Tab card insignia — small, top-right corner of the member card */
 .member-card { position: relative; }

@@ -1603,7 +1603,7 @@ function showStudentProfile(student, addToHistory = true) {
 
     document.getElementById('profile-name').innerHTML = `${student.name} <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-student-id="${student.id}">${isFavorite ? '★' : '☆'}</button>`;
     const profileClassEl = document.getElementById('profile-class');
-    if (student.facultyRank) {
+    if (student.facultyRank || student.councilRank) {
         profileClassEl.textContent = '';
         profileClassEl.style.display = 'none';
     } else {
