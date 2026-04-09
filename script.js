@@ -1458,7 +1458,7 @@ function createClassCard(year, className, students) {
         </div>
         <div class="class-card-students">
             ${previewStudents.map(s => createStudentPreviewHTML(s)).join('')}
-            ${students.length === 0 ? `<div class="empty-class">${state.showFavoritesOnly ? 'No favorites in this class' : (state.dbStudents === null ? 'Loading students...' : 'No students enrolled')}</div>` : ''}
+            ${students.length === 0 ? `<div class="empty-class">${state.showFavoritesOnly ? 'No favorites in this class' : (state.dbStudents === null ? 'Connecting...' : 'No students enrolled')}</div>` : ''}
         </div>
         ${students.length > 3 ? `<div class="view-all-link">View all ${students.length} students</div>` : ''}
     `;
@@ -1540,7 +1540,7 @@ function showClassView(year, className, addToHistory = true) {
     container.innerHTML = '';
 
     if (students.length === 0) {
-        const message = state.showFavoritesOnly ? 'No favorites in this class' : (state.dbStudents === null ? 'Loading students...' : 'No students enrolled');
+        const message = state.showFavoritesOnly ? 'No favorites in this class' : (state.dbStudents === null ? 'Connecting...' : 'No students enrolled');
         container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 3rem;">${message}</p>`;
     } else {
         students.forEach(student => container.appendChild(createStudentCard(student)));
@@ -2324,8 +2324,8 @@ function showDbFailureMessage() {
     // so users know it's a network/blocker issue, not an empty roster.
     state.dbStudents = null; // keep null so the message shows correctly
     document.querySelectorAll('.empty-class').forEach(el => {
-        if (el.textContent === 'Loading students...') {
-            el.textContent = 'Could not connect to database. Disable ad blockers and reload.';
+        if (el.textContent === 'Connecting...') {
+            el.textContent = 'Connection failed — try disabling ad blockers';
         }
     });
 }
