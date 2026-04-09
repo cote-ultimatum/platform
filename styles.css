@@ -1707,16 +1707,12 @@ body::before {
 .member-card { position: relative; }
 .member-card-insignia {
     position: absolute;
-    /* Center the crest both ways inside the empty area to the right of
-       the stat bars. Horizontal math: gap left edge = 1.35rem + 88px
-       (avatar) + 1.15rem (body gap) + 41px (5 stat bars + gaps); gap
-       right edge = 100% - 1.35rem; midpoint - 22px (half insignia)
-       gives the right offset below. Vertical: center on the body, which
-       sits below the 2.6rem top padding, then nudge up by half the
-       1.25rem padding-top/bottom delta. */
-    top: 50%;
+    /* Horizontally center in the empty area between the stat bars and
+       the card's right padding (gap left = 1.35rem + 88px + 1.15rem +
+       41px, gap right = 100% - 1.35rem). Vertically align the crest's
+       midline with the mini stat bars rather than the whole body. */
     right: calc(50% - 86.5px - 0.575rem);
-    transform: translateY(calc(-50% + 0.625rem));
+    bottom: 1.25rem;
     width: 44px;
     height: 44px;
     color: var(--rank-color, var(--cyan));
