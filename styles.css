@@ -1487,8 +1487,8 @@ body::before {
 
 .member-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
 }
 
 /* ===== Council / Faculty member cards ===== */
@@ -1497,7 +1497,7 @@ body::before {
     background: linear-gradient(160deg, rgba(16, 29, 50, 0.95) 0%, rgba(10, 18, 32, 0.95) 100%);
     border: 1px solid color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, transparent);
     border-radius: 10px;
-    padding: 2.25rem 1rem 1rem;
+    padding: 2.6rem 1.35rem 1.35rem;
     cursor: pointer;
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
@@ -1532,13 +1532,13 @@ body::before {
 .member-card-body {
     display: flex;
     align-items: center;
-    gap: 0.9rem;
+    gap: 1.15rem;
     position: relative;
 }
 .member-avatar-frame {
     flex-shrink: 0;
-    width: 64px;
-    height: 64px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid var(--rank-color, var(--cyan));
@@ -1553,15 +1553,15 @@ body::before {
 }
 .member-avatar-placeholder {
     flex-shrink: 0;
-    width: 64px;
-    height: 64px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     border: 2px solid var(--rank-color, var(--cyan));
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
+    font-size: 1.45rem;
     color: var(--rank-color, var(--cyan));
     background: rgba(0, 0, 0, 0.3);
 }
@@ -1571,7 +1571,7 @@ body::before {
 }
 .member-card-name {
     font-family: 'Orbitron', monospace;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     color: #fff;
     font-weight: 600;
     white-space: nowrap;
@@ -1579,17 +1579,17 @@ body::before {
     text-overflow: ellipsis;
 }
 .member-card-id {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    margin-top: 0.1rem;
+    margin-top: 0.2rem;
     letter-spacing: 0.05em;
 }
 .member-card-stats {
     display: flex;
     align-items: flex-end;
-    gap: 3px;
-    height: 16px;
-    margin-top: 0.5rem;
+    gap: 4px;
+    height: 22px;
+    margin-top: 0.65rem;
 }
 .member-card.comparing {
     border-color: var(--cyan);
@@ -2379,18 +2379,18 @@ body::before {
 
 .student-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 1.25rem;
 }
 
 .student-card {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1.5rem;
     background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 29, 50, 0.6) 100%);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--border-radius);
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 1.75rem;
     cursor: pointer;
     transition: all 0.3s ease;
     animation: studentCardIn 0.4s ease backwards;
@@ -2438,18 +2438,18 @@ body::before {
 }
 
 .student-card-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 84px;
+    height: 84px;
+    border-radius: 14px;
     object-fit: contain;
     background: var(--bg-darker);
     border: 2px solid var(--cyan-dim);
 }
 
 .student-card-avatar-placeholder {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 84px;
+    height: 84px;
+    border-radius: 14px;
     background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
     border: 2px solid var(--cyan-dim);
     display: flex;
@@ -2457,7 +2457,7 @@ body::before {
     justify-content: center;
     color: var(--cyan);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
 }
 
 .student-card-info {
@@ -2467,18 +2467,18 @@ body::before {
 
 .student-card-name {
     font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
 }
 
 .student-card-class {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
 }
 
 .student-card-id {
     font-family: 'Orbitron', monospace;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--cyan);
     text-shadow: 0 0 10px var(--cyan-glow);
 }
@@ -2492,7 +2492,7 @@ body::before {
 
 .rating-grade {
     font-family: 'Orbitron', monospace;
-    font-size: 1.25rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--cyan);
     text-shadow: 0 0 10px var(--cyan-glow);
@@ -2513,8 +2513,8 @@ body::before {
 }
 
 .stat-mini-bar {
-    width: 4px;
-    height: 16px;
+    width: 5px;
+    height: 22px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
     position: relative;
