@@ -5079,10 +5079,10 @@ async function exportStudentCard(subject, opts = {}) {
 
     // Quote block — ranked gets big stylized quotation marks
     const rankQuoteHTML = rankQuote ? (ranked ? `
-        <div style="position:relative;margin:24px 8px 0;padding:8px 36px 14px;text-align:center;">
-            <span style="position:absolute;top:-14px;left:0;font-family:'Orbitron',monospace;font-size:48px;line-height:1;color:${hexToRgba(accentColor, 0.4)};text-shadow:0 0 14px ${hexToRgba(accentColor, 0.4)};">&ldquo;</span>
-            <p style="margin:0;font-family:'Inter',sans-serif;font-style:italic;font-size:14px;line-height:1.6;color:#cbd5e1;">${rankQuote}</p>
-            <span style="position:absolute;bottom:-26px;right:0;font-family:'Orbitron',monospace;font-size:48px;line-height:1;color:${hexToRgba(accentColor, 0.4)};text-shadow:0 0 14px ${hexToRgba(accentColor, 0.4)};">&rdquo;</span>
+        <div style="display:flex;align-items:stretch;justify-content:center;gap:14px;margin:18px 8px 6px;padding:4px 12px;">
+            <span style="flex:0 0 auto;font-family:'Orbitron',monospace;font-size:42px;line-height:0.8;color:${hexToRgba(accentColor, 0.4)};text-shadow:0 0 14px ${hexToRgba(accentColor, 0.4)};align-self:flex-start;">&ldquo;</span>
+            <p style="margin:0;align-self:center;max-width:640px;font-family:'Inter',sans-serif;font-style:italic;font-size:14px;line-height:1.6;color:#cbd5e1;text-align:center;">${rankQuote}</p>
+            <span style="flex:0 0 auto;font-family:'Orbitron',monospace;font-size:42px;line-height:0.8;color:${hexToRgba(accentColor, 0.4)};text-shadow:0 0 14px ${hexToRgba(accentColor, 0.4)};align-self:flex-end;">&rdquo;</span>
         </div>
     ` : `
         <div style="margin-top:22px;padding:14px 22px;border-left:3px solid ${nameColor};background:${hexToRgba(accentColor || '#4dc9e6', 0.06)};border-radius:0 8px 8px 0;">
