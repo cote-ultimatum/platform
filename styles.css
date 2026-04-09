@@ -1707,10 +1707,10 @@ body::before {
 .member-card { position: relative; }
 .member-card-insignia {
     position: absolute;
-    top: 2.55rem;
-    right: 0.6rem;
-    width: 32px;
-    height: 32px;
+    bottom: 1rem;
+    right: 1rem;
+    width: 44px;
+    height: 44px;
     color: var(--rank-color, var(--cyan));
     opacity: 0.7;
     filter: drop-shadow(0 0 6px color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, transparent));
@@ -2177,8 +2177,8 @@ body::before {
 .student-preview {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem;
+    gap: 1rem;
+    padding: 0.65rem 0.5rem;
     border-radius: 8px;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -2208,18 +2208,18 @@ body::before {
 }
 
 .student-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
     object-fit: contain;
     background: var(--bg-darker);
     border: 2px solid var(--bg-secondary);
 }
 
 .student-avatar-placeholder {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
     background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
     border: 2px solid var(--class-color);
     display: flex;
@@ -2227,7 +2227,7 @@ body::before {
     justify-content: center;
     color: var(--class-color);
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.95rem;
 }
 
 .student-preview-info {
@@ -2237,7 +2237,7 @@ body::before {
 
 .student-preview-name {
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2245,20 +2245,20 @@ body::before {
 
 .student-preview-id {
     font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
 }
 
 .student-preview-stats {
     display: flex;
-    gap: 2px;
+    gap: 3px;
     align-items: flex-end;
-    height: 12px;
+    height: 16px;
 }
 
 .student-preview-stats .stat-mini-bar {
-    width: 3px;
-    height: 12px;
+    width: 4px;
+    height: 16px;
 }
 
 .student-preview:hover .stat-mini-bar::after {
@@ -5030,9 +5030,9 @@ body::before {
     line-height: 0;
 }
 .student-avatar-frame {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
 }
 .student-card-avatar-frame {
     width: 84px;
