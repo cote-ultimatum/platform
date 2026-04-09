@@ -1708,7 +1708,7 @@ body::before {
 .member-card-insignia {
     position: absolute;
     bottom: 1rem;
-    right: 3.25rem;
+    right: 2.5rem;
     width: 44px;
     height: 44px;
     color: var(--rank-color, var(--cyan));
