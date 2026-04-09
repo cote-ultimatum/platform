@@ -1719,9 +1719,17 @@ body::before {
 }
 .member-card-insignia .rank-insignia-svg { width: 100%; height: 100%; }
 .member-card:hover .member-card-insignia { opacity: 1; }
-/* In compare mode, the checkbox sits where the insignia would be — hide the
-   crest so the two don't collide in the bottom-right corner. */
-.compare-mode .member-card .member-card-insignia { display: none; }
+/* In compare mode the checkbox claims the bottom-right corner, so move
+   the rank crest into the top-right corner over the ribbon end-cap. */
+.compare-mode .member-card .member-card-insignia {
+    top: 0.15rem;
+    right: 0.4rem;
+    bottom: auto;
+    width: 30px;
+    height: 30px;
+    opacity: 0.95;
+    z-index: 3;
+}
 
 /* Rank sort row — sits inside the year-section under the header */
 .sort-container.rank-sort,
