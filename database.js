@@ -501,32 +501,6 @@ async function deleteStudent(firebaseKey) {
     }
 }
 
-// Subscribe to student updates (real-time)
-function subscribeToStudents(callback) {
-    if (!dbState.initialized) {
-        console.warn('Database not initialized');
-        return () => {};
-    }
-
-    const studentsRef = firebase.database().ref('students');
-
-    const listener = studentsRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            const students = Object.keys(data).map(key => ({
-                ...data[key],
-                _firebaseKey: key
-            }));
-            callback(students);
-        } else {
-            callback([]);
-        }
-    });
-
-    // Return unsubscribe function
-    return () => studentsRef.off('value', listener);
-}
-
 // Migrate local students to Firebase (one-time operation)
 async function migrateStudentsToFirebase() {
     if (!dbState.initialized || !dbState.adminAuthenticated) {
@@ -589,6 +563,5 @@ window.COTEDB = {
     addStudent: addStudent,
     updateStudent: updateStudent,
     deleteStudent: deleteStudent,
-    subscribeToStudents: subscribeToStudents,
     migrateStudentsToFirebase: migrateStudentsToFirebase
 };
