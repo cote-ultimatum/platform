@@ -4547,7 +4547,6 @@ body::before {
 }
 
 .admin-login-icon:hover {
-    animation: glitchEffect 0.15s ease;
     cursor: pointer;
 }
 

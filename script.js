@@ -203,6 +203,12 @@ function initGlitchEffects() {
         icon.addEventListener('mouseleave', () => stopContinuousGlitch(icon));
     });
 
+    // Same continuous glitch for the admin lock icon on the login view
+    document.querySelectorAll('.admin-login-icon').forEach(icon => {
+        icon.addEventListener('mouseenter', () => startContinuousGlitch(icon));
+        icon.addEventListener('mouseleave', () => stopContinuousGlitch(icon));
+    });
+
     // Continuous glitch on hover for COTE title
     const lockTitle = document.querySelector('.lock-title');
     if (lockTitle) {
