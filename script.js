@@ -2459,38 +2459,41 @@ function initAdminApp() {
     const logoutBtn = document.getElementById('admin-logout-btn');
     const saveBtn = document.getElementById('admin-save-btn');
     const resetBtn = document.getElementById('admin-reset-btn');
-    const usernameInput = document.getElementById('admin-username');
-    const passwordInput = document.getElementById('admin-password');
 
-    // Login button
+    // Sign-in button
     if (loginBtn) {
-        loginBtn.addEventListener('click', handleAdminLogin);
+        loginBtn.addEventListener('click', handleGoogleSignIn);
         loginBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
 
-    // Enter key on password field
-    if (passwordInput) {
-        passwordInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleAdminLogin();
-            }
-        });
-        passwordInput.addEventListener('focus', () => playSound('select'));
-        passwordInput.addEventListener('input', () => playSound('type'));
-    }
+    // Auth state observer — drives all login/panel view transitions based on
+    // Firebase Auth. Fires once on page load with current state, then again
+    // whenever the user signs in or out.
+    COTEDB.onAuthChange(event => {
+        const loginView = document.getElementById('admin-login-view');
+        const panelView = document.getElementById('admin-panel-view');
+        const errorEl = document.getElementById('admin-login-error');
 
-    // Enter key on username field attempts login — handleAdminLogin's
-    // validation will surface the missing-password error and focus the
-    // password field for the user.
-    if (usernameInput) {
-        usernameInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleAdminLogin();
+        if (event.signedIn && event.isAdmin) {
+            adminState.loggedIn = true;
+            adminState.currentUser = event.email;
+            adminState.displayName = event.displayName;
+            if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
+            if (panelView && panelView.style.display !== 'block') {
+                showAdminPanel();
+            } else if (panelView) {
+                const userName = document.getElementById('admin-user-name');
+                if (userName) userName.textContent = adminState.displayName;
             }
-        });
-        usernameInput.addEventListener('focus', () => playSound('select'));
-        usernameInput.addEventListener('input', () => playSound('type'));
-    }
+        } else {
+            adminState.loggedIn = false;
+            adminState.currentUser = null;
+            adminState.displayName = null;
+            if (loginView && loginView.style.display !== 'block') {
+                showAdminLogin();
+            }
+        }
+    });
 
     // Logout button
     if (logoutBtn) {
@@ -2644,66 +2647,63 @@ function initAdminApp() {
     initFacultyManagement();
 }
 
-async function handleAdminLogin() {
-    const usernameInput = document.getElementById('admin-username');
-    const passwordInput = document.getElementById('admin-password');
+async function handleGoogleSignIn() {
     const loginBtn = document.getElementById('admin-login-btn');
+    const errorEl = document.getElementById('admin-login-error');
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+    if (!loginBtn) return;
 
-    if (!username) {
-        showErrorToast('Enter your username');
-        usernameInput.focus();
-        playSound('error');
-        return;
-    }
-    if (!password) {
-        showErrorToast('Enter your password');
-        passwordInput.focus();
-        playSound('error');
-        return;
-    }
-
-    // Disable button while checking
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Verifying...';
+    loginBtn.classList.add('loading');
+    if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
     playSound('select');
 
-    // Minimum delay to prevent flash (feels more intentional)
-    const minDelay = new Promise(resolve => setTimeout(resolve, 800));
+    const restore = () => {
+        loginBtn.disabled = false;
+        loginBtn.classList.remove('loading');
+    };
 
     try {
-        // Check credentials against Firebase (runs in parallel with delay)
-        const [result] = await Promise.all([
-            COTEDB.verifyAdmin(username, password),
-            minDelay
-        ]);
+        const result = await COTEDB.signInWithGoogle();
 
         if (result.success) {
-            adminState.loggedIn = true;
-            adminState.currentUser = username;
-            adminState.displayName = result.displayName;
-
-            // Clear inputs
-            usernameInput.value = '';
-            passwordInput.value = '';
-
             playSound('success');
-            showAdminPanel();
-        } else {
-            showErrorToast('Invalid credentials');
-            loginBtn.disabled = false;
-            loginBtn.textContent = 'Log In';
-            passwordInput.value = '';
-            passwordInput.focus();
-            playSound('error');
+            // onAuthChange observer handles the panel transition.
+            return;
         }
+
+        if (result.reason === 'not-admin') {
+            // Signed in with Google but not authorized. Sign them back out
+            // so we don't leave them in a half-state.
+            await COTEDB.signOut();
+            if (errorEl) {
+                errorEl.textContent = `${result.displayName || 'This account'} is not authorized.`;
+                errorEl.hidden = false;
+            }
+            restore();
+            playSound('error');
+            return;
+        }
+
+        if (result.reason === 'popup-closed') {
+            // User dismissed the popup. Silent recovery — no error toast.
+            restore();
+            return;
+        }
+
+        if (errorEl) {
+            errorEl.textContent = 'Sign-in failed. Try again.';
+            errorEl.hidden = false;
+        }
+        restore();
+        playSound('error');
     } catch (error) {
-        console.error('Login error:', error);
-        showErrorToast('Connection error. Try again.');
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Log In';
+        console.error('Sign-in error:', error);
+        if (errorEl) {
+            errorEl.textContent = 'Sign-in failed. Try again.';
+            errorEl.hidden = false;
+        }
+        restore();
         playSound('error');
     }
 }
@@ -2718,16 +2718,13 @@ function handleAdminLogout() {
     });
 }
 
-function confirmAdminLogout() {
+async function confirmAdminLogout() {
     const modal = document.getElementById('admin-logout-modal');
     if (modal) modal.classList.remove('active');
 
-    adminState.loggedIn = false;
-    adminState.currentUser = null;
-    adminState.displayName = null;
-
     playSound('back');
-    showAdminLogin();
+    // Sign out of Firebase — onAuthChange observer will flip the view.
+    await COTEDB.signOut();
 }
 
 function cancelAdminLogout() {
@@ -2752,10 +2749,10 @@ function showAdminLogin() {
             container.style.animation = '';
         }
     }
-    // Reset login button state
+    // Reset login button state (keep the Google icon + label intact)
     if (loginBtn) {
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Log In';
+        loginBtn.classList.remove('loading');
     }
 }
 

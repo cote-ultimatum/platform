@@ -195,52 +195,94 @@ async function setAllClassPoints(pointsData) {
 }
 
 // ========================================
-// DISCORD OAUTH AUTHENTICATION
+// GOOGLE AUTHENTICATION
 // ========================================
 
-// Check if user is admin (stored in Firebase)
-async function checkAdminStatus(discordUserId) {
-    if (!dbState.initialized) return false;
-
+// Look up a user's admin record by Firebase UID. Returns the admin entry
+// ({ displayName, email, ... }) if they're an admin, or null otherwise.
+async function checkAdminStatus(uid) {
+    if (!dbState.initialized || !uid) return null;
     try {
-        const snapshot = await firebase.database().ref(`admins/${discordUserId}`).once('value');
-        return snapshot.val() === true;
+        const snapshot = await firebase.database().ref(`admins/${uid}`).once('value');
+        return snapshot.exists() ? (snapshot.val() || {}) : null;
     } catch (error) {
         console.error('Error checking admin status:', error);
-        return false;
+        return null;
     }
 }
 
-// Sign in with Discord OAuth token (handled via Firebase Auth custom token)
-async function signInWithDiscord(customToken) {
+// Sign in with Google. Returns:
+//   { success: true, displayName, uid }                     — signed in as admin
+//   { success: false, reason: 'not-admin', displayName }    — auth OK but not in /admins
+//   { success: false, reason: 'popup-closed' }              — user dismissed the popup
+//   { success: false, reason: 'error', error }              — any other failure
+async function signInWithGoogle() {
     if (!dbState.initialized) {
-        console.error('Database not initialized');
-        return false;
+        return { success: false, reason: 'not-initialized' };
     }
-
     try {
-        const userCredential = await firebase.auth().signInWithCustomToken(customToken);
-        const user = userCredential.user;
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
 
-        // Check if user is admin
-        dbState.adminAuthenticated = await checkAdminStatus(user.uid);
+        const adminRecord = await checkAdminStatus(user.uid);
+        if (!adminRecord) {
+            return {
+                success: false,
+                reason: 'not-admin',
+                displayName: user.displayName || user.email,
+                email: user.email
+            };
+        }
 
-        console.log(dbState.adminAuthenticated ? 'Signed in as admin' : 'Signed in (not admin)');
-        return dbState.adminAuthenticated;
+        dbState.adminAuthenticated = true;
+        return {
+            success: true,
+            uid: user.uid,
+            email: user.email,
+            displayName: adminRecord.displayName || user.displayName || user.email
+        };
     } catch (error) {
-        console.error('Discord sign-in error:', error);
-        return false;
+        if (error && error.code === 'auth/popup-closed-by-user') {
+            return { success: false, reason: 'popup-closed' };
+        }
+        console.error('Google sign-in error:', error);
+        return { success: false, reason: 'error', error: error?.message ?? String(error) };
     }
+}
+
+// Observe auth state. Callback receives:
+//   { signedIn: false }                                  — not signed in
+//   { signedIn: true, isAdmin: true,  displayName, ... } — signed in as admin
+//   { signedIn: true, isAdmin: false, displayName, ... } — signed in but not authorized
+// Returns the unsubscribe function from Firebase Auth.
+function onAuthChange(callback) {
+    if (!dbState.initialized) return () => {};
+    return firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+            dbState.adminAuthenticated = false;
+            callback({ signedIn: false });
+            return;
+        }
+        const adminRecord = await checkAdminStatus(user.uid);
+        const isAdmin = !!adminRecord;
+        dbState.adminAuthenticated = isAdmin;
+        callback({
+            signedIn: true,
+            isAdmin,
+            uid: user.uid,
+            email: user.email,
+            displayName: (adminRecord && adminRecord.displayName) || user.displayName || user.email
+        });
+    });
 }
 
 // Sign out
 async function signOut() {
     if (!dbState.initialized) return;
-
     try {
         await firebase.auth().signOut();
         dbState.adminAuthenticated = false;
-        console.log('Signed out');
     } catch (error) {
         console.error('Sign out error:', error);
     }
@@ -282,36 +324,6 @@ function isDatabaseInitialized() {
 
 function isAdminAuthenticated() {
     return dbState.adminAuthenticated;
-}
-
-// ========================================
-// SIMPLE ADMIN AUTHENTICATION
-// ========================================
-
-// Verify admin credentials against Firebase
-async function verifyAdmin(username, password) {
-    if (!dbState.initialized) {
-        console.error('Database not initialized');
-        return { success: false };
-    }
-
-    try {
-        const snapshot = await firebase.database().ref(`admins/${username}`).once('value');
-        const adminData = snapshot.val();
-
-        if (adminData && adminData.password === password) {
-            dbState.adminAuthenticated = true;
-            return {
-                success: true,
-                displayName: adminData.displayName || username
-            };
-        }
-
-        return { success: false };
-    } catch (error) {
-        console.error('Error verifying admin:', error);
-        return { success: false };
-    }
 }
 
 // Set class points with changelog entry
@@ -546,15 +558,17 @@ window.COTEDB = {
     getPointDelta: getPointDelta,
     updateClassPoints: updateClassPoints,
     setAllClassPoints: setAllClassPoints,
-    signInWithDiscord: signInWithDiscord,
-    signOut: signOut,
     isConnected: isDatabaseConnected,
     isInitialized: isDatabaseInitialized,
     isAdmin: isAdminAuthenticated,
     addListener: addDatabaseListener,
     removeListener: removeDatabaseListener,
-    // Admin functions
-    verifyAdmin: verifyAdmin,
+    // Auth
+    signInWithGoogle: signInWithGoogle,
+    signOut: signOut,
+    onAuthChange: onAuthChange,
+    checkAdminStatus: checkAdminStatus,
+    // Admin data functions
     setClassPointsWithLog: setClassPointsWithLog,
     addChangelogEntry: addChangelogEntry,
     getChangelog: getChangelog,
