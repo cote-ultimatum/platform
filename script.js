@@ -2052,11 +2052,14 @@ function buildRankInsigniaSVG(rank) {
         // Council = a shield bearing stars. Distinct silhouette from the
         // organic oak sprig used by faculty.
         pieces.push('<path d="M32 8 L54 16 L54 34 C54 46 44 54 32 58 C20 54 10 46 10 34 L10 16 Z" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>');
-        // Stars stacked centrally inside the shield (1 = lowest, 5 = president)
+        // Stars stacked centrally inside the shield (1 = lowest, 5 = president).
+        // Step/startY tuned so 5 stars stay inside the shield body (old step 8
+        // pushed the bottom star into the narrowing tip at y=58).
         const starPath = 'M0 -5.2 L1.35 -1.65 L5.2 -1.65 L2.15 0.65 L3.35 4.45 L0 2.2 L-3.35 4.45 L-2.15 0.65 L-5.2 -1.65 L-1.35 -1.65 Z';
-        const startY = 38 - (n - 1) * 4;
+        const step = 7;
+        const startY = 34 - (n - 1) * (step / 2);
         for (let i = 0; i < n; i++) {
-            const y = startY + i * 8;
+            const y = startY + i * step;
             pieces.push(`<g transform="translate(32 ${y})"><path d="${starPath}"/></g>`);
         }
     } else {

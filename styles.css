@@ -1715,9 +1715,11 @@ body::before {
     bottom: 1.25rem;
     width: 44px;
     height: 44px;
-    color: var(--rank-color, var(--cyan));
-    opacity: 0.7;
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--rank-color, var(--cyan)) 60%, transparent));
+    /* Shape is brightened so dark ranks (e.g. President #3b0764) stay
+       readable on the dark card; rank identity carries through the glow. */
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 55%, #e2e8f0);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 6px var(--rank-color, var(--cyan)));
     pointer-events: none;
     z-index: 2;
 }
@@ -1853,9 +1855,12 @@ body::before {
     transform: translate(-50%, -50%);
     width: min(80%, 720px);
     aspect-ratio: 1 / 1;
-    color: var(--rank-color, var(--cyan));
-    opacity: 0.05;
-    filter: drop-shadow(0 0 40px color-mix(in srgb, var(--rank-color, var(--cyan)) 45%, transparent));
+    /* Shape color is brightened against dark bg — raw rank colors like
+       President (#3b0764) are too dark to see at low opacity. The rank
+       identity is carried by the drop-shadow glow below. */
+    color: color-mix(in srgb, var(--rank-color, var(--cyan)) 40%, #e2e8f0);
+    opacity: 0.08;
+    filter: drop-shadow(0 0 40px var(--rank-color, var(--cyan)));
     pointer-events: none;
     z-index: 0;
 }
