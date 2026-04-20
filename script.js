@@ -2478,13 +2478,11 @@ function initAdminApp() {
     COTEDB.onAuthChange(event => {
         const loginView = document.getElementById('admin-login-view');
         const panelView = document.getElementById('admin-panel-view');
-        const errorEl = document.getElementById('admin-login-error');
 
         if (event.signedIn && event.isAdmin) {
             adminState.loggedIn = true;
             adminState.currentUser = event.email;
             adminState.displayName = event.displayName;
-            if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
             if (panelView && panelView.style.display !== 'block') {
                 showAdminPanel();
             } else if (panelView) {
@@ -2655,13 +2653,10 @@ function initAdminApp() {
 
 async function handleGoogleSignIn() {
     const loginBtn = document.getElementById('admin-login-btn');
-    const errorEl = document.getElementById('admin-login-error');
-
     if (!loginBtn) return;
 
     loginBtn.disabled = true;
     loginBtn.classList.add('loading');
-    if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
     playSound('select');
 
     const restore = () => {
@@ -2682,33 +2677,24 @@ async function handleGoogleSignIn() {
             // Signed in with Google but not authorized. Sign them back out
             // so we don't leave them in a half-state.
             await COTEDB.signOut();
-            if (errorEl) {
-                errorEl.textContent = `${result.displayName || 'This account'} is not authorized.`;
-                errorEl.hidden = false;
-            }
+            showErrorToast('Account not authorized');
             restore();
             playSound('error');
             return;
         }
 
         if (result.reason === 'popup-closed') {
-            // User dismissed the popup. Silent recovery — no error toast.
+            // User dismissed the popup. Silent recovery — no toast.
             restore();
             return;
         }
 
-        if (errorEl) {
-            errorEl.textContent = 'Sign-in failed. Try again.';
-            errorEl.hidden = false;
-        }
+        showErrorToast('Sign-in failed. Try again.');
         restore();
         playSound('error');
     } catch (error) {
         console.error('Sign-in error:', error);
-        if (errorEl) {
-            errorEl.textContent = 'Sign-in failed. Try again.';
-            errorEl.hidden = false;
-        }
+        showErrorToast('Sign-in failed. Try again.');
         restore();
         playSound('error');
     }
