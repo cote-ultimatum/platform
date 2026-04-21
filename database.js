@@ -69,6 +69,9 @@ async function initDatabase() {
             notifyListeners('connection', dbState.connected);
         });
 
+        // Finish any sign-in that came back via redirect before the UI asks.
+        await consumeRedirectResult();
+
         // Load initial data and subscribe to updates
         await subscribeToClassPoints();
 
@@ -211,41 +214,54 @@ async function checkAdminStatus(uid) {
     }
 }
 
-// Sign in with Google. Returns:
-//   { success: true, displayName, uid }                     — signed in as admin
-//   { success: false, reason: 'not-admin', displayName }    — auth OK but not in /admins
-//   { success: false, reason: 'popup-closed' }              — user dismissed the popup
-//   { success: false, reason: 'error', error }              — any other failure
+// Set after a returning redirect if sign-in failed or the user isn't an admin.
+// Consumed once by the admin UI to show a toast after the post-redirect reload.
+let pendingSignInError = null;
+
+// Handle the result of a returning signInWithRedirect call. Runs once during
+// initDatabase. If the signed-in user isn't an admin, sign them back out and
+// stash an error for the UI to surface. Uses redirect (not popup) because
+// popup flows hang in Chrome incognito due to storage-partitioned iframes.
+async function consumeRedirectResult() {
+    if (!dbState.initialized) return;
+    try {
+        const result = await firebase.auth().getRedirectResult();
+        if (!result || !result.user) return;
+        const adminRecord = await checkAdminStatus(result.user.uid);
+        if (!adminRecord) {
+            await firebase.auth().signOut();
+            pendingSignInError = {
+                reason: 'not-admin',
+                displayName: result.user.displayName || result.user.email
+            };
+        }
+    } catch (error) {
+        console.error('Redirect sign-in error:', error);
+        pendingSignInError = { reason: 'error', error: error?.message ?? String(error) };
+    }
+}
+
+function consumePendingSignInError() {
+    const err = pendingSignInError;
+    pendingSignInError = null;
+    return err;
+}
+
+// Sign in with Google via full-page redirect. Returns:
+//   { success: false, reason: 'pending-redirect' }  — redirect started; page will navigate
+//   { success: false, reason: 'not-initialized' }   — Firebase not ready
+//   { success: false, reason: 'error', error }      — redirect failed to start
+// After Google redirects back, consumeRedirectResult() in initDatabase handles
+// the returning state and onAuthChange fires for successful sign-ins.
 async function signInWithGoogle() {
     if (!dbState.initialized) {
         return { success: false, reason: 'not-initialized' };
     }
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        const result = await firebase.auth().signInWithPopup(provider);
-        const user = result.user;
-
-        const adminRecord = await checkAdminStatus(user.uid);
-        if (!adminRecord) {
-            return {
-                success: false,
-                reason: 'not-admin',
-                displayName: user.displayName || user.email,
-                email: user.email
-            };
-        }
-
-        dbState.adminAuthenticated = true;
-        return {
-            success: true,
-            uid: user.uid,
-            email: user.email,
-            displayName: adminRecord.displayName || user.displayName || user.email
-        };
+        await firebase.auth().signInWithRedirect(provider);
+        return { success: false, reason: 'pending-redirect' };
     } catch (error) {
-        if (error && error.code === 'auth/popup-closed-by-user') {
-            return { success: false, reason: 'popup-closed' };
-        }
         console.error('Google sign-in error:', error);
         return { success: false, reason: 'error', error: error?.message ?? String(error) };
     }
@@ -568,6 +584,7 @@ window.COTEDB = {
     signOut: signOut,
     onAuthChange: onAuthChange,
     checkAdminStatus: checkAdminStatus,
+    consumePendingSignInError: consumePendingSignInError,
     // Admin data functions
     setClassPointsWithLog: setClassPointsWithLog,
     addChangelogEntry: addChangelogEntry,

@@ -2453,6 +2453,19 @@ const adminState = {
 };
 
 function initAdminApp() {
+    // Surface any error from a returning signInWithRedirect (e.g. non-admin
+    // tried to sign in). The error is stashed in database.js during init and
+    // consumed once here.
+    const pendingError = COTEDB.consumePendingSignInError?.();
+    if (pendingError) {
+        if (pendingError.reason === 'not-admin') {
+            showErrorToast('Account not authorized');
+        } else {
+            showErrorToast('Sign-in failed. Try again.');
+        }
+        playSound('error');
+    }
+
     if (adminState.initialized) {
         // Already initialized, just refresh view based on login state
         if (adminState.loggedIn) {
@@ -2668,27 +2681,14 @@ async function handleGoogleSignIn() {
     };
 
     try {
+        // Redirect flow: page navigates to Google, then back. On return,
+        // initDatabase consumes the result and onAuthChange flips the view.
+        // Non-admin / error cases surface via consumePendingSignInError in
+        // initAdminApp after the page reloads.
         const result = await COTEDB.signInWithGoogle();
 
-        if (result.success) {
-            playSound('success');
-            // onAuthChange observer handles the panel transition.
-            return;
-        }
-
-        if (result.reason === 'not-admin') {
-            // Signed in with Google but not authorized. Sign them back out
-            // so we don't leave them in a half-state.
-            await COTEDB.signOut();
-            showErrorToast('Account not authorized');
-            restore();
-            playSound('error');
-            return;
-        }
-
-        if (result.reason === 'popup-closed') {
-            // User dismissed the popup. Silent recovery — no toast.
-            restore();
+        if (result.reason === 'pending-redirect') {
+            // Page is about to navigate away; leave the button in loading state.
             return;
         }
 
