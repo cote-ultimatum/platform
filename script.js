@@ -1139,30 +1139,46 @@ function initSearch() {
 
 function filterStudents(query) {
     const classCards = document.querySelectorAll('.class-card');
-    if (!query) {
-        classCards.forEach(card => {
-            card.style.display = '';
-            card.querySelectorAll('.student-preview').forEach(p => p.style.display = '');
-        });
-        return;
-    }
 
+    // Searches the full class roster (not just the rendered top-3 previews)
+    // so students outside the default preview — e.g. council members whose
+    // position in the class data pushes them below the cut — still surface.
     classCards.forEach(card => {
-        const previews = card.querySelectorAll('.student-preview');
-        let hasMatch = false;
-        previews.forEach(preview => {
-            const name = preview.querySelector('.student-preview-name').textContent.toLowerCase();
-            const id = preview.querySelector('.student-preview-id').textContent.toLowerCase();
-            const match = name.includes(query) || id.includes(query);
-            preview.style.display = match ? '' : 'none';
-            if (match) hasMatch = true;
-        });
+        const year = parseInt(card.dataset.year, 10);
+        const className = card.dataset.class;
+        if (!Number.isFinite(year) || !className) return;
+
+        const sorted = getSortedStudents(
+            getStudentsByClass(year, className),
+            yearSortState[year]
+        );
+        const visibleRoster = state.showFavoritesOnly
+            ? sorted.filter(s => state.favorites.includes(s.id))
+            : sorted;
+
+        if (!query) {
+            card.style.display = '';
+            renderClassCardPreviews(card, visibleRoster.slice(0, 3), visibleRoster.length);
+            return;
+        }
+
         const classLabel = card.querySelector('.class-label').textContent.toLowerCase();
         if (classLabel.includes(query)) {
-            hasMatch = true;
-            previews.forEach(p => p.style.display = '');
+            card.style.display = '';
+            renderClassCardPreviews(card, visibleRoster.slice(0, 3), visibleRoster.length);
+            return;
         }
-        card.style.display = hasMatch ? '' : 'none';
+
+        const matches = visibleRoster.filter(s =>
+            (s.name || '').toLowerCase().includes(query) ||
+            (s.id || '').toLowerCase().includes(query)
+        );
+        if (matches.length > 0) {
+            card.style.display = '';
+            renderClassCardPreviews(card, matches.slice(0, 3), visibleRoster.length);
+        } else {
+            card.style.display = 'none';
+        }
     });
 }
 
@@ -1436,8 +1452,9 @@ function initOAASectionToggles() {
 function createClassCard(year, className, students) {
     const card = document.createElement('div');
     card.className = `class-card class-${className.toLowerCase()}`;
+    card.dataset.year = String(year);
+    card.dataset.class = className;
 
-    const previewStudents = students.slice(0, 3);
     const activePoints = getActiveClassPoints();
     const points = (activePoints && activePoints[year]) ? activePoints[year][className] || 0 : 0;
     const delta = getPointDelta(year, className);
@@ -1462,31 +1479,11 @@ function createClassCard(year, className, students) {
                 <span class="class-points">${points.toLocaleString()} CP${deltaHTML}</span>
             </div>
         </div>
-        <div class="class-card-students">
-            ${previewStudents.map(s => createStudentPreviewHTML(s)).join('')}
-            ${students.length === 0 ? `<div class="empty-class">${state.showFavoritesOnly ? 'No favorites in this class' : (state.dbStudents === null ? 'Connecting...' : 'No students enrolled')}</div>` : ''}
-        </div>
+        <div class="class-card-students"></div>
         ${students.length > 3 ? `<div class="view-all-link">View all ${students.length} students</div>` : ''}
     `;
 
-    // Student preview clicks
-    card.querySelectorAll('.student-preview').forEach(preview => {
-        preview.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const student = studentLookup[preview.dataset.studentId];
-            if (student) {
-                if (state.compareMode) {
-                    toggleCompareSelection(student);
-                } else {
-                    playSound('click');
-                    state.currentClass = { year: student.year, className: student.class };
-                    // Only push current view to history - back from profile goes directly to dashboard
-                    state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
-                    showStudentProfile(student, false);
-                }
-            }
-        });
-    });
+    renderClassCardPreviews(card, students.slice(0, 3), students.length);
 
     // Card click
     card.addEventListener('click', () => {
@@ -1495,6 +1492,38 @@ function createClassCard(year, className, students) {
     });
 
     return card;
+}
+
+// Render (or re-render) the student previews inside a class card and rebind
+// click handlers. Used by both initial render and search, so the search can
+// surface a matching student that wouldn't normally be in the top-3 preview.
+function renderClassCardPreviews(card, previewStudents, totalInClass) {
+    const container = card.querySelector('.class-card-students');
+    if (!container) return;
+    if (previewStudents.length === 0) {
+        const emptyMessage = totalInClass === 0
+            ? (state.showFavoritesOnly ? 'No favorites in this class' : (state.dbStudents === null ? 'Connecting...' : 'No students enrolled'))
+            : 'No matches';
+        container.innerHTML = `<div class="empty-class">${emptyMessage}</div>`;
+    } else {
+        container.innerHTML = previewStudents.map(s => createStudentPreviewHTML(s)).join('');
+    }
+    container.querySelectorAll('.student-preview').forEach(preview => {
+        preview.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const student = studentLookup[preview.dataset.studentId];
+            if (!student) return;
+            if (state.compareMode) {
+                toggleCompareSelection(student);
+            } else {
+                playSound('click');
+                state.currentClass = { year: student.year, className: student.class };
+                state.navigationHistory.push({ screen: 'oaa-app', oaaView: 'oaa-dashboard', classData: null });
+                showStudentProfile(student, false);
+            }
+        });
+    });
+    attachHoverSounds(container);
 }
 
 function createStudentPreviewHTML(student) {
