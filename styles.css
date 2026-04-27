@@ -2913,7 +2913,7 @@ body::before {
     display: grid;
     grid-template-columns: auto 1fr auto;
     grid-template-areas:
-        "rank-crest rank-crest rank-crest"
+        "rank-crest rank-crest actions"
         "name badges actions"
         "class class class"
         "quote quote quote";

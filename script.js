@@ -1874,19 +1874,54 @@ function renderAdminCommendationsList() {
     const addBtn = document.getElementById('admin-commendation-add-btn');
     const typeSelect = document.getElementById('admin-commendation-type');
     const tierSelect = document.getElementById('admin-commendation-tier');
-    const dateInput = document.getElementById('admin-commendation-date');
-    if (!addBtn || !typeSelect || !tierSelect || !dateInput) return;
+    const daySelect = document.getElementById('admin-commendation-day');
+    const monthSelect = document.getElementById('admin-commendation-month');
+    const yearInput = document.getElementById('admin-commendation-year');
+    if (!addBtn || !typeSelect || !tierSelect || !daySelect || !monthSelect || !yearInput) return;
+
+    // Populate day options 1–31 once
+    if (daySelect.options.length <= 1) {
+        for (let d = 1; d <= 31; d++) {
+            const opt = document.createElement('option');
+            opt.value = String(d);
+            opt.textContent = String(d);
+            daySelect.appendChild(opt);
+        }
+    }
+
+    // Default the date fields to today on first show — most awards are dated now.
+    const setDateToToday = () => {
+        const t = new Date();
+        daySelect.value = String(t.getDate());
+        monthSelect.value = String(t.getMonth() + 1);
+        yearInput.value = String(t.getFullYear());
+    };
+    setDateToToday();
 
     addBtn.addEventListener('mouseenter', () => playSound('hover'));
     addBtn.addEventListener('click', () => {
         const type = typeSelect.value;
         const tier = parseInt(tierSelect.value, 10);
-        const date = dateInput.value;
-        if (!type || !tier || !date) {
-            showErrorToast('Pick a type, tier, and date');
+        const d = daySelect.value;
+        const m = monthSelect.value;
+        const y = (yearInput.value || '').trim();
+        if (!type || !tier) {
+            showErrorToast('Pick a type and tier');
             playSound('error');
             return;
         }
+        if (!d || !m || !y) {
+            showErrorToast('Pick a date');
+            playSound('error');
+            return;
+        }
+        const yr = parseInt(y, 10);
+        if (isNaN(yr) || yr < 2000 || yr > 2100) {
+            showErrorToast('Year must be between 2000 and 2100');
+            playSound('error');
+            return;
+        }
+        const date = `${yr}-${String(parseInt(m, 10)).padStart(2, '0')}-${String(parseInt(d, 10)).padStart(2, '0')}`;
         if (!adminState.editingCommendations) adminState.editingCommendations = [];
         const dupe = adminState.editingCommendations.find(
             c => c.type === type && Number(c.tier) === tier
@@ -1897,19 +1932,18 @@ function renderAdminCommendationsList() {
             return;
         }
         adminState.editingCommendations.push({ type, tier, awardedAt: date });
-        // Sort by type then tier so the list stays consistent.
         adminState.editingCommendations.sort((a, b) =>
             a.type.localeCompare(b.type) || Number(a.tier) - Number(b.tier)
         );
         typeSelect.value = '';
         tierSelect.value = '';
-        dateInput.value = '';
+        setDateToToday();
         renderAdminCommendationsList();
         playSound('select');
     });
 
     // Hover sounds for the form controls — match the rest of the admin form.
-    [typeSelect, tierSelect, dateInput].forEach(el => {
+    [typeSelect, tierSelect, daySelect, monthSelect, yearInput].forEach(el => {
         el.addEventListener('mouseenter', () => playSound('hover'));
     });
 })();
