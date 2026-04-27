@@ -1643,16 +1643,28 @@ function createStudentCard(student) {
 // PROFILE VIEW
 // ========================================
 
-// Honors commendation registry — name, description, and label per (type, tier).
+// Honors commendation registry — name, description, and per-tier requirement.
 // Tiers: 1 Bronze, 2 Silver, 3 Gold, 4 Diamond.
 const COMMENDATION_REGISTRY = {
     diplomat: {
         name: 'Diplomat',
-        description: 'For partnerships brokered on behalf of the school.',
+        description: 'For partnerships brokered on behalf of the school',
+        requirements: {
+            1: '1 partnership brokered',
+            2: '5 partnerships brokered',
+            3: '15 partnerships brokered',
+            4: '30 partnerships brokered',
+        },
     },
     service: {
         name: 'Service',
-        description: 'For tenure within the Advanced Nurturing High School.',
+        description: 'For tenure within the Advanced Nurturing High School',
+        requirements: {
+            1: '3 months of tenure',
+            2: '6 months of tenure',
+            3: '1 year of tenure',
+            4: '2 years of tenure',
+        },
     },
 };
 const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
@@ -1682,6 +1694,7 @@ function renderProfileCommendations(student) {
     container.querySelectorAll('.profile-commendation').forEach(el => {
         el.addEventListener('mouseenter', () => playSound('hover'));
         el.addEventListener('click', () => {
+            playSound('open');
             const type = el.dataset.commendationType;
             const tier = parseInt(el.dataset.commendationTier, 10);
             openHonorsApp({ type, tier });
@@ -1746,11 +1759,12 @@ function renderHonorsApp() {
                 (a, b) => (a.awardedAt || '').localeCompare(b.awardedAt || '')
             );
             const isFocused = honorsFocus && honorsFocus.type === type && honorsFocus.tier === tier;
-            const isEarned = recipients.length > 0;
             const classes = ['honors-tier-card'];
-            if (!isEarned) classes.push('honors-tier-card--locked');
-            if (isFocused) classes.push('honors-tier-card--focused');
-            const metalName = TIER_METAL_NAMES[tier];
+            if (isFocused) {
+                classes.push('honors-tier-card--focused');
+                classes.push('honors-tier-card--expanded');
+            }
+            const requirement = meta.requirements?.[tier] || '';
             const recipientsHTML = recipients.length
                 ? `<div class="honors-tier-recipients-list">${recipients.map(r =>
                     `<span class="honors-recipient-chip" data-student-id="${escapeHtml(r.id || '')}">${escapeHtml(r.name)}</span>`
@@ -1761,12 +1775,20 @@ function renderHonorsApp() {
                     <img src="honors/${type}-${tier}.png" alt="">
                     <div class="honors-tier-head-text">
                         <div class="honors-tier-card-name">${escapeHtml(meta.name)} ${TIER_NAMES[tier]}</div>
-                        <div class="honors-tier-card-meta">${metalName} · ${recipients.length} ${recipients.length === 1 ? 'recipient' : 'recipients'}</div>
+                        <div class="honors-tier-card-meta">${recipients.length} ${recipients.length === 1 ? 'recipient' : 'recipients'}</div>
                     </div>
                 </div>
-                <div class="honors-tier-recipients">
-                    <span class="honors-tier-recipients-label">Held by</span>
-                    ${recipientsHTML}
+                <div class="honors-tier-detail">
+                    <div class="honors-tier-detail-inner">
+                        <div class="honors-tier-requirement">
+                            <span class="honors-tier-requirement-label">Requirement</span>
+                            <span class="honors-tier-requirement-text">${escapeHtml(requirement)}</span>
+                        </div>
+                        <div class="honors-tier-recipients">
+                            <span class="honors-tier-recipients-label">Held by</span>
+                            ${recipientsHTML}
+                        </div>
+                    </div>
                 </div>
             </div>`;
         }).join('');
@@ -1779,10 +1801,33 @@ function renderHonorsApp() {
         </div>`;
     }).join('');
 
+    // Click tier card → toggle expanded state to reveal requirement + recipients
+    container.querySelectorAll('.honors-tier-card').forEach(card => {
+        card.addEventListener('mouseenter', () => playSound('hover'));
+        card.addEventListener('click', (e) => {
+            // Recipient-chip clicks bubble up here; let them handle their own click
+            if (e.target.closest('.honors-recipient-chip')) return;
+            const wasExpanded = card.classList.contains('honors-tier-card--expanded');
+            // Collapse all others, expand this one (or collapse if already)
+            container.querySelectorAll('.honors-tier-card--expanded')
+                .forEach(c => c.classList.remove('honors-tier-card--expanded'));
+            if (!wasExpanded) {
+                card.classList.add('honors-tier-card--expanded');
+                playSound('select');
+            } else {
+                playSound('back');
+            }
+        });
+    });
+
     // Wire clicks on recipient chips → open that student's profile
     container.querySelectorAll('.honors-recipient-chip').forEach(chip => {
-        chip.addEventListener('mouseenter', () => playSound('hover'));
-        chip.addEventListener('click', () => {
+        chip.addEventListener('mouseenter', (e) => {
+            e.stopPropagation(); // don't double-play hover with the card
+            playSound('hover');
+        });
+        chip.addEventListener('click', (e) => {
+            e.stopPropagation();
             const sid = chip.dataset.studentId;
             const student = getAllStudents().find(s => s.id === sid);
             if (student) {

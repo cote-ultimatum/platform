@@ -1895,11 +1895,11 @@ body::before {
 .honors-tier-card {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
     padding: 1.1rem;
     background: rgba(0, 245, 255, 0.04);
     border: 1px solid color-mix(in srgb, var(--cyan) 25%, transparent);
     border-radius: 8px;
+    cursor: pointer;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -1908,14 +1908,35 @@ body::before {
     box-shadow: 0 0 18px color-mix(in srgb, var(--cyan) 25%, transparent);
 }
 
-.honors-tier-card--locked {
-    opacity: 0.55;
-    filter: grayscale(0.6);
-}
-
 .honors-tier-card--focused {
     border-color: var(--cyan);
     box-shadow: 0 0 24px var(--cyan-glow, rgba(0, 245, 255, 0.45));
+}
+
+/* Detail section is hidden by default — click the card to expand it */
+.honors-tier-detail {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease, margin-top 0.25s ease, padding-top 0.25s ease;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+.honors-tier-detail > * {
+    min-height: 0;
+}
+
+.honors-tier-card--expanded .honors-tier-detail {
+    grid-template-rows: 1fr;
+    margin-top: 0.85rem;
+}
+
+.honors-tier-detail-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px dashed color-mix(in srgb, var(--cyan) 22%, transparent);
 }
 
 .honors-tier-head {
@@ -1951,12 +1972,29 @@ body::before {
     letter-spacing: 0.04em;
 }
 
-.honors-tier-recipients {
+.honors-tier-requirement {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    padding-top: 0.5rem;
-    border-top: 1px dashed color-mix(in srgb, var(--cyan) 18%, transparent);
+}
+
+.honors-tier-requirement-label {
+    font-family: 'Orbitron', monospace;
+    color: var(--text-muted, #94a3b8);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.honors-tier-requirement-text {
+    color: var(--text-primary, #e2e8f0);
+    font-size: 0.9rem;
+}
+
+.honors-tier-recipients {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
 }
 
 .honors-tier-recipients-label {
