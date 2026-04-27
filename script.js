@@ -1658,16 +1658,27 @@ function renderProfileCommendations(student) {
         { type: 'diplomat', tier: 1, awardedAt: '2025-11-20' },
     ];
 
+    // Lean tooltip — name+tier and award date only. Full description / requirements
+    // live in the Honors app, opened by clicking the pin.
     container.innerHTML = sample.map(c => {
         const meta = COMMENDATION_REGISTRY[c.type];
         if (!meta) return '';
         const tierLabel = TIER_NAMES[c.tier] || '';
         const date = formatCommendationDate(c.awardedAt);
-        const label = `${meta.name} ${tierLabel}\n${meta.description}\nAwarded ${date}`;
-        return `<div class="profile-commendation" data-label="${escapeHtml(label)}">
+        const label = `${meta.name} ${tierLabel}\nAwarded ${date}`;
+        return `<div class="profile-commendation" data-label="${escapeHtml(label)}" data-commendation-type="${c.type}" data-commendation-tier="${c.tier}">
             <img src="honors/${c.type}-${c.tier}.svg" alt="${meta.name} ${tierLabel}">
         </div>`;
     }).join('');
+
+    // Hover sound for consistency with the rest of the UI.
+    container.querySelectorAll('.profile-commendation').forEach(el => {
+        el.addEventListener('mouseenter', () => playSound('hover'));
+        el.addEventListener('click', () => {
+            playSound('click');
+            // TODO: open Honors app focused on this commendation.
+        });
+    });
 }
 
 function formatCommendationDate(iso) {
@@ -1841,6 +1852,7 @@ function showStudentProfile(student, addToHistory = true) {
             e.stopPropagation();
             toggleFavorite(student.id);
         });
+        favBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
 
     showOAAView('oaa-profile', addToHistory);
@@ -2280,6 +2292,7 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
             if (!isNaN(v) && v >= 1) f.zoom = v;
             apply();
         });
+        zoomSlider.addEventListener('mouseenter', () => playSound('hover'));
     }
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
@@ -2288,6 +2301,7 @@ function bindImageFramer(container, zoomSlider, resetBtn, frameRef) {
             apply();
             try { playSound('back'); } catch (e) {}
         });
+        resetBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
 
     let dragging = false;
@@ -3136,6 +3150,7 @@ function initStudentManagement() {
     const adminUploadBtn = document.querySelector('.admin-image-input .creator-upload-btn');
     if (adminUploadBtn) {
         adminUploadBtn.addEventListener('click', () => playSound('select'));
+        adminUploadBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
     const adminImageUpload = document.getElementById('admin-student-image-upload');
     if (adminImageUpload) {
@@ -4353,10 +4368,12 @@ function initCreatorApp() {
         imageInput.addEventListener('focus', () => playSound('select'));
     }
 
-    // Image file upload
-    const uploadBtn = document.querySelector('.creator-upload-btn');
+    // Image file upload — selector targets the creator label specifically;
+    // a bare `.creator-upload-btn` would match admin's button first in DOM.
+    const uploadBtn = document.querySelector('label[for="creator-image-upload"]');
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => playSound('select'));
+        uploadBtn.addEventListener('mouseenter', () => playSound('hover'));
     }
     const imageUpload = document.getElementById('creator-image-upload');
     if (imageUpload) {

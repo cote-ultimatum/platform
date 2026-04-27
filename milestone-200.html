@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>200 Members</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+
+  .canvas {
+    position: relative;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #050a12;
+  }
+
+  /* Backdrop image - visible but subdued */
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    background: url('GRVN8MNQY-backdrop_wide.png') center center / cover no-repeat;
+    filter: blur(2px) brightness(0.35);
+  }
+
+  /* Soft vignette overlay */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5, 10, 18, 0.25) 0%, rgba(5, 10, 18, 0.8) 100%);
+  }
+
+  /* Cyan radial glow behind content */
+  .glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(77, 201, 230, 0.1) 0%, rgba(77, 201, 230, 0.03) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Accent bars from bot style */
+  .bar-top, .bar-bottom {
+    position: absolute;
+    left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #7a2438, #4dc9e6 50%, #7a2438);
+    z-index: 3;
+  }
+  .bar-top { top: 0; }
+  .bar-bottom { bottom: 0; }
+
+  /* Corner brackets from bot style */
+  .corner { position: absolute; z-index: 3; }
+  .corner-tr {
+    top: 24px; right: 24px;
+    width: 36px; height: 36px;
+    border-top: 3px solid rgba(77, 201, 230, 0.5);
+    border-right: 3px solid rgba(77, 201, 230, 0.5);
+  }
+  .corner-bl {
+    bottom: 24px; left: 24px;
+    width: 36px; height: 36px;
+    border-bottom: 3px solid rgba(77, 201, 230, 0.5);
+    border-left: 3px solid rgba(77, 201, 230, 0.5);
+  }
+
+  /* Content */
+  .content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20px;
+    z-index: 2;
+    text-align: center;
+  }
+
+  /* Top header - pinned like the bot cards */
+  .top-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 3;
+  }
+
+  .header {
+    font-family: 'Orbitron', 'Trebuchet MS', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #4dc9e6;
+    text-shadow: 0 0 20px rgba(77, 201, 230, 0.3);
+    margin-top: 55px;
+  }
+
+  .subheader {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: #64748b;
+    margin-top: 10px;
+  }
+
+  .divider-top {
+    width: 300px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(77, 201, 230, 0.25), transparent);
+    margin: 18px auto 0;
+  }
+
+  .number {
+    font-family: 'Orbitron', 'Trebuchet MS', sans-serif;
+    font-size: 200px;
+    font-weight: 900;
+    letter-spacing: 12px;
+    color: #e2e8f0;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(77, 201, 230, 0.35), 0 0 60px rgba(77, 201, 230, 0.2), 0 0 120px rgba(77, 201, 230, 0.1), 0 0 200px rgba(77, 201, 230, 0.05);
+  }
+
+  .label {
+    font-family: 'Orbitron', 'Trebuchet MS', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 12px;
+    text-transform: uppercase;
+    color: rgba(160, 190, 210, 0.7);
+    margin-top: 4px;
+  }
+
+  .divider-bottom {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(77, 201, 230, 0.4), transparent);
+    margin-top: 22px;
+    margin-bottom: 22px;
+  }
+
+  .thankyou {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: rgba(180, 205, 220, 0.7);
+    text-shadow: 0 0 14px rgba(77, 201, 230, 0.2), 0 0 30px rgba(77, 201, 230, 0.08);
+  }
+
+  .thankyou-jp {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: rgba(160, 185, 205, 0.45);
+    margin-top: 6px;
+  }
+
+  /* COTE: ULTIMATUM footer - centered */
+  .credit {
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Orbitron', 'Trebuchet MS', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    z-index: 3;
+  }
+  .credit .cyan { color: #4dc9e6; }
+  .credit .maroon { color: #9a2e48; margin-left: 8px; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="backdrop"></div>
+  <div class="overlay"></div>
+  <div class="bar-top"></div>
+  <div class="bar-bottom"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+
+  <div class="glow"></div>
+
+  <div class="top-header">
+    <div class="header">ADVANCED NURTURING HIGH SCHOOL</div>
+    <div class="subheader">SERVER MILESTONE</div>
+    <div class="divider-top"></div>
+  </div>
+
+  <div class="content">
+    <div class="number">200</div>
+    <div class="label">Members</div>
+    <div class="divider-bottom"></div>
+    <div class="thankyou">THANK YOU SO FUCKING MUCH</div>
+    <div class="thankyou-jp">本当にありがとうございます</div>
+  </div>
+
+  <div class="credit">
+    <span class="cyan">COTE:</span><span class="maroon">ULTIMATUM</span>
+  </div>
+</div>
+</body>
+</html>

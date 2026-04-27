@@ -2598,8 +2598,13 @@ body::before {
     position: relative;
     background: linear-gradient(180deg, rgba(0, 245, 255, 0.05) 0%, transparent 100%);
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
+    gap: 1rem;
+}
+
+.profile-header-info {
+    flex: 1 1 0%;
+    min-width: 0;
 }
 
 .profile-header-info h2 {
@@ -2623,17 +2628,18 @@ body::before {
 }
 
 /* Honors commendations row — sits between profile-header-info (left) and
-   profile-header-actions (right). Hidden when empty so it doesn't reserve
-   space on profiles without commendations. */
+   profile-header-actions (right). Anchored to the right side of info via
+   flex: 0 0 auto so a typing rank quote in info doesn't shift the row's
+   horizontal position. */
 .profile-commendations {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
-    padding: 0 1rem;
+    flex: 0 0 auto;
     align-self: center;
-    max-width: 240px;
-    justify-content: center;
+    justify-content: flex-end;
+    max-width: 280px;
 }
 
 .profile-commendations:empty {
@@ -2641,10 +2647,10 @@ body::before {
 }
 
 .profile-commendation {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     flex: 0 0 auto;
-    cursor: help;
+    cursor: pointer;
     transition: transform 0.18s ease;
     position: relative;
 }
