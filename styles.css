@@ -2917,22 +2917,20 @@ body::before {
     padding: 2rem;
     position: relative;
     background: linear-gradient(180deg, rgba(0, 245, 255, 0.05) 0%, transparent 100%);
-    /* Grid layout with named areas:
-         row 1: rank-crest spans full width (only visible for ranked profiles)
-         row 2: name | badges | actions   ← badges anchored here, beside name
-         row 3: class spans col 1 only
-         row 4: quote spans full width    ← so typing doesn't expand col 1
-       profile-header-info uses display: contents so its children become
-       direct grid items. The middle 1fr column fills the actual gap between
-       name-end and actions-start, so badges centered in it sit between the
-       name+star and the ID box. */
+    /* Grid layout with named areas — header is just info on the left,
+       actions on the right. Commendations live under the overall-grade
+       box in the body, not in the header.
+         row 1: rank-crest | actions   (only visible for ranked profiles)
+         row 2: name       | actions
+         row 3: class spans both
+         row 4: quote spans both       (so typing doesn't expand col 1) */
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-        "rank-crest rank-crest actions"
-        "name badges actions"
-        "class class class"
-        "quote quote quote";
+        "rank-crest actions"
+        "name actions"
+        "class class"
+        "quote quote";
     align-items: start;
     column-gap: 1rem;
     row-gap: 0;
@@ -2995,15 +2993,16 @@ body::before {
    midpoint lands between name-end and actions-start regardless of badge
    count. */
 .profile-commendations {
-    grid-area: badges;
-    align-self: start;
-    justify-self: center;
+    /* Sits in the profile body's left column, under the overall-grade box.
+       Width matches the image+grade column (240px) so pins wrap naturally
+       to multiple rows when several are awarded. */
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     flex-wrap: wrap;
-    justify-content: center;
-    max-width: 360px;
+    width: 240px;
+    margin-top: 0.5rem;
 }
 
 .profile-commendations:empty {
@@ -7424,16 +7423,10 @@ body::before {
             "rank-crest"
             "name"
             "class"
-            "badges"
             "quote"
             "actions";
         row-gap: 1rem;
         align-items: stretch;
-    }
-
-    .profile-commendations {
-        justify-self: center;
-        max-width: none;
     }
 
     .profile-header-info h2 {
