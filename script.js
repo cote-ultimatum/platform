@@ -1789,8 +1789,9 @@ function renderHonorsApp() {
         });
     });
 
-    // Group commendation types by category so a Distinction with multiple
-    // single-tier badges (Cipher, Apex, …) reads as one section.
+    // Group commendation types by category so a Limited section with
+    // multiple single-tier commendations (Cipher, Apex, …) reads as one
+    // section in the Honors app.
     const byCategory = new Map();
     Object.keys(COMMENDATION_REGISTRY).forEach(type => {
         const meta = COMMENDATION_REGISTRY[type];
@@ -1943,7 +1944,7 @@ function renderAdminCommendationsList() {
     const yearInput = document.getElementById('admin-commendation-year');
     if (!addBtn || !categorySelect || !typeSelect || !tierSelect || !daySelect || !monthSelect || !yearInput) return;
 
-    // Build a categories map { 'Diplomacy': ['diplomat'], 'Limited': ['cipher','apex'], ... }
+    // Build a categories map { 'Social': ['diplomat'], 'Limited': ['cipher','apex'], ... }
     const categoriesMap = new Map();
     Object.keys(COMMENDATION_REGISTRY).forEach(type => {
         const cat = COMMENDATION_REGISTRY[type].category || COMMENDATION_REGISTRY[type].name;
@@ -2032,8 +2033,22 @@ function renderAdminCommendationsList() {
         const d = daySelect.value;
         const m = monthSelect.value;
         const y = (yearInput.value || '').trim();
-        if (!categorySelect.value || !type || !tier) {
-            showErrorToast('Pick a category, commendation, and tier');
+        // Validate fields one at a time so the error is specific and tier
+        // isn't mentioned when the commendation is single-tier (auto-locked).
+        if (!categorySelect.value) {
+            showErrorToast('Pick a category');
+            playSound('error');
+            return;
+        }
+        if (!type) {
+            showErrorToast('Pick a commendation');
+            playSound('error');
+            return;
+        }
+        const meta = COMMENDATION_REGISTRY[type];
+        const isMultiTier = (meta?.tiers || []).length > 1;
+        if (isMultiTier && !tier) {
+            showErrorToast('Pick a tier');
             playSound('error');
             return;
         }
