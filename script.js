@@ -1691,9 +1691,9 @@ const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
 // Per-category description for the Honors app section header. Broad enough
 // to cover any future commendations that might join each category.
 const CATEGORY_DESCRIPTIONS = {
-    'Social': 'Engagement on behalf of the school and its standing',
+    'Social': 'Acts of social initiative',
     'Service': 'Sustained duty within the school',
-    'Limited': 'Earned through particular events',
+    'Limited': 'Earned at notable events',
 };
 
 // Returns the user-facing display name for a commendation. Multi-tier ranks
