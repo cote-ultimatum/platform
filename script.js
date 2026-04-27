@@ -1652,7 +1652,7 @@ const COMMENDATION_REGISTRY = {
     diplomat: {
         category: 'Diplomacy',
         name: 'Diplomat',
-        description: 'For partnerships negotiated on behalf of the school',
+        description: 'Partnerships negotiated on behalf of the school',
         tiers: [1, 2, 3, 4],
         requirements: {
             1: '1 partnership negotiated',
@@ -1664,7 +1664,7 @@ const COMMENDATION_REGISTRY = {
     service: {
         category: 'Tenure',
         name: 'Service',
-        description: 'For tenure within the Advanced Nurturing High School',
+        description: 'Tenure within the Advanced Nurturing High School',
         tiers: [1, 2, 3, 4],
         requirements: {
             1: '3 months of tenure',
@@ -1674,17 +1674,15 @@ const COMMENDATION_REGISTRY = {
         },
     },
     cipher: {
-        category: 'Distinction',
+        category: 'Limited',
         name: 'Cipher',
-        description: 'For uncovering what was hidden',
+        description: 'Uncovered what was hidden',
         tiers: [1],
-        // Single-tier event awards reuse the description as the
-        // expanded-card explanation; no count-based requirement applies.
     },
     apex: {
-        category: 'Distinction',
+        category: 'Limited',
         name: 'Apex',
-        description: 'For outperforming all challengers',
+        description: 'Outperformed all challengers',
         tiers: [1],
     },
 };
@@ -1920,25 +1918,51 @@ function renderAdminCommendationsList() {
 
 (function bindAdminCommendationsForm() {
     const addBtn = document.getElementById('admin-commendation-add-btn');
+    const categorySelect = document.getElementById('admin-commendation-category');
     const typeSelect = document.getElementById('admin-commendation-type');
     const tierSelect = document.getElementById('admin-commendation-tier');
     const daySelect = document.getElementById('admin-commendation-day');
     const monthSelect = document.getElementById('admin-commendation-month');
     const yearInput = document.getElementById('admin-commendation-year');
-    if (!addBtn || !typeSelect || !tierSelect || !daySelect || !monthSelect || !yearInput) return;
+    if (!addBtn || !categorySelect || !typeSelect || !tierSelect || !daySelect || !monthSelect || !yearInput) return;
 
-    // Populate the type select from the registry so adding a new commendation
-    // type (e.g., a future event distinction) only needs a registry change.
-    typeSelect.innerHTML = '<option value="">Type</option>' +
-        Object.keys(COMMENDATION_REGISTRY).map(type => {
-            const meta = COMMENDATION_REGISTRY[type];
-            return `<option value="${type}">${escapeHtml(meta.name)}</option>`;
-        }).join('');
+    // Build a categories map { 'Diplomacy': ['diplomat'], 'Limited': ['cipher','apex'], ... }
+    const categoriesMap = new Map();
+    Object.keys(COMMENDATION_REGISTRY).forEach(type => {
+        const cat = COMMENDATION_REGISTRY[type].category || COMMENDATION_REGISTRY[type].name;
+        if (!categoriesMap.has(cat)) categoriesMap.set(cat, []);
+        categoriesMap.get(cat).push(type);
+    });
+    categorySelect.innerHTML = '<option value="">Category</option>' +
+        Array.from(categoriesMap.keys()).map(cat =>
+            `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`
+        ).join('');
+
+    const TIER_LABELS = { 1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
+
+    // Type dropdown adapts to the selected category. Single-type categories
+    // auto-select; multi-type categories show the picker.
+    const updateTypeOptions = () => {
+        const cat = categorySelect.value;
+        const types = categoriesMap.get(cat) || [];
+        if (!cat) {
+            typeSelect.innerHTML = '<option value="">Badge</option>';
+            typeSelect.disabled = true;
+        } else if (types.length === 1) {
+            const t = types[0];
+            typeSelect.innerHTML = `<option value="${t}" selected>${escapeHtml(COMMENDATION_REGISTRY[t].name)}</option>`;
+            typeSelect.disabled = true;
+        } else {
+            typeSelect.innerHTML = '<option value="">Badge</option>' +
+                types.map(t => `<option value="${t}">${escapeHtml(COMMENDATION_REGISTRY[t].name)}</option>`).join('');
+            typeSelect.disabled = false;
+        }
+        updateTierOptions();
+    };
 
     // Tier dropdown adapts to the selected type — multi-tier types show
     // Bronze/Silver/Gold/Diamond; single-tier types show one auto-selected
     // option since there's no progression to pick.
-    const TIER_LABELS = { 1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
     const updateTierOptions = () => {
         const type = typeSelect.value;
         const meta = COMMENDATION_REGISTRY[type];
@@ -1948,18 +1972,22 @@ function renderAdminCommendationsList() {
             tierSelect.disabled = true;
         } else if (tiers.length === 1) {
             tierSelect.innerHTML = `<option value="${tiers[0]}" selected>${escapeHtml(meta.name)}</option>`;
-            tierSelect.disabled = true;  // nothing to choose
+            tierSelect.disabled = true;
         } else {
             tierSelect.innerHTML = '<option value="">Tier</option>' +
                 tiers.map(t => `<option value="${t}">${TIER_LABELS[t] || `Tier ${t}`}</option>`).join('');
             tierSelect.disabled = false;
         }
     };
+    categorySelect.addEventListener('change', () => {
+        updateTypeOptions();
+        playSound('select');
+    });
     typeSelect.addEventListener('change', () => {
         updateTierOptions();
         playSound('select');
     });
-    updateTierOptions();
+    updateTypeOptions();
 
     // Populate day options 1–31 once
     if (daySelect.options.length <= 1) {
@@ -2017,15 +2045,17 @@ function renderAdminCommendationsList() {
         adminState.editingCommendations.sort((a, b) =>
             a.type.localeCompare(b.type) || Number(a.tier) - Number(b.tier)
         );
-        typeSelect.value = '';
-        tierSelect.value = '';
+        // Reset the form for the next award. Category clears, which cascades
+        // to type and tier via the change handlers.
+        categorySelect.value = '';
+        updateTypeOptions();
         setDateToToday();
         renderAdminCommendationsList();
         playSound('select');
     });
 
     // Hover sounds for the form controls — match the rest of the admin form.
-    [typeSelect, tierSelect, daySelect, monthSelect, yearInput].forEach(el => {
+    [categorySelect, typeSelect, tierSelect, daySelect, monthSelect, yearInput].forEach(el => {
         el.addEventListener('mouseenter', () => playSound('hover'));
     });
 })();

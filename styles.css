@@ -1745,14 +1745,10 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    padding-bottom: 1rem;
     margin-bottom: 1rem;
-    border-bottom: 1px dashed color-mix(in srgb, var(--cyan) 25%, transparent);
 }
 
 .admin-commendations-list:empty {
-    border-bottom: none;
-    padding-bottom: 0;
     margin-bottom: 0.75rem;
 }
 
@@ -1812,15 +1808,35 @@ body::before {
 
 .admin-commendation-add {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    align-items: stretch;
-    flex-wrap: wrap;
 }
 
-.admin-commendation-add select,
-.admin-commendation-add input {
-    flex: 1 1 8rem;
+.admin-commendation-add-line {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.admin-commendation-add-line select,
+.admin-commendation-add-line input {
+    flex: 1 1 0;
     min-width: 0;
+}
+
+/* Day/Month/Year/Award row — keep day & year compact, month flexes,
+   button content-sized so the year input doesn't stretch into a long bar. */
+.admin-commendation-add-line-bottom .admin-tenure-day {
+    flex: 0 0 4.5rem;
+}
+.admin-commendation-add-line-bottom .admin-tenure-month {
+    flex: 1 1 auto;
+}
+.admin-commendation-add-line-bottom .admin-tenure-year {
+    flex: 0 0 5.5rem;
+}
+.admin-commendation-add-line-bottom .admin-btn-add {
+    flex: 0 0 auto;
 }
 
 .admin-btn-add {
