@@ -31,7 +31,7 @@
       <stop offset="0%" stop-color="#f87171"/>
       <stop offset="100%" stop-color="#9a2e48"/>
     </linearGradient>
-    <filter id="symbolGlow" x="-50%" y="-50%" width="200%" height="200%">
+    <filter id="ringGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur"/>
       <feFlood flood-color="#fb7185" flood-opacity="0.7"/>
       <feComposite in2="blur" operator="in" result="halo"/>
@@ -45,12 +45,12 @@
 
   <g filter="url(#pinShadow)">
     <circle cx="32" cy="32" r="24" fill="url(#fieldGrad)"/>
-    <circle cx="32" cy="32" r="27" fill="none" stroke="url(#metalGrad)" stroke-width="6"/>
+    <circle cx="32" cy="32" r="27" fill="none" stroke="url(#metalGrad)" stroke-width="6" filter="url(#ringGlow)"/>
     <g clip-path="url(#ringClip)">
       <rect width="64" height="64" fill="url(#topHighlight)"/>
     </g>
     <!-- Upward triangle (peak) -->
-    <g filter="url(#symbolGlow)" fill="url(#symbolMetalGrad)" stroke="url(#symbolMetalGrad)" stroke-width="1" stroke-linejoin="round">
+    <g fill="url(#symbolMetalGrad)" stroke="url(#symbolMetalGrad)" stroke-width="1" stroke-linejoin="round">
       <path d="M 32 19 L 44 41 L 20 41 Z"/>
     </g>
   </g>

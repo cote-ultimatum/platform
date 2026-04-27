@@ -33,7 +33,7 @@
       <stop offset="0%" stop-color="#e8a872"/>
       <stop offset="100%" stop-color="#b87333"/>
     </linearGradient>
-    <filter id="symbolGlow" x="-50%" y="-50%" width="200%" height="200%">
+    <filter id="ringGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur"/>
       <feFlood flood-color="#e8a872" flood-opacity="0.7"/>
       <feComposite in2="blur" operator="in" result="halo"/>
@@ -50,7 +50,7 @@
     <circle cx="32" cy="32" r="24" fill="url(#fieldGrad)"/>
 
     <!-- Metal ring (the visible bezel — fills the donut from r=24 to r=30) -->
-    <circle cx="32" cy="32" r="27" fill="none" stroke="url(#metalGrad)" stroke-width="6"/>
+    <circle cx="32" cy="32" r="27" fill="none" stroke="url(#metalGrad)" stroke-width="6" filter="url(#ringGlow)"/>
 
     <!-- Top highlight crescent on the bezel for the polished feel -->
     <g clip-path="url(#ringClip)">
@@ -58,7 +58,7 @@
     </g>
 
     <!-- Chain-link rings symbol -->
-    <g filter="url(#symbolGlow)" fill="none" stroke="url(#symbolMetalGrad)" stroke-width="2.6" stroke-linecap="round">
+    <g fill="none" stroke="url(#symbolMetalGrad)" stroke-width="2.6" stroke-linecap="round">
       <circle cx="25" cy="32" r="9"/>
       <circle cx="39" cy="32" r="9"/>
       <path d="M 32.95 36.22 A 9 9 0 0 1 29.77 39.63"/>

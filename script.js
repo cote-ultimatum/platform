@@ -1676,13 +1676,13 @@ const COMMENDATION_REGISTRY = {
     cipher: {
         category: 'Limited',
         name: 'Cipher',
-        description: 'Uncovering what was hidden',
+        description: 'Uncover what was hidden',
         tiers: [1],
     },
     apex: {
         category: 'Limited',
         name: 'Apex',
-        description: 'Outperforming all challengers',
+        description: 'Outperform all challengers',
         tiers: [1],
     },
 };
