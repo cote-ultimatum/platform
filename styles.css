@@ -2638,7 +2638,13 @@ body::before {
 }
 #profile-class { grid-area: class; }
 .profile-rank-quote { grid-area: quote; }
-.profile-rank-crest { grid-area: rank-crest; }
+/* justify-self: start prevents the rank-crest from stretching to fill the
+   3-col span. Without it, CSS Grid blockifies the inline-flex display and
+   the default stretch+row-reverse pushes its content to the right side. */
+.profile-rank-crest {
+    grid-area: rank-crest;
+    justify-self: start;
+}
 
 .profile-header-info h2 {
     font-family: 'Orbitron', monospace;
