@@ -1646,11 +1646,11 @@ function createStudentCard(student) {
 // Honors commendation registry — name, description, per-tier requirement,
 // category for grouping in the Honors app, and `tiers` listing the valid
 // tier numbers for this commendation.
-//   - Diplomacy / Tenure: 4-tier progressions (bronze → diamond) by count
-//   - Distinction: 1-tier event awards, each its own type with unique visuals
+//   - Social / Service: 4-tier progressions (bronze → diamond) by count
+//   - Limited: 1-tier event awards, each its own type with unique visuals
 const COMMENDATION_REGISTRY = {
     diplomat: {
-        category: 'Diplomacy',
+        category: 'Social',
         name: 'Diplomat',
         description: 'Partnerships negotiated on behalf of the school',
         tiers: [1, 2, 3, 4],
@@ -1662,9 +1662,9 @@ const COMMENDATION_REGISTRY = {
         },
     },
     service: {
-        category: 'Tenure',
-        name: 'Service',
-        description: 'Tenure within the Advanced Nurturing High School',
+        category: 'Service',
+        name: 'Tenure',
+        description: 'Time given to the Advanced Nurturing High School',
         tiers: [1, 2, 3, 4],
         requirements: {
             1: '3 months of tenure',
@@ -1676,17 +1676,36 @@ const COMMENDATION_REGISTRY = {
     cipher: {
         category: 'Limited',
         name: 'Cipher',
-        description: 'Uncovered what was hidden',
+        description: 'Uncovering what was hidden',
         tiers: [1],
     },
     apex: {
         category: 'Limited',
         name: 'Apex',
-        description: 'Outperformed all challengers',
+        description: 'Outperforming all challengers',
         tiers: [1],
     },
 };
 const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
+
+// Per-category description for the Honors app section header. Broad enough
+// to cover any future commendations that might join each category.
+const CATEGORY_DESCRIPTIONS = {
+    'Social': 'Engagement on behalf of the school and its standing',
+    'Service': 'Sustained duty within the school',
+    'Limited': 'Earned through particular events',
+};
+
+// Returns the user-facing display name for a commendation. Multi-tier ranks
+// append the Roman numeral; single-tier badges show just the name (no "I").
+function commendationDisplayName(type, tier) {
+    const meta = COMMENDATION_REGISTRY[type];
+    if (!meta) return '';
+    const isMultiTier = (meta.tiers || []).length > 1;
+    return isMultiTier
+        ? `${meta.name} ${TIER_NAMES[tier] || ''}`.trim()
+        : meta.name;
+}
 
 function renderProfileCommendations(student) {
     const container = document.getElementById('profile-commendations');
@@ -1701,11 +1720,11 @@ function renderProfileCommendations(student) {
         if (!meta) return '';
         const tier = Number(c.tier);
         if (!(tier >= 1 && tier <= 4)) return '';
-        const tierLabel = TIER_NAMES[tier] || '';
+        const displayName = commendationDisplayName(c.type, tier);
         const date = formatCommendationDate(c.awardedAt);
-        const label = `${meta.name} ${tierLabel}\nAwarded ${date}`;
+        const label = `${displayName}\nAwarded ${date}`;
         return `<div class="profile-commendation" data-label="${escapeHtml(label)}" data-commendation-type="${c.type}" data-commendation-tier="${tier}">
-            <img src="honors/${c.type}-${tier}.svg" alt="${meta.name} ${tierLabel}">
+            <img src="honors/${c.type}-${tier}.svg" alt="${displayName}">
         </div>`;
     }).join('');
 
@@ -1792,16 +1811,13 @@ function renderHonorsApp() {
             classes.push('honors-tier-card--expanded');
         }
         const isMultiTier = (meta.tiers || []).length > 1;
-        // Multi-tier badges show their tier's count requirement; single-tier
-        // event badges (Cipher, Apex) show their description instead, since
-        // there's no progression to describe.
+        // Multi-tier commendations show their tier's count requirement;
+        // single-tier event commendations (Cipher, Apex) show their
+        // description instead, since there's no progression to describe.
         const requirement = isMultiTier
             ? (meta.requirements?.[tier] || '')
             : (meta.description || '');
-        // Single-tier badges show just the badge name; multi-tier show "Name I/II/III/IV"
-        const cardName = isMultiTier
-            ? `${escapeHtml(meta.name)} ${TIER_NAMES[tier]}`
-            : escapeHtml(meta.name);
+        const cardName = escapeHtml(commendationDisplayName(type, tier));
         const recipientsHTML = recipients.length
             ? `<div class="honors-tier-recipients-list">${recipients.map(r =>
                 `<span class="honors-recipient-chip" data-student-id="${escapeHtml(r.id || '')}">${escapeHtml(r.name)}</span>`
@@ -1831,10 +1847,12 @@ function renderHonorsApp() {
     };
 
     container.innerHTML = Array.from(byCategory.entries()).map(([categoryName, entries]) => {
-        // For multi-type categories (Distinction), description is omitted at
-        // category level — each badge has its own description in its detail.
-        const isMultiType = entries.length > 1;
-        const categoryDesc = isMultiType ? '' : (entries[0].meta.description || '');
+        // Always pull the description from the category map so multi-type
+        // categories (e.g., Limited holding Cipher + Apex) get a header
+        // description too. Falls back to the lone type's description for
+        // unknown categories so registry additions don't go undescribed.
+        const categoryDesc = CATEGORY_DESCRIPTIONS[categoryName]
+            || (entries.length === 1 ? (entries[0].meta.description || '') : '');
         const cards = entries.flatMap(({ type, meta }) =>
             (meta.tiers || [1]).map(tier => renderTierCard(type, meta, tier))
         ).join('');
@@ -1896,11 +1914,10 @@ function renderAdminCommendationsList() {
         const meta = COMMENDATION_REGISTRY[c.type];
         const tier = Number(c.tier);
         if (!meta || !(tier >= 1 && tier <= 4)) return '';
-        const tierLabel = TIER_NAMES[tier];
         const date = formatCommendationDate(c.awardedAt);
         return `<div class="admin-commendation-row">
             <img src="honors/${c.type}-${tier}.svg" alt="">
-            <span class="admin-commendation-row-name">${escapeHtml(meta.name)} ${tierLabel}</span>
+            <span class="admin-commendation-row-name">${escapeHtml(commendationDisplayName(c.type, tier))}</span>
             <span class="admin-commendation-row-date">Awarded ${escapeHtml(date)}</span>
             <button type="button" class="admin-commendation-row-remove" data-index="${i}">Remove</button>
         </div>`;
@@ -1940,20 +1957,20 @@ function renderAdminCommendationsList() {
 
     const TIER_LABELS = { 1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
 
-    // Type dropdown adapts to the selected category. Single-type categories
-    // auto-select; multi-type categories show the picker.
+    // Commendation dropdown adapts to the selected category. Single-type
+    // categories auto-select; multi-type categories show the picker.
     const updateTypeOptions = () => {
         const cat = categorySelect.value;
         const types = categoriesMap.get(cat) || [];
         if (!cat) {
-            typeSelect.innerHTML = '<option value="">Badge</option>';
+            typeSelect.innerHTML = '<option value="">Commendation</option>';
             typeSelect.disabled = true;
         } else if (types.length === 1) {
             const t = types[0];
             typeSelect.innerHTML = `<option value="${t}" selected>${escapeHtml(COMMENDATION_REGISTRY[t].name)}</option>`;
             typeSelect.disabled = true;
         } else {
-            typeSelect.innerHTML = '<option value="">Badge</option>' +
+            typeSelect.innerHTML = '<option value="">Commendation</option>' +
                 types.map(t => `<option value="${t}">${escapeHtml(COMMENDATION_REGISTRY[t].name)}</option>`).join('');
             typeSelect.disabled = false;
         }
@@ -2015,8 +2032,8 @@ function renderAdminCommendationsList() {
         const d = daySelect.value;
         const m = monthSelect.value;
         const y = (yearInput.value || '').trim();
-        if (!type || !tier) {
-            showErrorToast('Pick a type and tier');
+        if (!categorySelect.value || !type || !tier) {
+            showErrorToast('Pick a category, commendation, and tier');
             playSound('error');
             return;
         }
@@ -2037,7 +2054,7 @@ function renderAdminCommendationsList() {
             c => c.type === type && Number(c.tier) === tier
         );
         if (dupe) {
-            showErrorToast(`${COMMENDATION_REGISTRY[type].name} ${TIER_NAMES[tier]} already awarded`);
+            showErrorToast(`${commendationDisplayName(type, tier)} already awarded`);
             playSound('error');
             return;
         }
