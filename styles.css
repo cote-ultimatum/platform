@@ -2619,7 +2619,23 @@ body::before {
 }
 
 .profile-header-info { display: contents; }
-#profile-name { grid-area: name; }
+#profile-name {
+    grid-area: name;
+    /* width: max-content + position: relative make h2 size to the name TEXT
+       only (not the favorite-btn which we float as an absolute overlay below).
+       That way col 1's right edge = end of name letters, so badges centered
+       in col 2 sit symmetrically between the visible name end and ID box. */
+    position: relative;
+    width: max-content;
+    max-width: 100%;
+}
+#profile-name .favorite-btn {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-left: 0.5rem;
+    transform: translateY(-50%);
+}
 #profile-class { grid-area: class; }
 .profile-rank-quote { grid-area: quote; }
 .profile-rank-crest { grid-area: rank-crest; }
