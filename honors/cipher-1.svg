@@ -33,7 +33,7 @@
     </linearGradient>
     <filter id="symbolGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur"/>
-      <feFlood flood-color="#a78bfa" flood-opacity="0.75"/>
+      <feFlood flood-color="#a78bfa" flood-opacity="0.7"/>
       <feComposite in2="blur" operator="in" result="halo"/>
       <feMerge>
         <feMergeNode in="halo"/>

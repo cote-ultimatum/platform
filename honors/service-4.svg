@@ -32,11 +32,10 @@
       <stop offset="100%" stop-color="#0891b2"/>
     </linearGradient>
     <filter id="symbolGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="2.8" result="blur"/>
-      <feFlood flood-color="#67e8f9" flood-opacity="0.85"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur"/>
+      <feFlood flood-color="#67e8f9" flood-opacity="0.7"/>
       <feComposite in2="blur" operator="in" result="halo"/>
       <feMerge>
-        <feMergeNode in="halo"/>
         <feMergeNode in="halo"/>
         <feMergeNode in="halo"/>
         <feMergeNode in="SourceGraphic"/>
