@@ -2628,18 +2628,19 @@ body::before {
 }
 
 /* Honors commendations row — sits between profile-header-info (left) and
-   profile-header-actions (right). Anchored to the right side of info via
-   flex: 0 0 auto so a typing rank quote in info doesn't shift the row's
-   horizontal position. */
+   profile-header-actions (right). Anchored to the TOP of the header
+   (align-self: flex-start) so a multi-line rank quote in info doesn't push
+   the row vertically as it grows. */
 .profile-commendations {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
     flex: 0 0 auto;
-    align-self: center;
+    align-self: flex-start;
     justify-content: flex-end;
     max-width: 280px;
+    margin-top: 0.25rem;
 }
 
 .profile-commendations:empty {
@@ -2647,8 +2648,8 @@ body::before {
 }
 
 .profile-commendation {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     flex: 0 0 auto;
     cursor: pointer;
     transition: transform 0.18s ease;
