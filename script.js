@@ -1643,12 +1643,17 @@ function createStudentCard(student) {
 // PROFILE VIEW
 // ========================================
 
-// Honors commendation registry — name, description, and per-tier requirement.
-// Tiers: 1 Bronze, 2 Silver, 3 Gold, 4 Diamond.
+// Honors commendation registry — name, description, per-tier requirement,
+// category for grouping in the Honors app, and `tiers` listing the valid
+// tier numbers for this commendation.
+//   - Diplomacy / Tenure: 4-tier progressions (bronze → diamond) by count
+//   - Distinction: 1-tier event awards, each its own type with unique visuals
 const COMMENDATION_REGISTRY = {
     diplomat: {
+        category: 'Diplomacy',
         name: 'Diplomat',
         description: 'For partnerships negotiated on behalf of the school',
+        tiers: [1, 2, 3, 4],
         requirements: {
             1: '1 partnership negotiated',
             2: '5 partnerships negotiated',
@@ -1657,14 +1662,30 @@ const COMMENDATION_REGISTRY = {
         },
     },
     service: {
+        category: 'Tenure',
         name: 'Service',
         description: 'For tenure within the Advanced Nurturing High School',
+        tiers: [1, 2, 3, 4],
         requirements: {
             1: '3 months of tenure',
             2: '6 months of tenure',
             3: '1 year of tenure',
             4: '2 years of tenure',
         },
+    },
+    cipher: {
+        category: 'Distinction',
+        name: 'Cipher',
+        description: 'For uncovering what was hidden',
+        tiers: [1],
+        // Single-tier event awards reuse the description as the
+        // expanded-card explanation; no count-based requirement applies.
+    },
+    apex: {
+        category: 'Distinction',
+        name: 'Apex',
+        description: 'For outperforming all challengers',
+        tiers: [1],
     },
 };
 const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
@@ -1751,53 +1772,80 @@ function renderHonorsApp() {
         });
     });
 
-    container.innerHTML = Object.keys(COMMENDATION_REGISTRY).map(type => {
+    // Group commendation types by category so a Distinction with multiple
+    // single-tier badges (Cipher, Apex, …) reads as one section.
+    const byCategory = new Map();
+    Object.keys(COMMENDATION_REGISTRY).forEach(type => {
         const meta = COMMENDATION_REGISTRY[type];
-        const tiers = [1, 2, 3, 4].map(tier => {
-            const key = `${type}-${tier}`;
-            const recipients = (recipientsMap.get(key) || []).slice().sort(
-                (a, b) => (a.awardedAt || '').localeCompare(b.awardedAt || '')
-            );
-            const isFocused = honorsFocus && honorsFocus.type === type && honorsFocus.tier === tier;
-            const classes = ['honors-tier-card'];
-            if (isFocused) {
-                classes.push('honors-tier-card--focused');
-                classes.push('honors-tier-card--expanded');
-            }
-            const requirement = meta.requirements?.[tier] || '';
-            const recipientsHTML = recipients.length
-                ? `<div class="honors-tier-recipients-list">${recipients.map(r =>
-                    `<span class="honors-recipient-chip" data-student-id="${escapeHtml(r.id || '')}">${escapeHtml(r.name)}</span>`
-                ).join('')}</div>`
-                : `<div class="honors-tier-recipients-empty">No recipients yet</div>`;
-            return `<div class="${classes.join(' ')}" data-type="${type}" data-tier="${tier}">
-                <div class="honors-tier-head">
-                    <img src="honors/${type}-${tier}.png" alt="">
-                    <div class="honors-tier-head-text">
-                        <div class="honors-tier-card-name">${escapeHtml(meta.name)} ${TIER_NAMES[tier]}</div>
-                        <div class="honors-tier-card-meta">${recipients.length} ${recipients.length === 1 ? 'recipient' : 'recipients'}</div>
+        const cat = meta.category || meta.name;
+        if (!byCategory.has(cat)) byCategory.set(cat, []);
+        byCategory.get(cat).push({ type, meta });
+    });
+
+    const renderTierCard = (type, meta, tier) => {
+        const key = `${type}-${tier}`;
+        const recipients = (recipientsMap.get(key) || []).slice().sort(
+            (a, b) => (a.awardedAt || '').localeCompare(b.awardedAt || '')
+        );
+        const isFocused = honorsFocus && honorsFocus.type === type && honorsFocus.tier === tier;
+        const classes = ['honors-tier-card'];
+        if (isFocused) {
+            classes.push('honors-tier-card--focused');
+            classes.push('honors-tier-card--expanded');
+        }
+        const isMultiTier = (meta.tiers || []).length > 1;
+        // Multi-tier badges show their tier's count requirement; single-tier
+        // event badges (Cipher, Apex) show their description instead, since
+        // there's no progression to describe.
+        const requirement = isMultiTier
+            ? (meta.requirements?.[tier] || '')
+            : (meta.description || '');
+        // Single-tier badges show just the badge name; multi-tier show "Name I/II/III/IV"
+        const cardName = isMultiTier
+            ? `${escapeHtml(meta.name)} ${TIER_NAMES[tier]}`
+            : escapeHtml(meta.name);
+        const recipientsHTML = recipients.length
+            ? `<div class="honors-tier-recipients-list">${recipients.map(r =>
+                `<span class="honors-recipient-chip" data-student-id="${escapeHtml(r.id || '')}">${escapeHtml(r.name)}</span>`
+            ).join('')}</div>`
+            : `<div class="honors-tier-recipients-empty">No recipients yet</div>`;
+        return `<div class="${classes.join(' ')}" data-type="${type}" data-tier="${tier}">
+            <div class="honors-tier-head">
+                <img src="honors/${type}-${tier}.png" alt="">
+                <div class="honors-tier-head-text">
+                    <div class="honors-tier-card-name">${cardName}</div>
+                    <div class="honors-tier-card-meta">${recipients.length} ${recipients.length === 1 ? 'recipient' : 'recipients'}</div>
+                </div>
+            </div>
+            <div class="honors-tier-detail">
+                <div class="honors-tier-detail-inner">
+                    <div class="honors-tier-requirement">
+                        <span class="honors-tier-requirement-label">Requirement</span>
+                        <span class="honors-tier-requirement-text">${escapeHtml(requirement)}</span>
+                    </div>
+                    <div class="honors-tier-recipients">
+                        <span class="honors-tier-recipients-label">Held by</span>
+                        ${recipientsHTML}
                     </div>
                 </div>
-                <div class="honors-tier-detail">
-                    <div class="honors-tier-detail-inner">
-                        <div class="honors-tier-requirement">
-                            <span class="honors-tier-requirement-label">Requirement</span>
-                            <span class="honors-tier-requirement-text">${escapeHtml(requirement)}</span>
-                        </div>
-                        <div class="honors-tier-recipients">
-                            <span class="honors-tier-recipients-label">Held by</span>
-                            ${recipientsHTML}
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
+            </div>
+        </div>`;
+    };
+
+    container.innerHTML = Array.from(byCategory.entries()).map(([categoryName, entries]) => {
+        // For multi-type categories (Distinction), description is omitted at
+        // category level — each badge has its own description in its detail.
+        const isMultiType = entries.length > 1;
+        const categoryDesc = isMultiType ? '' : (entries[0].meta.description || '');
+        const cards = entries.flatMap(({ type, meta }) =>
+            (meta.tiers || [1]).map(tier => renderTierCard(type, meta, tier))
+        ).join('');
         return `<div class="honors-category">
             <div class="honors-category-header">
-                <span class="honors-category-name">${escapeHtml(meta.name)}</span>
-                <span class="honors-category-desc">${escapeHtml(meta.description)}</span>
+                <span class="honors-category-name">${escapeHtml(categoryName)}</span>
+                ${categoryDesc ? `<span class="honors-category-desc">${escapeHtml(categoryDesc)}</span>` : ''}
             </div>
-            <div class="honors-tier-grid">${tiers}</div>
+            <div class="honors-tier-grid">${cards}</div>
         </div>`;
     }).join('');
 
@@ -1878,6 +1926,40 @@ function renderAdminCommendationsList() {
     const monthSelect = document.getElementById('admin-commendation-month');
     const yearInput = document.getElementById('admin-commendation-year');
     if (!addBtn || !typeSelect || !tierSelect || !daySelect || !monthSelect || !yearInput) return;
+
+    // Populate the type select from the registry so adding a new commendation
+    // type (e.g., a future event distinction) only needs a registry change.
+    typeSelect.innerHTML = '<option value="">Type</option>' +
+        Object.keys(COMMENDATION_REGISTRY).map(type => {
+            const meta = COMMENDATION_REGISTRY[type];
+            return `<option value="${type}">${escapeHtml(meta.name)}</option>`;
+        }).join('');
+
+    // Tier dropdown adapts to the selected type — multi-tier types show
+    // Bronze/Silver/Gold/Diamond; single-tier types show one auto-selected
+    // option since there's no progression to pick.
+    const TIER_LABELS = { 1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Diamond' };
+    const updateTierOptions = () => {
+        const type = typeSelect.value;
+        const meta = COMMENDATION_REGISTRY[type];
+        const tiers = meta?.tiers || [];
+        if (!type) {
+            tierSelect.innerHTML = '<option value="">Tier</option>';
+            tierSelect.disabled = true;
+        } else if (tiers.length === 1) {
+            tierSelect.innerHTML = `<option value="${tiers[0]}" selected>${escapeHtml(meta.name)}</option>`;
+            tierSelect.disabled = true;  // nothing to choose
+        } else {
+            tierSelect.innerHTML = '<option value="">Tier</option>' +
+                tiers.map(t => `<option value="${t}">${TIER_LABELS[t] || `Tier ${t}`}</option>`).join('');
+            tierSelect.disabled = false;
+        }
+    };
+    typeSelect.addEventListener('change', () => {
+        updateTierOptions();
+        playSound('select');
+    });
+    updateTierOptions();
 
     // Populate day options 1–31 once
     if (daySelect.options.length <= 1) {
