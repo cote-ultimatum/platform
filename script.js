@@ -1632,6 +1632,57 @@ function createStudentCard(student) {
 // PROFILE VIEW
 // ========================================
 
+// Honors commendation registry — name, description, and label per (type, tier).
+// Tiers: 1 Bronze, 2 Silver, 3 Gold, 4 Diamond.
+const COMMENDATION_REGISTRY = {
+    diplomat: {
+        name: 'Diplomat',
+        description: 'For partnerships brokered on behalf of the school.',
+    },
+    service: {
+        name: 'Service',
+        description: 'For tenure within the Advanced Nurturing High School.',
+    },
+};
+const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
+
+function renderProfileCommendations(student) {
+    const container = document.getElementById('profile-commendations');
+    if (!container) return;
+
+    // Prototype data — hardcoded for layout testing. Replace with student.commendations
+    // once the data shape is wired up.
+    const sample = [
+        { type: 'diplomat', tier: 3, awardedAt: '2026-03-12' },
+        { type: 'service', tier: 2, awardedAt: '2026-01-05' },
+        { type: 'diplomat', tier: 1, awardedAt: '2025-11-20' },
+    ];
+
+    container.innerHTML = sample.map(c => {
+        const meta = COMMENDATION_REGISTRY[c.type];
+        if (!meta) return '';
+        const tierLabel = TIER_NAMES[c.tier] || '';
+        const date = formatCommendationDate(c.awardedAt);
+        const label = `${meta.name} ${tierLabel}\n${meta.description}\nAwarded ${date}`;
+        return `<div class="profile-commendation" data-label="${escapeHtml(label)}">
+            <img src="honors/${c.type}-${c.tier}.svg" alt="${meta.name} ${tierLabel}">
+        </div>`;
+    }).join('');
+}
+
+function formatCommendationDate(iso) {
+    if (!iso) return 'unknown';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[ch]);
+}
+
 function showStudentProfile(student, addToHistory = true) {
     state.currentStudent = student;
     const isFavorite = state.favorites.includes(student.id);
@@ -1708,6 +1759,10 @@ function showStudentProfile(student, addToHistory = true) {
             }
         }
     }
+
+    // Honors commendations row — between name and ID/download in the header.
+    // Prototype: hardcoded sample for visual testing, real data wires later.
+    renderProfileCommendations(student);
 
     const profileImage = document.getElementById('profile-image');
     const profilePlaceholder = document.getElementById('profile-placeholder');

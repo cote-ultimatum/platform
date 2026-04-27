@@ -2622,6 +2622,76 @@ body::before {
     gap: 0.5rem;
 }
 
+/* Honors commendations row — sits between profile-header-info (left) and
+   profile-header-actions (right). Hidden when empty so it doesn't reserve
+   space on profiles without commendations. */
+.profile-commendations {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+    align-self: center;
+    max-width: 240px;
+    justify-content: center;
+}
+
+.profile-commendations:empty {
+    display: none;
+}
+
+.profile-commendation {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    cursor: help;
+    transition: transform 0.18s ease;
+    position: relative;
+}
+
+.profile-commendation:hover {
+    transform: scale(1.08);
+}
+
+.profile-commendation img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+/* Hover tooltip — name + tier on top, description / earn date below.
+   Positioned below the pin since the parent .profile-card has overflow:hidden
+   and a tooltip extending above the pin would get clipped at the card's top. */
+.profile-commendation::after {
+    content: attr(data-label);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(8, 12, 22, 0.96);
+    border: 1px solid color-mix(in srgb, var(--cyan) 35%, transparent);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    white-space: pre-line;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    min-width: max-content;
+    max-width: 220px;
+}
+
+.profile-commendation:hover::after {
+    opacity: 1;
+}
+
 .profile-download-btn {
     display: inline-flex;
     align-items: center;
