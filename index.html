@@ -123,6 +123,18 @@
                     </div>
                     <span class="app-name">CREATOR</span>
                 </div>
+                <div class="app-icon" data-app="honors">
+                    <div class="app-icon-image">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Pin / commendation circle -->
+                            <circle cx="32" cy="28" r="14" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="32" cy="28" r="6" stroke="currentColor" stroke-width="2"/>
+                            <!-- Ribbons -->
+                            <path d="M22 38 L18 56 L26 50 L32 56 L38 50 L46 56 L42 38" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="app-name">HONORS</span>
+                </div>
                 <div class="app-icon admin-app-icon" data-app="admin">
                     <div class="app-icon-image">
                         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -144,7 +156,8 @@
             <div class="key-hint"><span class="key">1</span> OAA</div>
             <div class="key-hint"><span class="key">2</span> EXAMS</div>
             <div class="key-hint"><span class="key">3</span> CREATOR</div>
-            <div class="key-hint"><span class="key">4</span> ADMIN</div>
+            <div class="key-hint"><span class="key">4</span> HONORS</div>
+            <div class="key-hint"><span class="key">5</span> ADMIN</div>
         </div>
     </div>
 
@@ -953,10 +966,10 @@
                             </select>
                             <select id="admin-commendation-tier">
                                 <option value="">Tier</option>
-                                <option value="1">I — Bronze</option>
-                                <option value="2">II — Silver</option>
-                                <option value="3">III — Gold</option>
-                                <option value="4">IV — Diamond</option>
+                                <option value="1">Bronze</option>
+                                <option value="2">Silver</option>
+                                <option value="3">Gold</option>
+                                <option value="4">Diamond</option>
                             </select>
                             <input type="date" id="admin-commendation-date">
                             <button type="button" id="admin-commendation-add-btn" class="admin-btn-add">Award</button>
@@ -1415,6 +1428,37 @@
         </div>
     </div>
 
+    <!-- Honors App — registry of all commendations with recipients -->
+    <div id="honors-app" class="screen app-screen">
+        <div class="app-header">
+            <div class="nav-group">
+                <button class="nav-btn" data-action="back" title="Back (ESC)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <h1 class="app-title">HONORS</h1>
+            </div>
+            <div class="header-brand">
+                <span class="brand-title">COTE:</span>
+                <span class="brand-subtitle">ULTIMATUM</span>
+            </div>
+            <div class="header-right">
+                <span class="header-time" id="honors-time">12:00</span>
+                <button class="nav-btn" data-action="home" title="Home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="honors-content" id="honors-content"></div>
+        <div class="keyboard-hint">
+            <div class="key-hint"><span class="key">ESC</span> BACK</div>
+        </div>
+    </div>
+
     <!-- Image Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -1431,18 +1475,6 @@
         <source src="Midnight Authentication.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Honors modal — opened by clicking a commendation pin on a profile.
-         Shows all available commendations (earned vs locked) for the focused student. -->
-    <div class="honors-modal-overlay" id="honors-modal">
-        <div class="honors-modal">
-            <div class="honors-modal-header">
-                <span class="honors-modal-title">Honors</span>
-                <span class="honors-modal-subtitle" id="honors-modal-subtitle"></span>
-                <button class="honors-modal-close" id="honors-modal-close" title="Close" aria-label="Close">&times;</button>
-            </div>
-            <div class="honors-modal-body" id="honors-modal-body"></div>
-        </div>
-    </div>
 
     <!-- Music Toggle -->
     <button id="music-toggle" class="music-toggle" title="Toggle music" aria-label="Toggle music">

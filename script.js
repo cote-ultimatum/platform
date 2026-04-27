@@ -353,6 +353,12 @@ function initKeyboardHintClicks() {
                 case '4':
                     if (state.currentScreen === 'home-screen') {
                         playSound('open');
+                        openApp('honors');
+                    }
+                    break;
+                case '5':
+                    if (state.currentScreen === 'home-screen') {
+                        playSound('open');
                         openApp('admin');
                     }
                     break;
@@ -816,6 +822,8 @@ function openApp(appId) {
     } else if (appId === 'creator') {
         showScreen('creator-app');
         initCreatorApp();
+    } else if (appId === 'honors') {
+        openHonorsApp(null);
     }
 }
 
@@ -971,7 +979,7 @@ function initKeyboardNav() {
             return;
         }
 
-        // Number keys for apps
+        // Number keys for apps — match home screen dock order
         if (state.currentScreen === 'home-screen') {
             if (e.key === '1') {
                 playSound('open');
@@ -981,10 +989,13 @@ function initKeyboardNav() {
                 openApp('events');
             } else if (e.key === '3') {
                 playSound('open');
-                openApp('admin');
+                openApp('creator');
             } else if (e.key === '4') {
                 playSound('open');
-                openApp('creator');
+                openApp('honors');
+            } else if (e.key === '5') {
+                playSound('open');
+                openApp('admin');
             }
         }
 
@@ -1667,89 +1678,121 @@ function renderProfileCommendations(student) {
         </div>`;
     }).join('');
 
-    // Hover sound + click opens Honors panel focused on this commendation.
+    // Hover sound + click opens the Honors app focused on this commendation.
     container.querySelectorAll('.profile-commendation').forEach(el => {
         el.addEventListener('mouseenter', () => playSound('hover'));
         el.addEventListener('click', () => {
             const type = el.dataset.commendationType;
             const tier = parseInt(el.dataset.commendationTier, 10);
-            openHonorsModal(student, type, tier);
+            openHonorsApp({ type, tier });
         });
     });
 }
 
 // ========================================
-// HONORS MODAL — full registry view of all commendations
+// HONORS APP — full-screen registry of all commendations
 // ========================================
 
-function openHonorsModal(student, focusType, focusTier) {
-    const modal = document.getElementById('honors-modal');
-    const body = document.getElementById('honors-modal-body');
-    const subtitle = document.getElementById('honors-modal-subtitle');
-    if (!modal || !body) return;
+// Friendly name per tier (for display in the Honors app)
+const TIER_METAL_NAMES = ['', 'Bronze', 'Silver', 'Gold', 'Diamond'];
 
-    const earned = Array.isArray(student?.commendations) ? student.commendations : [];
-    const earnedMap = new Map();
-    earned.forEach(c => earnedMap.set(`${c.type}-${Number(c.tier)}`, c));
+// Tracks the currently-focused tier card after navigation from a profile pin
+let honorsFocus = null; // { type, tier }
 
-    if (subtitle) subtitle.textContent = student?.name ? `for ${student.name}` : '';
+function openHonorsApp(focus) {
+    honorsFocus = focus || null;
+    showScreen('honors-app');
+    renderHonorsApp();
+    if (honorsFocus) {
+        // Scroll focused card into view after the next paint
+        requestAnimationFrame(() => {
+            const focused = document.querySelector('.honors-tier-card--focused');
+            if (focused) focused.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }
+}
 
-    body.innerHTML = Object.keys(COMMENDATION_REGISTRY).map(type => {
+function renderHonorsApp() {
+    const container = document.getElementById('honors-content');
+    if (!container) return;
+
+    // Build a map: { 'diplomat-3': [studentRefs...] } from all loaded students.
+    // getAllStudents() returns the Firebase-backed list once loaded, falling
+    // back to local studentData; recipients stay in sync with whatever admin
+    // has awarded.
+    const recipientsMap = new Map();
+    const allStudents = getAllStudents();
+    allStudents.forEach(student => {
+        const list = Array.isArray(student.commendations) ? student.commendations : [];
+        list.forEach(c => {
+            const tier = Number(c.tier);
+            if (!c.type || !(tier >= 1 && tier <= 4)) return;
+            const key = `${c.type}-${tier}`;
+            if (!recipientsMap.has(key)) recipientsMap.set(key, []);
+            recipientsMap.get(key).push({
+                name: student.name,
+                id: student.id,
+                awardedAt: c.awardedAt,
+                _ref: student
+            });
+        });
+    });
+
+    container.innerHTML = Object.keys(COMMENDATION_REGISTRY).map(type => {
         const meta = COMMENDATION_REGISTRY[type];
         const tiers = [1, 2, 3, 4].map(tier => {
             const key = `${type}-${tier}`;
-            const earnedRecord = earnedMap.get(key);
-            const isEarned = !!earnedRecord;
-            const isFocused = focusType === type && focusTier === tier;
-            const tierName = TIER_NAMES[tier];
-            const status = isEarned
-                ? `Awarded ${formatCommendationDate(earnedRecord.awardedAt)}`
-                : 'Locked';
-            const classes = ['honors-tier'];
-            if (!isEarned) classes.push('honors-tier--locked');
-            if (isFocused) classes.push('honors-tier--focused');
-            return `<div class="${classes.join(' ')}">
-                <img src="honors/${type}-${tier}.svg" alt="">
-                <div class="honors-tier-info">
-                    <div class="honors-tier-name">${escapeHtml(meta.name)} ${tierName}</div>
-                    <div class="honors-tier-status">${escapeHtml(status)}</div>
+            const recipients = (recipientsMap.get(key) || []).slice().sort(
+                (a, b) => (a.awardedAt || '').localeCompare(b.awardedAt || '')
+            );
+            const isFocused = honorsFocus && honorsFocus.type === type && honorsFocus.tier === tier;
+            const isEarned = recipients.length > 0;
+            const classes = ['honors-tier-card'];
+            if (!isEarned) classes.push('honors-tier-card--locked');
+            if (isFocused) classes.push('honors-tier-card--focused');
+            const metalName = TIER_METAL_NAMES[tier];
+            const recipientsHTML = recipients.length
+                ? `<div class="honors-tier-recipients-list">${recipients.map(r =>
+                    `<span class="honors-recipient-chip" data-student-id="${escapeHtml(r.id || '')}">${escapeHtml(r.name)}</span>`
+                ).join('')}</div>`
+                : `<div class="honors-tier-recipients-empty">No recipients yet</div>`;
+            return `<div class="${classes.join(' ')}" data-type="${type}" data-tier="${tier}">
+                <div class="honors-tier-head">
+                    <img src="honors/${type}-${tier}.png" alt="">
+                    <div class="honors-tier-head-text">
+                        <div class="honors-tier-card-name">${escapeHtml(meta.name)} ${TIER_NAMES[tier]}</div>
+                        <div class="honors-tier-card-meta">${metalName} · ${recipients.length} ${recipients.length === 1 ? 'recipient' : 'recipients'}</div>
+                    </div>
+                </div>
+                <div class="honors-tier-recipients">
+                    <span class="honors-tier-recipients-label">Held by</span>
+                    ${recipientsHTML}
                 </div>
             </div>`;
         }).join('');
-        return `<div class="honors-section">
-            <div class="honors-section-title">${escapeHtml(meta.name)}</div>
-            <div class="honors-section-desc">${escapeHtml(meta.description)}</div>
+        return `<div class="honors-category">
+            <div class="honors-category-header">
+                <span class="honors-category-name">${escapeHtml(meta.name)}</span>
+                <span class="honors-category-desc">${escapeHtml(meta.description)}</span>
+            </div>
             <div class="honors-tier-grid">${tiers}</div>
         </div>`;
     }).join('');
 
-    modal.classList.add('show');
-    playSound('open');
-}
-
-function closeHonorsModal() {
-    const modal = document.getElementById('honors-modal');
-    if (!modal) return;
-    modal.classList.remove('show');
-    playSound('back');
-}
-
-// Wire close behaviors once at boot
-(function bindHonorsModal() {
-    const modal = document.getElementById('honors-modal');
-    if (!modal) return;
-    const closeBtn = document.getElementById('honors-modal-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeHonorsModal);
-        closeBtn.addEventListener('mouseenter', () => playSound('hover'));
-    }
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeHonorsModal();
+    // Wire clicks on recipient chips → open that student's profile
+    container.querySelectorAll('.honors-recipient-chip').forEach(chip => {
+        chip.addEventListener('mouseenter', () => playSound('hover'));
+        chip.addEventListener('click', () => {
+            const sid = chip.dataset.studentId;
+            const student = getAllStudents().find(s => s.id === sid);
+            if (student) {
+                playSound('click');
+                showScreen('oaa-app');
+                showStudentProfile(student);
+            }
+        });
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('show')) closeHonorsModal();
-    });
-})();
+}
 
 // ========================================
 // ADMIN COMMENDATIONS EDITOR
