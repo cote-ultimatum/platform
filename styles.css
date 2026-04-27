@@ -1890,6 +1890,9 @@ body::before {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1rem;
+    /* Each card sizes to its own content — without this, expanding one card
+       would stretch every other card in the same row to match its height. */
+    align-items: start;
 }
 
 .honors-tier-card {
