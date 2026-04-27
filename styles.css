@@ -2638,7 +2638,8 @@ body::before {
 /* Honors commendations row — center column of the header grid. justify-self:
    center keeps it horizontally centered between info and actions; the auto
    column width adapts to badge count. align-self: start anchors it to the
-   top so the row doesn't shift as the info column grows in height. */
+   top so the row doesn't shift as the info column grows in height. Pin
+   height matches the ID box for visual rhythm with the right side. */
 .profile-commendations {
     grid-column: 2;
     justify-self: center;
@@ -2648,7 +2649,7 @@ body::before {
     gap: 0.5rem;
     flex-wrap: wrap;
     justify-content: center;
-    max-width: 320px;
+    max-width: 360px;
     margin-top: 0.25rem;
 }
 
@@ -2657,8 +2658,8 @@ body::before {
 }
 
 .profile-commendation {
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
     flex: 0 0 auto;
     cursor: pointer;
     transition: transform 0.18s ease;
