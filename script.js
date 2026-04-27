@@ -1650,36 +1650,182 @@ function renderProfileCommendations(student) {
     const container = document.getElementById('profile-commendations');
     if (!container) return;
 
-    // Prototype data — hardcoded for layout testing. Replace with student.commendations
-    // once the data shape is wired up.
-    const sample = [
-        { type: 'diplomat', tier: 3, awardedAt: '2026-03-12' },
-        { type: 'service', tier: 2, awardedAt: '2026-01-05' },
-        { type: 'diplomat', tier: 1, awardedAt: '2025-11-20' },
-    ];
+    // Read from the student's commendations field. Empty array (or missing) =
+    // no row rendered (the :empty CSS rule hides the container).
+    const commendations = Array.isArray(student?.commendations) ? student.commendations : [];
 
-    // Lean tooltip — name+tier and award date only. Full description / requirements
-    // live in the Honors app, opened by clicking the pin.
-    container.innerHTML = sample.map(c => {
+    container.innerHTML = commendations.map(c => {
         const meta = COMMENDATION_REGISTRY[c.type];
         if (!meta) return '';
-        const tierLabel = TIER_NAMES[c.tier] || '';
+        const tier = Number(c.tier);
+        if (!(tier >= 1 && tier <= 4)) return '';
+        const tierLabel = TIER_NAMES[tier] || '';
         const date = formatCommendationDate(c.awardedAt);
         const label = `${meta.name} ${tierLabel}\nAwarded ${date}`;
-        return `<div class="profile-commendation" data-label="${escapeHtml(label)}" data-commendation-type="${c.type}" data-commendation-tier="${c.tier}">
-            <img src="honors/${c.type}-${c.tier}.svg" alt="${meta.name} ${tierLabel}">
+        return `<div class="profile-commendation" data-label="${escapeHtml(label)}" data-commendation-type="${c.type}" data-commendation-tier="${tier}">
+            <img src="honors/${c.type}-${tier}.svg" alt="${meta.name} ${tierLabel}">
         </div>`;
     }).join('');
 
-    // Hover sound for consistency with the rest of the UI.
+    // Hover sound + click opens Honors panel focused on this commendation.
     container.querySelectorAll('.profile-commendation').forEach(el => {
         el.addEventListener('mouseenter', () => playSound('hover'));
         el.addEventListener('click', () => {
-            playSound('click');
-            // TODO: open Honors app focused on this commendation.
+            const type = el.dataset.commendationType;
+            const tier = parseInt(el.dataset.commendationTier, 10);
+            openHonorsModal(student, type, tier);
         });
     });
 }
+
+// ========================================
+// HONORS MODAL — full registry view of all commendations
+// ========================================
+
+function openHonorsModal(student, focusType, focusTier) {
+    const modal = document.getElementById('honors-modal');
+    const body = document.getElementById('honors-modal-body');
+    const subtitle = document.getElementById('honors-modal-subtitle');
+    if (!modal || !body) return;
+
+    const earned = Array.isArray(student?.commendations) ? student.commendations : [];
+    const earnedMap = new Map();
+    earned.forEach(c => earnedMap.set(`${c.type}-${Number(c.tier)}`, c));
+
+    if (subtitle) subtitle.textContent = student?.name ? `for ${student.name}` : '';
+
+    body.innerHTML = Object.keys(COMMENDATION_REGISTRY).map(type => {
+        const meta = COMMENDATION_REGISTRY[type];
+        const tiers = [1, 2, 3, 4].map(tier => {
+            const key = `${type}-${tier}`;
+            const earnedRecord = earnedMap.get(key);
+            const isEarned = !!earnedRecord;
+            const isFocused = focusType === type && focusTier === tier;
+            const tierName = TIER_NAMES[tier];
+            const status = isEarned
+                ? `Awarded ${formatCommendationDate(earnedRecord.awardedAt)}`
+                : 'Locked';
+            const classes = ['honors-tier'];
+            if (!isEarned) classes.push('honors-tier--locked');
+            if (isFocused) classes.push('honors-tier--focused');
+            return `<div class="${classes.join(' ')}">
+                <img src="honors/${type}-${tier}.svg" alt="">
+                <div class="honors-tier-info">
+                    <div class="honors-tier-name">${escapeHtml(meta.name)} ${tierName}</div>
+                    <div class="honors-tier-status">${escapeHtml(status)}</div>
+                </div>
+            </div>`;
+        }).join('');
+        return `<div class="honors-section">
+            <div class="honors-section-title">${escapeHtml(meta.name)}</div>
+            <div class="honors-section-desc">${escapeHtml(meta.description)}</div>
+            <div class="honors-tier-grid">${tiers}</div>
+        </div>`;
+    }).join('');
+
+    modal.classList.add('show');
+    playSound('open');
+}
+
+function closeHonorsModal() {
+    const modal = document.getElementById('honors-modal');
+    if (!modal) return;
+    modal.classList.remove('show');
+    playSound('back');
+}
+
+// Wire close behaviors once at boot
+(function bindHonorsModal() {
+    const modal = document.getElementById('honors-modal');
+    if (!modal) return;
+    const closeBtn = document.getElementById('honors-modal-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeHonorsModal);
+        closeBtn.addEventListener('mouseenter', () => playSound('hover'));
+    }
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeHonorsModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) closeHonorsModal();
+    });
+})();
+
+// ========================================
+// ADMIN COMMENDATIONS EDITOR
+// ========================================
+
+function renderAdminCommendationsList() {
+    const container = document.getElementById('admin-commendations-list');
+    if (!container) return;
+    const items = adminState.editingCommendations || [];
+    container.innerHTML = items.map((c, i) => {
+        const meta = COMMENDATION_REGISTRY[c.type];
+        const tier = Number(c.tier);
+        if (!meta || !(tier >= 1 && tier <= 4)) return '';
+        const tierLabel = TIER_NAMES[tier];
+        const date = formatCommendationDate(c.awardedAt);
+        return `<div class="admin-commendation-row">
+            <img src="honors/${c.type}-${tier}.svg" alt="">
+            <span class="admin-commendation-row-name">${escapeHtml(meta.name)} ${tierLabel}</span>
+            <span class="admin-commendation-row-date">Awarded ${escapeHtml(date)}</span>
+            <button type="button" class="admin-commendation-row-remove" data-index="${i}">Remove</button>
+        </div>`;
+    }).join('');
+    container.querySelectorAll('.admin-commendation-row-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.currentTarget.dataset.index, 10);
+            adminState.editingCommendations.splice(idx, 1);
+            renderAdminCommendationsList();
+            playSound('back');
+        });
+        btn.addEventListener('mouseenter', () => playSound('hover'));
+    });
+}
+
+(function bindAdminCommendationsForm() {
+    const addBtn = document.getElementById('admin-commendation-add-btn');
+    const typeSelect = document.getElementById('admin-commendation-type');
+    const tierSelect = document.getElementById('admin-commendation-tier');
+    const dateInput = document.getElementById('admin-commendation-date');
+    if (!addBtn || !typeSelect || !tierSelect || !dateInput) return;
+
+    addBtn.addEventListener('mouseenter', () => playSound('hover'));
+    addBtn.addEventListener('click', () => {
+        const type = typeSelect.value;
+        const tier = parseInt(tierSelect.value, 10);
+        const date = dateInput.value;
+        if (!type || !tier || !date) {
+            showErrorToast('Pick a type, tier, and date');
+            playSound('error');
+            return;
+        }
+        if (!adminState.editingCommendations) adminState.editingCommendations = [];
+        const dupe = adminState.editingCommendations.find(
+            c => c.type === type && Number(c.tier) === tier
+        );
+        if (dupe) {
+            showErrorToast(`${COMMENDATION_REGISTRY[type].name} ${TIER_NAMES[tier]} already awarded`);
+            playSound('error');
+            return;
+        }
+        adminState.editingCommendations.push({ type, tier, awardedAt: date });
+        // Sort by type then tier so the list stays consistent.
+        adminState.editingCommendations.sort((a, b) =>
+            a.type.localeCompare(b.type) || Number(a.tier) - Number(b.tier)
+        );
+        typeSelect.value = '';
+        tierSelect.value = '';
+        dateInput.value = '';
+        renderAdminCommendationsList();
+        playSound('select');
+    });
+
+    // Hover sounds for the form controls — match the rest of the admin form.
+    [typeSelect, tierSelect, dateInput].forEach(el => {
+        el.addEventListener('mouseenter', () => playSound('hover'));
+    });
+})();
 
 function formatCommendationDate(iso) {
     if (!iso) return 'unknown';
@@ -3435,6 +3581,12 @@ function openStudentModal(student, mode = 'student') {
     }
     document.getElementById('admin-student-rank-quote').value = student?.rankQuote || '';
 
+    // Load commendations into the editor (clone so removes don't mutate source)
+    adminState.editingCommendations = Array.isArray(student?.commendations)
+        ? student.commendations.map(c => ({ ...c }))
+        : [];
+    renderAdminCommendationsList();
+
     // Lock tenure + quote until a valid rank is picked
     updateRankFieldsLock();
     ['admin-student-council-rank', 'admin-student-faculty-rank'].forEach(id => {
@@ -3727,7 +3879,14 @@ async function saveStudent() {
             if (isNaN(yr) || yr < 2000 || yr > 2100) return null;
             return `${yr}-${String(parseInt(m, 10)).padStart(2, '0')}-${String(parseInt(d, 10)).padStart(2, '0')}`;
         })(),
-        rankQuote: document.getElementById('admin-student-rank-quote').value.trim() || null
+        rankQuote: document.getElementById('admin-student-rank-quote').value.trim() || null,
+        commendations: Array.isArray(adminState.editingCommendations)
+            ? adminState.editingCommendations.map(c => ({
+                type: c.type,
+                tier: Number(c.tier),
+                awardedAt: c.awardedAt,
+            }))
+            : []
     };
 
     // (Stats already validated above to be in 0–100; no clamping needed.)
@@ -5183,6 +5342,21 @@ async function exportStudentCard(subject, opts = {}) {
         </div>
     ` : '';
 
+    // Honors commendations row in the export. Uses the pre-rendered PNGs
+    // (not the SVGs the live site uses) because html2canvas struggles with
+    // the SVG filters/gradients on the pins — rasterized PNGs render reliably.
+    const exportCommendations = Array.isArray(char.commendations) ? char.commendations : [];
+    const exportCommendationsHTML = exportCommendations.length ? `
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;align-self:center;margin:0 16px;max-width:380px;">
+            ${exportCommendations.map(c => {
+                const meta = COMMENDATION_REGISTRY[c.type];
+                const tier = Number(c.tier);
+                if (!meta || !(tier >= 1 && tier <= 4)) return '';
+                return `<img src="honors/${c.type}-${tier}.png" alt="" width="56" height="56" style="display:block;">`;
+            }).join('')}
+        </div>
+    ` : '';
+
     const statusBoxHTML = ranked ? rankCrestHTML : `
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 24px 12px;border:2px solid ${statusColor};border-radius:10px;background:${statusBg};box-shadow:0 0 22px ${statusGlow};">
             <div style="font-family:'Orbitron',monospace;font-size:10px;line-height:1;color:rgba(255,255,255,0.55);letter-spacing:0.18em;margin-bottom:7px;text-transform:uppercase;">${statusLabel}</div>
@@ -5248,6 +5422,7 @@ async function exportStudentCard(subject, opts = {}) {
                     ${extraHeaderLine ? `<div style="font-family:'Inter',sans-serif;font-style:italic;font-size:12px;line-height:1;color:#94a3b8;margin-top:6px;">${extraHeaderLine}</div>` : ''}
                     ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:${idColor};margin-left:6px;text-shadow:${ranked ? `0 0 10px ${hexToRgba(accentColor, 0.6)}` : 'none'};">${char.id}</span></div>` : ''}
                 </div>
+                ${exportCommendationsHTML}
                 ${statusBoxHTML}
             </div>
 

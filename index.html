@@ -942,6 +942,26 @@
                     <div class="admin-form-row" id="admin-form-quote-row" style="display:none;">
                         <input type="text" id="admin-student-rank-quote" maxlength="160" placeholder="Something they'd say">
                     </div>
+                    <div class="admin-form-section-title">Commendations</div>
+                    <div class="admin-form-row admin-form-commendations">
+                        <div id="admin-commendations-list" class="admin-commendations-list"></div>
+                        <div class="admin-commendation-add">
+                            <select id="admin-commendation-type">
+                                <option value="">Type</option>
+                                <option value="diplomat">Diplomat</option>
+                                <option value="service">Service</option>
+                            </select>
+                            <select id="admin-commendation-tier">
+                                <option value="">Tier</option>
+                                <option value="1">I — Bronze</option>
+                                <option value="2">II — Silver</option>
+                                <option value="3">III — Gold</option>
+                                <option value="4">IV — Diamond</option>
+                            </select>
+                            <input type="date" id="admin-commendation-date">
+                            <button type="button" id="admin-commendation-add-btn" class="admin-btn-add">Award</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="admin-modal-actions">
                     <button class="admin-modal-delete" id="admin-student-delete" style="display: none;">Delete</button>
@@ -1410,6 +1430,19 @@
     <audio id="bg-music-admin" loop preload="auto">
         <source src="Midnight Authentication.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- Honors modal — opened by clicking a commendation pin on a profile.
+         Shows all available commendations (earned vs locked) for the focused student. -->
+    <div class="honors-modal-overlay" id="honors-modal">
+        <div class="honors-modal">
+            <div class="honors-modal-header">
+                <span class="honors-modal-title">Honors</span>
+                <span class="honors-modal-subtitle" id="honors-modal-subtitle"></span>
+                <button class="honors-modal-close" id="honors-modal-close" title="Close" aria-label="Close">&times;</button>
+            </div>
+            <div class="honors-modal-body" id="honors-modal-body"></div>
+        </div>
+    </div>
 
     <!-- Music Toggle -->
     <button id="music-toggle" class="music-toggle" title="Toggle music" aria-label="Toggle music">
