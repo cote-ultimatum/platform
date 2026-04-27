@@ -1803,11 +1803,17 @@ function renderHonorsApp() {
 
     // Click tier card → toggle its expanded state. Multiple cards can stay
     // expanded at once so you can compare requirements / recipients side by side.
+    // First user interaction clears the navigation focus highlight on every
+    // card — the highlight is meant as a one-shot "this is the one you came
+    // for" cue, not a persistent state.
     container.querySelectorAll('.honors-tier-card').forEach(card => {
         card.addEventListener('mouseenter', () => playSound('hover'));
         card.addEventListener('click', (e) => {
             // Recipient-chip clicks bubble up here; let them handle their own click
             if (e.target.closest('.honors-recipient-chip')) return;
+            container.querySelectorAll('.honors-tier-card--focused')
+                .forEach(c => c.classList.remove('honors-tier-card--focused'));
+            honorsFocus = null;
             const expanded = card.classList.toggle('honors-tier-card--expanded');
             playSound(expanded ? 'select' : 'back');
         });
