@@ -1648,12 +1648,12 @@ function createStudentCard(student) {
 const COMMENDATION_REGISTRY = {
     diplomat: {
         name: 'Diplomat',
-        description: 'For partnerships brokered on behalf of the school',
+        description: 'For partnerships negotiated on behalf of the school',
         requirements: {
-            1: '1 partnership brokered',
-            2: '5 partnerships brokered',
-            3: '15 partnerships brokered',
-            4: '30 partnerships brokered',
+            1: '1 partnership negotiated',
+            2: '5 partnerships negotiated',
+            3: '15 partnerships negotiated',
+            4: '30 partnerships negotiated',
         },
     },
     service: {
@@ -1801,22 +1801,15 @@ function renderHonorsApp() {
         </div>`;
     }).join('');
 
-    // Click tier card → toggle expanded state to reveal requirement + recipients
+    // Click tier card → toggle its expanded state. Multiple cards can stay
+    // expanded at once so you can compare requirements / recipients side by side.
     container.querySelectorAll('.honors-tier-card').forEach(card => {
         card.addEventListener('mouseenter', () => playSound('hover'));
         card.addEventListener('click', (e) => {
             // Recipient-chip clicks bubble up here; let them handle their own click
             if (e.target.closest('.honors-recipient-chip')) return;
-            const wasExpanded = card.classList.contains('honors-tier-card--expanded');
-            // Collapse all others, expand this one (or collapse if already)
-            container.querySelectorAll('.honors-tier-card--expanded')
-                .forEach(c => c.classList.remove('honors-tier-card--expanded'));
-            if (!wasExpanded) {
-                card.classList.add('honors-tier-card--expanded');
-                playSound('select');
-            } else {
-                playSound('back');
-            }
+            const expanded = card.classList.toggle('honors-tier-card--expanded');
+            playSound(expanded ? 'select' : 'back');
         });
     });
 
