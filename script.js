@@ -1673,6 +1673,18 @@ const COMMENDATION_REGISTRY = {
             4: '2 years of tenure',
         },
     },
+    broadcast: {
+        category: 'Clubs',
+        name: 'Broadcasting',
+        description: 'Member of the Broadcasting Club',
+        tiers: [1],
+    },
+    art: {
+        category: 'Clubs',
+        name: 'Art',
+        description: 'Member of the Art Club',
+        tiers: [1],
+    },
     cipher: {
         category: 'Limited',
         name: 'Cipher',
@@ -1693,6 +1705,7 @@ const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
 const CATEGORY_DESCRIPTIONS = {
     'Social': 'Acts of social initiative',
     'Service': 'Sustained duty within the school',
+    'Clubs': 'Granted on admission to a school club',
     'Limited': 'Earned at notable events',
 };
 
