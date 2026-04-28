@@ -560,7 +560,7 @@ function updateTime() {
     const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
     const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-    ['lock-time', 'home-time', 'oaa-time', 'events-time', 'admin-time', 'creator-time'].forEach(id => {
+    ['lock-time', 'home-time', 'oaa-time', 'events-time', 'admin-time', 'creator-time', 'honors-time'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = timeStr;
     });
