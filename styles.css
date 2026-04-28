@@ -1974,6 +1974,10 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+    /* flex: 1 + min-width: 0 lets the column take remaining space and shrink
+       below its content size, so a long uppercase name like "BROADCASTING CLUB"
+       wraps inside the card instead of overflowing past the border. */
+    flex: 1 1 0;
     min-width: 0;
 }
 
@@ -1983,6 +1987,7 @@ body::before {
     font-size: 1rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    overflow-wrap: break-word;
 }
 
 .honors-tier-card-meta {
