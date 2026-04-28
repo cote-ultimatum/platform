@@ -1674,15 +1674,15 @@ const COMMENDATION_REGISTRY = {
         },
     },
     broadcast: {
-        category: 'Clubs',
-        name: 'Broadcasting',
-        description: 'Member of the Broadcasting Club',
+        category: 'Social',
+        name: 'Broadcasting Club',
+        description: 'Selected for membership',
         tiers: [1],
     },
     art: {
-        category: 'Clubs',
-        name: 'Art',
-        description: 'Member of the Art Club',
+        category: 'Social',
+        name: 'Art Club',
+        description: 'Selected for membership',
         tiers: [1],
     },
     cipher: {
@@ -1705,7 +1705,6 @@ const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
 const CATEGORY_DESCRIPTIONS = {
     'Social': 'Acts of social initiative',
     'Service': 'Sustained duty within the school',
-    'Clubs': 'Granted on admission to a school club',
     'Limited': 'Earned at notable events',
 };
 
