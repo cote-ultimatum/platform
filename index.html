@@ -100,7 +100,7 @@
                     </div>
                     <span class="app-name">OAA</span>
                 </div>
-                <div class="app-icon" data-app="events">
+                <div class="app-icon" data-app="exams">
                     <div class="app-icon-image">
                         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="8" y="12" width="48" height="44" rx="4" stroke="currentColor" stroke-width="2"/>
@@ -414,7 +414,7 @@
     </div>
 
     <!-- Events App -->
-    <div id="events-app" class="screen app-screen">
+    <div id="exams-app" class="screen app-screen">
         <div class="app-header">
             <div class="nav-group">
                 <button class="nav-btn" data-action="back" title="Back (ESC)">
@@ -429,7 +429,7 @@
                 <span class="brand-subtitle">ULTIMATUM</span>
             </div>
             <div class="header-right">
-                <span class="header-time" id="events-time"></span>
+                <span class="header-time" id="exams-time"></span>
                 <button class="nav-btn" data-action="home" title="Home">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -438,12 +438,12 @@
                 </button>
             </div>
         </div>
-        <div class="events-content">
+        <div class="exams-content">
             <!-- Current Event Section -->
-            <div class="events-section">
-                <div class="events-section-header">
+            <div class="exams-section">
+                <div class="exams-section-header">
                     <div class="section-indicator standby"></div>
-                    <h2 class="events-section-title">CURRENT EXAM</h2>
+                    <h2 class="exams-section-title">CURRENT EXAM</h2>
                 </div>
                 <div class="current-event-card" id="current-event">
                     <div class="standby-state">
@@ -462,10 +462,10 @@
             </div>
 
             <!-- Upcoming Section -->
-            <div class="events-section">
-                <div class="events-section-header">
+            <div class="exams-section">
+                <div class="exams-section-header">
                     <div class="section-indicator upcoming"></div>
-                    <h2 class="events-section-title">UPCOMING</h2>
+                    <h2 class="exams-section-title">UPCOMING</h2>
                 </div>
                 <div class="upcoming-list">
                     <div class="upcoming-empty">
@@ -475,10 +475,10 @@
             </div>
 
             <!-- Exam Types Reference (Collapsible) -->
-            <div class="events-section collapsible">
-                <div class="events-section-header" data-toggle="exam-types">
+            <div class="exams-section collapsible">
+                <div class="exams-section-header" data-toggle="exam-types">
                     <div class="section-indicator info"></div>
-                    <h2 class="events-section-title">EXAM TYPES</h2>
+                    <h2 class="exams-section-title">EXAM TYPES</h2>
                     <span class="collapse-icon">▼</span>
                 </div>
                 <div class="collapsible-content collapsed" id="exam-types">
@@ -593,12 +593,12 @@
             </div>
 
             <!-- Past Events Section -->
-            <div class="events-section">
-                <div class="events-section-header">
+            <div class="exams-section">
+                <div class="exams-section-header">
                     <div class="section-indicator past"></div>
-                    <h2 class="events-section-title">HISTORY</h2>
+                    <h2 class="exams-section-title">HISTORY</h2>
                 </div>
-                <div class="past-events-list">
+                <div class="past-exams-list">
                     <div class="past-event-item">
                         <div class="past-event-date">—</div>
                         <div class="past-event-info">
@@ -608,7 +608,7 @@
                 </div>
             </div>
         </div>
-        <div class="keyboard-hint events-hints">
+        <div class="keyboard-hint exams-hints">
             <div class="key-hint"><span class="key">ESC</span> BACK</div>
         </div>
     </div>

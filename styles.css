@@ -955,7 +955,7 @@ body::before {
 
 /* OAA App keyboard hints */
 .oaa-hints,
-.events-hints {
+.exams-hints {
     transition: bottom 0.3s ease, opacity 0.3s ease;
 }
 
@@ -3388,7 +3388,7 @@ body::before {
    EVENTS APP
    ======================================== */
 
-.events-content {
+.exams-content {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -3400,14 +3400,14 @@ body::before {
 }
 
 /* Section styling */
-.events-section {
+.exams-section {
     background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 29, 50, 0.6) 100%);
     border: 1px solid rgba(77, 201, 230, 0.1);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
 }
 
-.events-section-header {
+.exams-section-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -3417,12 +3417,12 @@ body::before {
 }
 
 /* Collapsible sections */
-.events-section.collapsible .events-section-header {
+.exams-section.collapsible .exams-section-header {
     cursor: pointer;
     transition: background 0.2s ease;
 }
 
-.events-section.collapsible .events-section-header:hover {
+.exams-section.collapsible .exams-section-header:hover {
     background: rgba(77, 201, 230, 0.05);
 }
 
@@ -3433,7 +3433,7 @@ body::before {
     transition: color 0.2s ease;
 }
 
-.events-section.collapsible:hover .collapse-icon {
+.exams-section.collapsible:hover .collapse-icon {
     color: var(--cyan);
 }
 
@@ -3488,7 +3488,7 @@ body::before {
     50% { opacity: 0.5; }
 }
 
-.events-section-title {
+.exams-section-title {
     font-family: 'Orbitron', monospace;
     font-size: 0.85rem;
     font-weight: 600;
@@ -3559,8 +3559,8 @@ body::before {
     font-size: 0.9rem;
 }
 
-/* Past events list */
-.past-events-list {
+/* Past exams list */
+.past-exams-list {
     padding: 0.5rem 0;
 }
 
@@ -7514,7 +7514,7 @@ body::before {
     }
 
     /* --- Exams --- */
-    .events-content {
+    .exams-content {
         padding: 1rem;
     }
 

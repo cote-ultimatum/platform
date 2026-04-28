@@ -273,8 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========================================
 
 function initCollapsibleSections() {
-    document.querySelectorAll('.events-section.collapsible .events-section-header').forEach(header => {
-        const section = header.closest('.events-section');
+    document.querySelectorAll('.exams-section.collapsible .exams-section-header').forEach(header => {
+        const section = header.closest('.exams-section');
         const content = section.querySelector('.collapsible-content');
         const arrow = header.querySelector('.collapse-icon');
 
@@ -341,7 +341,7 @@ function initKeyboardHintClicks() {
                 case '2':
                     if (state.currentScreen === 'home-screen') {
                         playSound('open');
-                        openApp('events');
+                        openApp('exams');
                     }
                     break;
                 case '3':
@@ -560,7 +560,7 @@ function updateTime() {
     const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
     const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-    ['lock-time', 'home-time', 'oaa-time', 'events-time', 'admin-time', 'creator-time', 'honors-time'].forEach(id => {
+    ['lock-time', 'home-time', 'oaa-time', 'exams-time', 'admin-time', 'creator-time', 'honors-time'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = timeStr;
     });
@@ -618,7 +618,7 @@ function goBack() {
         if (state.currentOAAView === 'oaa-profile') showOAAView('oaa-class', false);
         else if (state.currentOAAView === 'oaa-class') showOAAView('oaa-dashboard', false);
         else showScreen('home-screen', false);
-    } else if (state.currentScreen === 'events-app') {
+    } else if (state.currentScreen === 'exams-app') {
         showScreen('home-screen', false);
     } else if (state.currentScreen === 'home-screen') {
         showScreen('lock-screen', false);
@@ -814,8 +814,8 @@ function openApp(appId) {
     if (appId === 'oaa') {
         showScreen('oaa-app');
         showOAAView('oaa-dashboard', false);
-    } else if (appId === 'events') {
-        showScreen('events-app');
+    } else if (appId === 'exams') {
+        showScreen('exams-app');
     } else if (appId === 'admin') {
         showScreen('admin-app');
         initAdminApp();
@@ -986,7 +986,7 @@ function initKeyboardNav() {
                 openApp('oaa');
             } else if (e.key === '2') {
                 playSound('open');
-                openApp('events');
+                openApp('exams');
             } else if (e.key === '3') {
                 playSound('open');
                 openApp('creator');
