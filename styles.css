@@ -2067,6 +2067,45 @@ body::before {
     border-color: var(--cyan);
 }
 
+/* Honors mobile: force single-column grid so the runtime card-min never
+   pushes content past the viewport, shrink padding, and right-size the
+   pin + chips for narrow screens. */
+@media (max-width: 600px) {
+    .honors-content {
+        padding: 1.25rem 1rem 4rem;
+        gap: 2rem;
+    }
+    .honors-category-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.35rem;
+    }
+    .honors-category-name {
+        font-size: 1.2rem;
+    }
+    .honors-category-desc {
+        font-size: 0.85rem;
+    }
+    .honors-tier-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    .honors-tier-card {
+        padding: 0.9rem;
+    }
+    .honors-tier-head img {
+        width: 64px;
+        height: 64px;
+    }
+    .honors-tier-card-name {
+        font-size: 0.95rem;
+    }
+    .honors-recipient-chip {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.82rem;
+    }
+}
+
 .honors-tier-recipients-empty {
     color: var(--text-muted, #94a3b8);
     font-style: italic;
