@@ -1904,7 +1904,11 @@ body::before {
 
 .honors-tier-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    /* Min width is sized to fit the longest commendation name ("Broadcasting
+       Club") on a single line alongside the 80px pin, so titles don't wrap.
+       min(340px, 100%) keeps narrow viewports from overflowing horizontally
+       — once the viewport drops below ~340px the column just takes 100%. */
+    grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
     gap: 1rem;
     /* Each card sizes to its own content — without this, expanding one card
        would stretch every other card in the same row to match its height. */
@@ -1974,9 +1978,10 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    /* flex: 1 + min-width: 0 lets the column take remaining space and shrink
-       below its content size, so a long uppercase name like "BROADCASTING CLUB"
-       wraps inside the card instead of overflowing past the border. */
+    /* flex: 1 + min-width: 0 lets the column take remaining space; the grid
+       min-width is what guarantees long titles fit on one line, but
+       overflow-wrap on the name keeps a future longer title from busting
+       out of the card. */
     flex: 1 1 0;
     min-width: 0;
 }
