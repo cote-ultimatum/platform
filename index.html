@@ -205,21 +205,13 @@
             <div class="year-section" data-section-id="year1">
                 <div class="year-header">
                     <h2 class="year-title">1st Year Students</h2>
-                    <span class="year-count" id="first-year-count">0 total</span>
+                    <span class="year-count" id="first-year-count"></span>
                     <span class="year-toggle" aria-hidden="true"></span>
                 </div>
                 <div class="year-collapse"><div class="year-collapse-inner">
                     <div class="sort-container year-sort" data-year-sort="1">
                         <span class="sort-label">Sort:</span>
-                        <div class="sort-buttons">
-                            <button class="sort-btn active" data-sort="default">Default</button>
-                            <button class="sort-btn" data-sort="overall">Overall Grade</button>
-                            <button class="sort-btn" data-sort="academic">Academic Ability</button>
-                            <button class="sort-btn" data-sort="intelligence">Intelligence</button>
-                            <button class="sort-btn" data-sort="decision">Decision Making</button>
-                            <button class="sort-btn" data-sort="physical">Physical Ability</button>
-                            <button class="sort-btn" data-sort="cooperativeness">Cooperativeness</button>
-                        </div>
+                        <div class="sort-buttons" data-render="sort-buttons"></div>
                     </div>
                     <div class="class-grid" id="first-year-classes">
                         <!-- Classes populated by JS -->
@@ -230,21 +222,13 @@
             <div class="year-section collapsed" data-section-id="year2">
                 <div class="year-header">
                     <h2 class="year-title">2nd Year Students</h2>
-                    <span class="year-count" id="second-year-count">0 total</span>
+                    <span class="year-count" id="second-year-count"></span>
                     <span class="year-toggle" aria-hidden="true"></span>
                 </div>
                 <div class="year-collapse"><div class="year-collapse-inner">
                     <div class="sort-container year-sort" data-year-sort="2">
                         <span class="sort-label">Sort:</span>
-                        <div class="sort-buttons">
-                            <button class="sort-btn active" data-sort="default">Default</button>
-                            <button class="sort-btn" data-sort="overall">Overall Grade</button>
-                            <button class="sort-btn" data-sort="academic">Academic Ability</button>
-                            <button class="sort-btn" data-sort="intelligence">Intelligence</button>
-                            <button class="sort-btn" data-sort="decision">Decision Making</button>
-                            <button class="sort-btn" data-sort="physical">Physical Ability</button>
-                            <button class="sort-btn" data-sort="cooperativeness">Cooperativeness</button>
-                        </div>
+                        <div class="sort-buttons" data-render="sort-buttons"></div>
                     </div>
                     <div class="class-grid" id="second-year-classes">
                         <!-- Classes populated by JS -->
@@ -255,21 +239,13 @@
             <div class="year-section collapsed" data-section-id="year3">
                 <div class="year-header">
                     <h2 class="year-title">3rd Year Students</h2>
-                    <span class="year-count" id="third-year-count">0 total</span>
+                    <span class="year-count" id="third-year-count"></span>
                     <span class="year-toggle" aria-hidden="true"></span>
                 </div>
                 <div class="year-collapse"><div class="year-collapse-inner">
                     <div class="sort-container year-sort" data-year-sort="3">
                         <span class="sort-label">Sort:</span>
-                        <div class="sort-buttons">
-                            <button class="sort-btn active" data-sort="default">Default</button>
-                            <button class="sort-btn" data-sort="overall">Overall Grade</button>
-                            <button class="sort-btn" data-sort="academic">Academic Ability</button>
-                            <button class="sort-btn" data-sort="intelligence">Intelligence</button>
-                            <button class="sort-btn" data-sort="decision">Decision Making</button>
-                            <button class="sort-btn" data-sort="physical">Physical Ability</button>
-                            <button class="sort-btn" data-sort="cooperativeness">Cooperativeness</button>
-                        </div>
+                        <div class="sort-buttons" data-render="sort-buttons"></div>
                     </div>
                     <div class="class-grid" id="third-year-classes">
                         <!-- Classes populated by JS -->
@@ -280,7 +256,7 @@
             <div class="year-section" data-section-id="council">
                 <div class="year-header">
                     <h2 class="year-title">Student Council</h2>
-                    <span class="year-count" id="council-count">0 total</span>
+                    <span class="year-count" id="council-count"></span>
                     <span class="year-toggle" aria-hidden="true"></span>
                 </div>
                 <div class="year-collapse"><div class="year-collapse-inner">
@@ -300,7 +276,7 @@
             <div class="year-section" data-section-id="faculty">
                 <div class="year-header">
                     <h2 class="year-title">Faculty Members</h2>
-                    <span class="year-count" id="faculty-count">0 total</span>
+                    <span class="year-count" id="faculty-count"></span>
                     <span class="year-toggle" aria-hidden="true"></span>
                 </div>
                 <div class="year-collapse"><div class="year-collapse-inner">
@@ -323,22 +299,14 @@
             <div class="class-view-top">
                 <div class="sort-container class-sort">
                     <span class="sort-label">Sort:</span>
-                    <div class="sort-buttons" id="class-sort-buttons">
-                        <button class="sort-btn active" data-sort="default">Default</button>
-                        <button class="sort-btn" data-sort="overall">Overall Grade</button>
-                        <button class="sort-btn" data-sort="academic">Academic Ability</button>
-                        <button class="sort-btn" data-sort="intelligence">Intelligence</button>
-                        <button class="sort-btn" data-sort="decision">Decision Making</button>
-                        <button class="sort-btn" data-sort="physical">Physical Ability</button>
-                        <button class="sort-btn" data-sort="cooperativeness">Cooperativeness</button>
-                    </div>
+                    <div class="sort-buttons" id="class-sort-buttons" data-render="sort-buttons"></div>
                 </div>
             </div>
             <div class="class-view-header">
                 <div class="class-view-badge" id="class-badge">A</div>
                 <div class="class-view-info">
-                    <h2 id="class-title">1st Year - Class A</h2>
-                    <p class="student-count" id="student-count">0 Students</p>
+                    <h2 id="class-title"></h2>
+                    <p class="student-count" id="student-count"></p>
                 </div>
             </div>
             <div class="student-list" id="student-list">
@@ -360,14 +328,14 @@
                                 <span class="profile-rank-since" id="profile-rank-since"></span>
                             </div>
                         </div>
-                        <h2 id="profile-name">Student Name</h2>
-                        <p id="profile-class">1st Year - Class A</p>
+                        <h2 id="profile-name"></h2>
+                        <p id="profile-class"></p>
                         <p class="profile-rank-quote" id="profile-rank-quote" style="display:none;"></p>
                     </div>
                     <div class="profile-header-actions">
                         <div class="profile-id">
                             <span class="id-label">ID</span>
-                            <span class="id-value" id="profile-id">ABC-123</span>
+                            <span class="id-value" id="profile-id"></span>
                         </div>
                         <button class="profile-download-btn" id="profile-download-btn" title="Download student card">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -392,7 +360,7 @@
                         </div>
                         <div class="overall-grade-box">
                             <span class="overall-label">OVERALL GRADE</span>
-                            <span class="overall-value" id="profile-overall">B-</span>
+                            <span class="overall-value" id="profile-overall"></span>
                         </div>
                         <div class="profile-commendations" id="profile-commendations"></div>
                     </div>
@@ -677,81 +645,14 @@
                             <circle cx="12" cy="7" r="4"/>
                         </svg>
                     </span>
-                    <span class="admin-user-name" id="admin-user-name">Admin</span>
+                    <span class="admin-user-name" id="admin-user-name"></span>
                 </div>
                 <button class="admin-logout-btn" id="admin-logout-btn">Log Out</button>
             </div>
 
             <div class="admin-section">
                 <h3 class="admin-section-title">Class Points</h3>
-                <div class="admin-years-container">
-                    <!-- Year 1 -->
-                    <div class="admin-year-section">
-                        <div class="admin-year-label">1st Year</div>
-                        <div class="admin-class-grid">
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-a">A</span>
-                                <input type="text" id="admin-points-1-A" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-b">B</span>
-                                <input type="text" id="admin-points-1-B" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-c">C</span>
-                                <input type="text" id="admin-points-1-C" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-d">D</span>
-                                <input type="text" id="admin-points-1-D" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Year 2 -->
-                    <div class="admin-year-section">
-                        <div class="admin-year-label">2nd Year</div>
-                        <div class="admin-class-grid">
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-a">A</span>
-                                <input type="text" id="admin-points-2-A" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-b">B</span>
-                                <input type="text" id="admin-points-2-B" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-c">C</span>
-                                <input type="text" id="admin-points-2-C" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-d">D</span>
-                                <input type="text" id="admin-points-2-D" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Year 3 -->
-                    <div class="admin-year-section">
-                        <div class="admin-year-label">3rd Year</div>
-                        <div class="admin-class-grid">
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-a">A</span>
-                                <input type="text" id="admin-points-3-A" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-b">B</span>
-                                <input type="text" id="admin-points-3-B" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-c">C</span>
-                                <input type="text" id="admin-points-3-C" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                            <div class="admin-class-input">
-                                <span class="admin-class-badge class-d">D</span>
-                                <input type="text" id="admin-points-3-D" inputmode="numeric" pattern="[0-9,]*" value="1,000">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="admin-years-container" data-render="admin-class-points"></div>
                 <div class="admin-actions">
                     <button class="admin-save-btn" id="admin-save-btn">Save Changes</button>
                     <button class="admin-reset-btn" id="admin-reset-btn">Reset</button>
@@ -777,19 +678,8 @@
                         Add Student
                     </button>
                     <div class="admin-student-filter">
-                        <select id="admin-student-year-filter">
-                            <option value="">All Years</option>
-                            <option value="1">1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                        </select>
-                        <select id="admin-student-class-filter">
-                            <option value="">All Classes</option>
-                            <option value="A">Class A</option>
-                            <option value="B">Class B</option>
-                            <option value="C">Class C</option>
-                            <option value="D">Class D</option>
-                        </select>
+                        <select id="admin-student-year-filter"></select>
+                        <select id="admin-student-class-filter"></select>
                     </div>
                 </div>
                 <div class="admin-student-list" id="admin-student-list">
@@ -808,13 +698,7 @@
                         Add Faculty
                     </button>
                     <div class="admin-student-filter">
-                        <select id="admin-faculty-rank-filter">
-                            <option value="">All Ranks</option>
-                            <option value="Staff">Staff</option>
-                            <option value="Instructor">Instructor</option>
-                            <option value="Director">Director</option>
-                            <option value="Chairperson">Chairperson</option>
-                        </select>
+                        <select id="admin-faculty-rank-filter"></select>
                     </div>
                 </div>
                 <div class="admin-student-list" id="admin-faculty-list">
@@ -838,20 +722,11 @@
                     <div class="admin-form-row admin-form-row-half" id="admin-form-year-class-row">
                         <div>
                             <label>Year</label>
-                            <select id="admin-student-year">
-                                <option value="1">1st Year</option>
-                                <option value="2">2nd Year</option>
-                                <option value="3">3rd Year</option>
-                            </select>
+                            <select id="admin-student-year"></select>
                         </div>
                         <div>
                             <label>Class</label>
-                            <select id="admin-student-class">
-                                <option value="A">Class A</option>
-                                <option value="B">Class B</option>
-                                <option value="C">Class C</option>
-                                <option value="D">Class D</option>
-                            </select>
+                            <select id="admin-student-class"></select>
                         </div>
                     </div>
                     <div class="admin-form-row admin-image-row">
@@ -879,75 +754,20 @@
                         </div>
                     </div>
                     <div class="admin-form-section-title">Evaluation</div>
-                    <div class="admin-form-stats">
-                        <div class="admin-stat-input stat-academic">
-                            <label>Academic Ability</label>
-                            <input type="number" id="admin-student-academic" min="0" max="100" value="50">
-                            <select id="admin-student-trait-academic" class="admin-trait-select"></select>
-                        </div>
-                        <div class="admin-stat-input stat-intelligence">
-                            <label>Intelligence</label>
-                            <input type="number" id="admin-student-intelligence" min="0" max="100" value="50">
-                            <select id="admin-student-trait-intelligence" class="admin-trait-select"></select>
-                        </div>
-                        <div class="admin-stat-input stat-decision">
-                            <label>Decision Making</label>
-                            <input type="number" id="admin-student-decision" min="0" max="100" value="50">
-                            <select id="admin-student-trait-decision" class="admin-trait-select"></select>
-                        </div>
-                        <div class="admin-stat-input stat-physical">
-                            <label>Physical Ability</label>
-                            <input type="number" id="admin-student-physical" min="0" max="100" value="50">
-                            <select id="admin-student-trait-physical" class="admin-trait-select"></select>
-                        </div>
-                        <div class="admin-stat-input stat-cooperativeness">
-                            <label>Cooperativeness</label>
-                            <input type="number" id="admin-student-cooperativeness" min="0" max="100" value="50">
-                            <select id="admin-student-trait-cooperativeness" class="admin-trait-select"></select>
-                        </div>
-                    </div>
+                    <div class="admin-form-stats" data-render="admin-stat-inputs"></div>
                     <div class="admin-form-section-title" id="admin-form-council-title">Rank</div>
                     <div class="admin-form-row" id="admin-form-council-row">
-                        <select id="admin-student-council-rank">
-                            <option value="">None</option>
-                            <option value="Representative">Representative</option>
-                            <option value="Treasurer">Treasurer</option>
-                            <option value="Secretary">Secretary</option>
-                            <option value="Vice President">Vice President</option>
-                            <option value="President">President</option>
-                        </select>
+                        <select id="admin-student-council-rank"></select>
                     </div>
                     <div class="admin-form-section-title" id="admin-form-faculty-title" style="display:none;">Rank</div>
                     <div class="admin-form-row" id="admin-form-faculty-row" style="display:none;">
-                        <select id="admin-student-faculty-rank">
-                            <option value="">None</option>
-                            <option value="Staff">Staff</option>
-                            <option value="Instructor">Instructor</option>
-                            <option value="Director">Director</option>
-                            <option value="Chairperson">Chairperson</option>
-                        </select>
+                        <select id="admin-student-faculty-rank"></select>
                     </div>
                     <div class="admin-form-section-title" id="admin-form-tenure-title" style="display:none;">Tenure</div>
                     <div class="admin-form-row admin-form-tenure" id="admin-form-tenure-row" style="display:none;">
                         <div class="admin-tenure-fields">
-                            <select id="admin-student-tenure-day" class="admin-tenure-day">
-                                <option value="">Day</option>
-                            </select>
-                            <select id="admin-student-tenure-month" class="admin-tenure-month">
-                                <option value="">Month</option>
-                                <option value="1">January</option>
-                                <option value="2">February</option>
-                                <option value="3">March</option>
-                                <option value="4">April</option>
-                                <option value="5">May</option>
-                                <option value="6">June</option>
-                                <option value="7">July</option>
-                                <option value="8">August</option>
-                                <option value="9">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
+                            <select id="admin-student-tenure-day" class="admin-tenure-day"></select>
+                            <select id="admin-student-tenure-month" class="admin-tenure-month"></select>
                             <input type="number" id="admin-student-tenure-year" class="admin-tenure-year" min="2000" max="2100" step="1" placeholder="Year">
                         </div>
                     </div>
@@ -1219,142 +1039,7 @@
                     </div>
 
                     <!-- Stat Cards -->
-                    <div class="eval-cards">
-                    <!-- Academic -->
-                    <div class="eval-card" data-category="academic">
-                        <div class="eval-card-header">
-                            <span class="eval-card-name">Academic Ability</span>
-                            <div class="eval-card-trait" id="trait-result-academic"></div>
-                        </div>
-                        <div class="eval-card-bar-container">
-                            <div class="eval-card-bar">
-                                <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-academic"></div>
-                                <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-academic"></div>
-                                <div class="eval-bar-fill stat-academic" id="creator-stat-academic-bar"></div>
-                            </div>
-                            <div class="eval-bar-labels">
-                                <span>0</span>
-                                <span>50</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <div class="eval-card-controls">
-                            <input type="range" class="eval-card-slider" id="creator-stat-academic" min="0" max="100" value="50">
-                            <span class="eval-card-value" id="creator-stat-academic-display">50</span>
-                        </div>
-                        <button class="eval-card-discover" data-category="academic">
-                            Discover Trait
-                        </button>
-                    </div>
-
-                    <!-- Intelligence -->
-                    <div class="eval-card" data-category="intelligence">
-                        <div class="eval-card-header">
-                            <span class="eval-card-name">Intelligence</span>
-                            <div class="eval-card-trait" id="trait-result-intelligence"></div>
-                        </div>
-                        <div class="eval-card-bar-container">
-                            <div class="eval-card-bar">
-                                <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-intelligence"></div>
-                                <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-intelligence"></div>
-                                <div class="eval-bar-fill stat-intelligence" id="creator-stat-intelligence-bar"></div>
-                            </div>
-                            <div class="eval-bar-labels">
-                                <span>0</span>
-                                <span>50</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <div class="eval-card-controls">
-                            <input type="range" class="eval-card-slider" id="creator-stat-intelligence" min="0" max="100" value="50">
-                            <span class="eval-card-value" id="creator-stat-intelligence-display">50</span>
-                        </div>
-                        <button class="eval-card-discover" data-category="intelligence">
-                            Discover Trait
-                        </button>
-                    </div>
-
-                    <!-- Decision Making -->
-                    <div class="eval-card" data-category="decision">
-                        <div class="eval-card-header">
-                            <span class="eval-card-name">Decision Making</span>
-                            <div class="eval-card-trait" id="trait-result-decision"></div>
-                        </div>
-                        <div class="eval-card-bar-container">
-                            <div class="eval-card-bar">
-                                <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-decision"></div>
-                                <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-decision"></div>
-                                <div class="eval-bar-fill stat-decision" id="creator-stat-decision-bar"></div>
-                            </div>
-                            <div class="eval-bar-labels">
-                                <span>0</span>
-                                <span>50</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <div class="eval-card-controls">
-                            <input type="range" class="eval-card-slider" id="creator-stat-decision" min="0" max="100" value="50">
-                            <span class="eval-card-value" id="creator-stat-decision-display">50</span>
-                        </div>
-                        <button class="eval-card-discover" data-category="decision">
-                            Discover Trait
-                        </button>
-                    </div>
-
-                    <!-- Physical -->
-                    <div class="eval-card" data-category="physical">
-                        <div class="eval-card-header">
-                            <span class="eval-card-name">Physical Ability</span>
-                            <div class="eval-card-trait" id="trait-result-physical"></div>
-                        </div>
-                        <div class="eval-card-bar-container">
-                            <div class="eval-card-bar">
-                                <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-physical"></div>
-                                <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-physical"></div>
-                                <div class="eval-bar-fill stat-physical" id="creator-stat-physical-bar"></div>
-                            </div>
-                            <div class="eval-bar-labels">
-                                <span>0</span>
-                                <span>50</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <div class="eval-card-controls">
-                            <input type="range" class="eval-card-slider" id="creator-stat-physical" min="0" max="100" value="50">
-                            <span class="eval-card-value" id="creator-stat-physical-display">50</span>
-                        </div>
-                        <button class="eval-card-discover" data-category="physical">
-                            Discover Trait
-                        </button>
-                    </div>
-
-                    <!-- Cooperativeness -->
-                    <div class="eval-card" data-category="cooperativeness">
-                        <div class="eval-card-header">
-                            <span class="eval-card-name">Cooperativeness</span>
-                            <div class="eval-card-trait" id="trait-result-cooperativeness"></div>
-                        </div>
-                        <div class="eval-card-bar-container">
-                            <div class="eval-card-bar">
-                                <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-cooperativeness"></div>
-                                <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-cooperativeness"></div>
-                                <div class="eval-bar-fill stat-cooperativeness" id="creator-stat-cooperativeness-bar"></div>
-                            </div>
-                            <div class="eval-bar-labels">
-                                <span>0</span>
-                                <span>50</span>
-                                <span>100</span>
-                            </div>
-                        </div>
-                        <div class="eval-card-controls">
-                            <input type="range" class="eval-card-slider" id="creator-stat-cooperativeness" min="0" max="100" value="50">
-                            <span class="eval-card-value" id="creator-stat-cooperativeness-display">50</span>
-                        </div>
-                        <button class="eval-card-discover" data-category="cooperativeness">
-                            Discover Trait
-                        </button>
-                    </div>
-                    </div>
+                    <div class="eval-cards" data-render="creator-eval-cards"></div>
                 </div>
 
                 <div class="creator-nav-buttons centered">

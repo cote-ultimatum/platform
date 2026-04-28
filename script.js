@@ -31,6 +31,171 @@ const state = {
 let audioContext = null;
 
 // ========================================
+// LABEL CONFIG
+// ========================================
+// Single source of truth for years, classes, stats, ranks, and months.
+// HTML uses empty containers/selects with data-render hooks; helpers
+// below populate them on init so labels never drift across the site.
+
+const YEAR_OPTIONS = [
+    { value: '1', label: '1st Year' },
+    { value: '2', label: '2nd Year' },
+    { value: '3', label: '3rd Year' },
+];
+const CLASS_LETTERS = ['A', 'B', 'C', 'D'];
+const STAT_DEFS = [
+    { key: 'academic', label: 'Academic Ability' },
+    { key: 'intelligence', label: 'Intelligence' },
+    { key: 'decision', label: 'Decision Making' },
+    { key: 'physical', label: 'Physical Ability' },
+    { key: 'cooperativeness', label: 'Cooperativeness' },
+];
+const MONTH_LABELS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+function populateSelect(selectEl, options, opts = {}) {
+    if (!selectEl) return;
+    const { placeholder } = opts;
+    selectEl.innerHTML = '';
+    if (placeholder) {
+        const o = document.createElement('option');
+        o.value = placeholder.value ?? '';
+        o.textContent = placeholder.label;
+        selectEl.appendChild(o);
+    }
+    options.forEach(({ value, label }) => {
+        const o = document.createElement('option');
+        o.value = value;
+        o.textContent = label;
+        selectEl.appendChild(o);
+    });
+}
+
+function renderSortButtons(container) {
+    if (!container) return;
+    const sorts = [
+        { sort: 'default', label: 'Default' },
+        { sort: 'overall', label: 'Overall Grade' },
+        ...STAT_DEFS.map(s => ({ sort: s.key, label: s.label })),
+    ];
+    container.innerHTML = sorts.map((s, i) =>
+        `<button class="sort-btn${i === 0 ? ' active' : ''}" data-sort="${s.sort}">${s.label}</button>`
+    ).join('');
+}
+
+// Renders the admin Class Points grid (3 years × 4 classes = 12 inputs).
+function renderAdminClassPointsGrid(container) {
+    if (!container) return;
+    container.innerHTML = YEAR_OPTIONS.map(year => `
+        <div class="admin-year-section">
+            <div class="admin-year-label">${year.label}</div>
+            <div class="admin-class-grid">
+                ${CLASS_LETTERS.map(letter => `
+                    <div class="admin-class-input">
+                        <span class="admin-class-badge class-${letter.toLowerCase()}">${letter}</span>
+                        <input type="text" id="admin-points-${year.value}-${letter}" inputmode="numeric" pattern="[0-9,]*" value="1,000">
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Renders the admin student-edit form's evaluation stat inputs.
+function renderAdminStatInputs(container) {
+    if (!container) return;
+    container.innerHTML = STAT_DEFS.map(stat => `
+        <div class="admin-stat-input stat-${stat.key}">
+            <label>${stat.label}</label>
+            <input type="number" id="admin-student-${stat.key}" min="0" max="100" value="50">
+            <select id="admin-student-trait-${stat.key}" class="admin-trait-select"></select>
+        </div>
+    `).join('');
+}
+
+// Renders the creator app's 5 evaluation cards. Each card has identical
+// structure with stat-specific IDs/classes; the only variance is the stat
+// key and display label.
+function renderCreatorEvalCards(container) {
+    if (!container) return;
+    container.innerHTML = STAT_DEFS.map(stat => `
+        <div class="eval-card" data-category="${stat.key}">
+            <div class="eval-card-header">
+                <span class="eval-card-name">${stat.label}</span>
+                <div class="eval-card-trait" id="trait-result-${stat.key}"></div>
+            </div>
+            <div class="eval-card-bar-container">
+                <div class="eval-card-bar">
+                    <div class="eval-bar-locked eval-bar-locked-left" id="locked-left-${stat.key}"></div>
+                    <div class="eval-bar-locked eval-bar-locked-right" id="locked-right-${stat.key}"></div>
+                    <div class="eval-bar-fill stat-${stat.key}" id="creator-stat-${stat.key}-bar"></div>
+                </div>
+                <div class="eval-bar-labels">
+                    <span>0</span>
+                    <span>50</span>
+                    <span>100</span>
+                </div>
+            </div>
+            <div class="eval-card-controls">
+                <input type="range" class="eval-card-slider" id="creator-stat-${stat.key}" min="0" max="100" value="50">
+                <span class="eval-card-value" id="creator-stat-${stat.key}-display">50</span>
+            </div>
+            <button class="eval-card-discover" data-category="${stat.key}">
+                Discover Trait
+            </button>
+        </div>
+    `).join('');
+}
+
+// Initial population of all centrally-managed selects, sort buttons, etc.
+// Called once during DOMContentLoaded after the DOM is ready. Keeps every
+// dropdown/sort row in sync with the LABEL CONFIG arrays above.
+function initLabelConfig() {
+    document.querySelectorAll('[data-render="sort-buttons"]').forEach(renderSortButtons);
+    renderAdminClassPointsGrid(document.querySelector('[data-render="admin-class-points"]'));
+    renderAdminStatInputs(document.querySelector('[data-render="admin-stat-inputs"]'));
+    renderCreatorEvalCards(document.querySelector('[data-render="creator-eval-cards"]'));
+
+    // Year dropdowns
+    populateSelect(document.getElementById('admin-student-year-filter'),
+        YEAR_OPTIONS, { placeholder: { label: 'All Years' } });
+    populateSelect(document.getElementById('admin-student-year'), YEAR_OPTIONS);
+
+    // Class dropdowns
+    const classOptions = CLASS_LETTERS.map(l => ({ value: l, label: `Class ${l}` }));
+    populateSelect(document.getElementById('admin-student-class-filter'),
+        classOptions, { placeholder: { label: 'All Classes' } });
+    populateSelect(document.getElementById('admin-student-class'),
+        CLASS_LETTERS.map(l => ({ value: l, label: l })));
+
+    // Faculty rank dropdowns (low to high — junior options first)
+    const facultyRanks = [...FACULTY_RANK_ORDER].reverse().map(r => ({ value: r, label: r }));
+    populateSelect(document.getElementById('admin-faculty-rank-filter'),
+        facultyRanks, { placeholder: { label: 'All Ranks' } });
+    populateSelect(document.getElementById('admin-student-faculty-rank'),
+        facultyRanks, { placeholder: { label: 'None' } });
+
+    // Council rank dropdown (low to high — junior options first)
+    const councilRanks = [...COUNCIL_RANK_ORDER].reverse().map(r => ({ value: r, label: r }));
+    populateSelect(document.getElementById('admin-student-council-rank'),
+        councilRanks, { placeholder: { label: 'None' } });
+
+    // Tenure month dropdown
+    populateSelect(document.getElementById('admin-student-tenure-month'),
+        MONTH_LABELS.map((label, i) => ({ value: String(i + 1), label })),
+        { placeholder: { label: 'Month' } });
+
+    // Tenure day dropdown (1–31)
+    const daySelect = document.getElementById('admin-student-tenure-day');
+    if (daySelect) {
+        const days = Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) }));
+        populateSelect(daySelect, days, { placeholder: { label: 'Day' } });
+    }
+}
+
+// ========================================
 // SOUND DESIGN SYSTEM
 // ========================================
 // Consistent sound categories:
@@ -247,6 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn && !btn.matches('input')) btn.blur();
     });
 
+    initLabelConfig();
     createStarfield();
     createParticles();
     initShootingStars();
@@ -3861,16 +4027,9 @@ function openStudentModal(student, mode = 'student') {
     document.getElementById('admin-student-cooperativeness').value = student?.stats?.cooperativeness || 50;
     document.getElementById('admin-student-council-rank').value = student?.councilRank || '';
     document.getElementById('admin-student-faculty-rank').value = student?.facultyRank || '';
-    // Tenure: populate Day select once (1–31), then split stored YYYY-MM-DD into the three fields
+    // Tenure: split stored YYYY-MM-DD into the three fields (day/month options
+    // are populated once at startup by initLabelConfig).
     const daySelect = document.getElementById('admin-student-tenure-day');
-    if (daySelect && daySelect.options.length <= 1) {
-        for (let d = 1; d <= 31; d++) {
-            const opt = document.createElement('option');
-            opt.value = String(d);
-            opt.textContent = String(d);
-            daySelect.appendChild(opt);
-        }
-    }
     const monthSelect = document.getElementById('admin-student-tenure-month');
     const yearInput = document.getElementById('admin-student-tenure-year');
     const since = student?.servingSince || '';
