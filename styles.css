@@ -1904,11 +1904,13 @@ body::before {
 
 .honors-tier-grid {
     display: grid;
-    /* Min width is sized to fit the longest commendation name ("Broadcasting
-       Club") on a single line alongside the 80px pin, so titles don't wrap.
-       min(340px, 100%) keeps narrow viewports from overflowing horizontally
-       — once the viewport drops below ~340px the column just takes 100%. */
-    grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+    /* --honors-card-min is set by renderHonorsApp() — measured at runtime
+       from the widest commendation title so adding a longer name later
+       just grows the cards instead of wrapping the title. The 340px
+       fallback covers the path where the variable hasn't been set yet
+       (e.g. brief flicker before the script runs). min(..., 100%) lets
+       narrow viewports collapse to one column without overflow. */
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--honors-card-min, 340px), 100%), 1fr));
     gap: 1rem;
     /* Each card sizes to its own content — without this, expanding one card
        would stretch every other card in the same row to match its height. */

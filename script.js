@@ -1719,6 +1719,30 @@ function commendationDisplayName(type, tier) {
         : meta.name;
 }
 
+// Measure the natural one-line width of the widest commendation name so the
+// Honors tier grid can size its column min to fit any title — adding a longer
+// commendation later (e.g. "International Exchange") auto-grows the cards
+// instead of wrapping the title under the pin.
+function computeHonorsCardMinPx() {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;'
+        + "font-family:'Orbitron',monospace;font-size:1rem;"
+        + 'letter-spacing:0.08em;text-transform:uppercase;';
+    document.body.appendChild(probe);
+    let widest = 0;
+    Object.keys(COMMENDATION_REGISTRY).forEach(type => {
+        const meta = COMMENDATION_REGISTRY[type];
+        (meta.tiers || [1]).forEach(tier => {
+            probe.textContent = commendationDisplayName(type, tier);
+            if (probe.offsetWidth > widest) widest = probe.offsetWidth;
+        });
+    });
+    document.body.removeChild(probe);
+    // Card overhead: 80px pin + 1rem gap + 2 * 1.1rem padding ≈ 131px,
+    // plus a small buffer so the title never sits flush against the edge.
+    return Math.ceil(widest + 140);
+}
+
 function renderProfileCommendations(student) {
     const container = document.getElementById('profile-commendations');
     if (!container) return;
@@ -1858,6 +1882,10 @@ function renderHonorsApp() {
             </div>
         </div>`;
     };
+
+    // Auto-size the tier grid column min to fit the widest commendation name.
+    // Set on the container so the variable cascades down to every grid inside.
+    container.style.setProperty('--honors-card-min', `${computeHonorsCardMinPx()}px`);
 
     container.innerHTML = Array.from(byCategory.entries()).map(([categoryName, entries]) => {
         // Always pull the description from the category map so multi-type
