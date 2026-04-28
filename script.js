@@ -5647,17 +5647,18 @@ async function exportStudentCard(subject, opts = {}) {
         </div>
     ` : '';
 
-    // Honors commendations row in the export. Uses the pre-rendered PNGs
-    // (not the SVGs the live site uses) because html2canvas struggles with
-    // the SVG filters/gradients on the pins — rasterized PNGs render reliably.
+    // Honors commendations row in the export. Sits under the overall grade
+    // box in the photo column to mirror the live profile layout. Uses the
+    // pre-rendered PNGs (not the SVGs the live site uses) because html2canvas
+    // struggles with the SVG filters/gradients on the pins.
     const exportCommendations = Array.isArray(char.commendations) ? char.commendations : [];
     const exportCommendationsHTML = exportCommendations.length ? `
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;align-self:center;margin:0 16px;max-width:380px;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:240px;">
             ${exportCommendations.map(c => {
                 const meta = COMMENDATION_REGISTRY[c.type];
                 const tier = Number(c.tier);
                 if (!meta || !(tier >= 1 && tier <= 4)) return '';
-                return `<img src="honors/${c.type}-${tier}.png" alt="" width="56" height="56" style="display:block;">`;
+                return `<img src="honors/${c.type}-${tier}.png" alt="" width="64" height="64" style="display:block;">`;
             }).join('')}
         </div>
     ` : '';
@@ -5727,7 +5728,6 @@ async function exportStudentCard(subject, opts = {}) {
                     ${extraHeaderLine ? `<div style="font-family:'Inter',sans-serif;font-style:italic;font-size:12px;line-height:1;color:#94a3b8;margin-top:6px;">${extraHeaderLine}</div>` : ''}
                     ${char.id ? `<div style="font-family:'Orbitron',monospace;font-size:13px;line-height:1;color:#94a3b8;margin-top:6px;letter-spacing:0.1em;"><span style="color:#64748b;">ID</span> <span style="color:${idColor};margin-left:6px;text-shadow:${ranked ? `0 0 10px ${hexToRgba(accentColor, 0.6)}` : 'none'};">${char.id}</span></div>` : ''}
                 </div>
-                ${exportCommendationsHTML}
                 ${statusBoxHTML}
             </div>
 
@@ -5745,6 +5745,7 @@ async function exportStudentCard(subject, opts = {}) {
                         <div style="font-size:10px;line-height:1;text-transform:uppercase;letter-spacing:0.15em;color:${overallGradeLabelColor};font-family:'Orbitron',monospace;">Overall Rating</div>
                         <div style="font-size:40px;font-weight:900;color:${overallGradeNumberColor};font-family:'Orbitron',monospace;line-height:1;margin-top:8px;text-shadow:${overallGradeNumberShadow};">${overallGrade}</div>
                     </div>
+                    ${exportCommendationsHTML}
                 </div>
 
                 <div style="flex:1;min-width:0;">
