@@ -486,7 +486,7 @@ async function addStudent(student) {
 }
 
 // Update an existing student
-async function updateStudent(firebaseKey, updates) {
+async function updateStudent(_firebaseKey, updates) {
     if (!dbState.initialized) {
         console.error('Database not initialized');
         return false;
@@ -498,8 +498,8 @@ async function updateStudent(firebaseKey, updates) {
     }
 
     try {
-        await firebase.database().ref(`students/${firebaseKey}`).update(updates);
-        console.log('Updated student:', firebaseKey);
+        await firebase.database().ref(`students/${_firebaseKey}`).update(updates);
+        console.log('Updated student:', _firebaseKey);
         return true;
     } catch (error) {
         console.error('Error updating student:', error);
@@ -508,7 +508,7 @@ async function updateStudent(firebaseKey, updates) {
 }
 
 // Delete a student
-async function deleteStudent(firebaseKey) {
+async function deleteStudent(_firebaseKey) {
     if (!dbState.initialized) {
         console.error('Database not initialized');
         return false;
@@ -520,8 +520,8 @@ async function deleteStudent(firebaseKey) {
     }
 
     try {
-        await firebase.database().ref(`students/${firebaseKey}`).remove();
-        console.log('Deleted student:', firebaseKey);
+        await firebase.database().ref(`students/${_firebaseKey}`).remove();
+        console.log('Deleted student:', _firebaseKey);
         return true;
     } catch (error) {
         console.error('Error deleting student:', error);

@@ -2098,8 +2098,8 @@ function renderHonorsApp() {
         });
         chip.addEventListener('click', (e) => {
             e.stopPropagation();
-            const sid = chip.dataset.studentId;
-            const student = getAllStudents().find(s => s.id === sid);
+            const studentId = chip.dataset.studentId;
+            const student = getAllStudents().find(s => s.id === studentId);
             if (student) {
                 playSound('click');
                 showScreen('oaa-app');

@@ -7840,3 +7840,63 @@ body::before {
 .music-toggle.muted .music-icon-off {
     display: block;
 }
+
+/* ========================================
+   TAP FEEDBACK
+   ========================================
+   Active-state shrink for every interactive element. Pre-existing :active
+   rules on .lock-btn, .app-icon, .nav-btn, .student-card, .trait-quiz-option
+   stay where they are; this block fills in the elements that only had
+   :hover. Small buttons use scale(0.97); large interactive cards lift just
+   one pixel less than their :hover translation to register the press. */
+
+.filter-btn:active,
+.sort-btn:active,
+.view-all-link:active,
+.back-link:active,
+.favorite-btn:active,
+.compare-cancel:active,
+.comparison-close:active,
+.admin-login-btn:active,
+.admin-logout-btn:active,
+.admin-save-btn:active,
+.admin-reset-btn:active,
+.admin-modal-cancel:active,
+.admin-modal-confirm:active,
+.admin-add-student-btn:active,
+.admin-student-download:active,
+.admin-student-retire:active,
+.admin-modal-close:active,
+.admin-modal-delete:active,
+.image-framer-reset:active,
+.admin-btn-add:active,
+.admin-commendation-row-remove:active,
+.creator-upload-btn:active,
+.creator-select-btn:active,
+.creator-btn:active,
+.eval-card-discover:active,
+.trait-quiz-btn:active,
+.trait-quiz-close:active,
+.profile-download-btn:active,
+.music-toggle:active {
+    transform: scale(0.97);
+}
+
+.member-card:active,
+.class-card:active,
+.honors-tier-card:active,
+.exam-type-card:active,
+.past-event-item:active,
+.admin-student-item:active,
+.admin-changelog-item:active {
+    transform: translateY(-2px);
+}
+
+.honors-recipient-chip:active,
+.profile-commendation:active {
+    transform: scale(0.95);
+}
+
+.exams-section.collapsible .exams-section-header:active {
+    background: rgba(0, 245, 255, 0.08);
+}
