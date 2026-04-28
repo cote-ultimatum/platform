@@ -48,6 +48,14 @@
     --glow-spread: 0 0 20px var(--cyan-glow);
     --glow-crimson: 0 0 20px var(--crimson-glow);
     --max-width: 1400px;
+
+    /* Motion — durations grouped by intent so site-wide tempo stays uniform */
+    --transition-instant: 0.1s;
+    --transition-fast: 0.15s;
+    --transition-base: 0.2s;
+    --transition-slow: 0.3s;
+    --transition-slower: 0.5s;
+    --stagger-step: 0.04s;
 }
 
 * {
@@ -195,12 +203,12 @@ body::before {
     justify-content: center;
     gap: 0.1em;
     /* Glitch the whole COTE: logo using same effect as lock screen hover */
-    animation: glitchEffect 0.15s ease 0.9s 2;
+    animation: glitchEffect var(--transition-fast) ease 0.9s 2;
 }
 
 .boot-letter {
     opacity: 0;
-    animation: bootLetterIn 0.3s ease forwards;
+    animation: bootLetterIn var(--transition-slow) ease forwards;
     color: var(--cyan);
     text-shadow: 0 0 30px var(--cyan-glow);
     text-transform: uppercase;
@@ -221,7 +229,7 @@ body::before {
     margin-top: -1.5rem;
     margin-bottom: 2.5rem;
     opacity: 0;
-    animation: bootSubtitleIn 0.5s ease 0.6s forwards;
+    animation: bootSubtitleIn var(--transition-slower) ease 0.6s forwards;
     text-shadow: 0 0 20px var(--crimson-glow);
     text-transform: uppercase;
 }
@@ -264,7 +272,7 @@ body::before {
     height: 100%;
     background: linear-gradient(90deg, var(--cyan), var(--crimson-light));
     border-radius: 3px;
-    animation: bootLoad 1.8s ease 0.5s forwards;
+    animation: bootLoad 1.8s ease var(--transition-slower) forwards;
     box-shadow: 0 0 10px var(--cyan-glow);
 }
 
@@ -282,7 +290,7 @@ body::before {
     color: var(--text-muted);
     letter-spacing: 0.3em;
     opacity: 0;
-    animation: bootTextIn 0.5s ease 0.6s forwards;
+    animation: bootTextIn var(--transition-slower) ease 0.6s forwards;
 }
 
 @keyframes bootTextIn {
@@ -303,7 +311,7 @@ body::before {
 .screen.active {
     display: flex;
     flex-direction: column;
-    animation: screenFadeIn 0.5s ease-out;
+    animation: screenFadeIn var(--transition-slower) ease-out;
 }
 
 @keyframes screenFadeIn {
@@ -541,7 +549,7 @@ body::before {
 }
 
 .lock-title.glitching {
-    animation: glitchEffect 0.15s ease;
+    animation: glitchEffect var(--transition-fast) ease;
 }
 
 @keyframes titleGlow {
@@ -580,7 +588,7 @@ body::before {
     justify-content: center;
     gap: 0.75rem;
     padding: 0.75rem 1.5rem;
-    transition: color 0.3s ease;
+    transition: color var(--transition-slow) ease;
 }
 
 .enter-hint:hover {
@@ -721,7 +729,7 @@ body::before {
     border-radius: 12px;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .lock-btn:hover {
@@ -806,7 +814,7 @@ body::before {
     align-items: center;
     gap: 1rem;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-slow) ease;
     padding: 0.5rem;
 }
 
@@ -839,7 +847,7 @@ body::before {
     box-shadow:
         var(--glow-spread),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
     position: relative;
     overflow: hidden;
 }
@@ -852,7 +860,7 @@ body::before {
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    transition: left 0.5s ease;
+    transition: left var(--transition-slower) ease;
 }
 
 .app-icon:hover .app-icon-image {
@@ -936,7 +944,7 @@ body::before {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     cursor: default;
     text-transform: uppercase;
     font-size: 0.75rem;
@@ -956,7 +964,7 @@ body::before {
 /* OAA App keyboard hints */
 .oaa-hints,
 .exams-hints {
-    transition: bottom 0.3s ease, opacity 0.3s ease;
+    transition: bottom var(--transition-slow) ease, opacity var(--transition-slow) ease;
 }
 
 /* Move keyboard hints up when compare bar is active */
@@ -975,7 +983,7 @@ body::before {
     border-radius: 4px;
     font-family: 'Orbitron', monospace;
     font-size: 0.7rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 /* ========================================
@@ -1093,7 +1101,7 @@ body::before {
     border-radius: 12px;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .nav-group {
@@ -1196,7 +1204,7 @@ body::before {
     color: var(--text-muted);
     font-size: 1.1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .filter-btn:hover {
@@ -1244,7 +1252,7 @@ body::before {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
@@ -1355,7 +1363,7 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
     padding: 0.5rem 1rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
     min-width: 250px;
 }
 
@@ -1404,7 +1412,7 @@ body::before {
 
 .app-view.active {
     display: block;
-    animation: viewFadeIn 0.35s ease-out;
+    animation: viewFadeIn var(--transition-slow) ease-out;
 }
 
 @keyframes viewFadeIn {
@@ -1418,7 +1426,7 @@ body::before {
 
 .year-section {
     margin-bottom: 3rem;
-    transition: margin-bottom 0.3s ease;
+    transition: margin-bottom var(--transition-slow) ease;
 }
 
 .year-section.collapsed {
@@ -1435,7 +1443,7 @@ body::before {
     position: relative;
     cursor: pointer;
     user-select: none;
-    transition: margin-bottom 0.3s ease;
+    transition: margin-bottom var(--transition-slow) ease;
 }
 
 .year-section.collapsed .year-header {
@@ -1449,7 +1457,7 @@ body::before {
     border-right: 2px solid var(--cyan);
     border-bottom: 2px solid var(--cyan);
     transform: rotate(45deg);
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-slow) ease;
     opacity: 0.8;
 }
 
@@ -1468,7 +1476,7 @@ body::before {
 .year-collapse {
     display: grid;
     grid-template-rows: 1fr;
-    transition: grid-template-rows 0.35s ease;
+    transition: grid-template-rows var(--transition-slow) ease;
 }
 .year-section.collapsed .year-collapse {
     grid-template-rows: 0fr;
@@ -1478,7 +1486,7 @@ body::before {
     overflow: clip;
     overflow-clip-margin: 8px; /* let hover lift breathe past the edge */
     opacity: 1;
-    transition: opacity 0.25s ease;
+    transition: opacity var(--transition-base) ease;
 }
 .year-section.collapsed .year-collapse-inner {
     opacity: 0;
@@ -1500,7 +1508,7 @@ body::before {
     padding: 2.6rem 1.35rem 1.35rem;
     cursor: pointer;
     overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    transition: transform var(--transition-base) ease, box-shadow var(--transition-base) ease, border-color var(--transition-base) ease;
     box-shadow: 0 0 0 rgba(0, 0, 0, 0),
                 inset 0 0 24px color-mix(in srgb, var(--rank-color, var(--cyan)) 10%, transparent);
 }
@@ -1799,7 +1807,7 @@ body::before {
     font-size: 0.7rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    transition: background 0.18s ease;
+    transition: background var(--transition-fast) ease;
 }
 
 .admin-commendation-row-remove:hover {
@@ -1851,7 +1859,7 @@ body::before {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     flex: 0 0 auto;
-    transition: background 0.18s ease, box-shadow 0.18s ease;
+    transition: background var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
 }
 
 .admin-btn-add:hover {
@@ -1924,7 +1932,7 @@ body::before {
     border: 1px solid color-mix(in srgb, var(--cyan) 25%, transparent);
     border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color var(--transition-base) ease, box-shadow var(--transition-base) ease;
 }
 
 .honors-tier-card:hover {
@@ -1943,7 +1951,7 @@ body::before {
 .honors-tier-detail {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.25s ease, margin-top 0.25s ease;
+    transition: grid-template-rows var(--transition-base) ease, margin-top var(--transition-base) ease;
     overflow: hidden;
     margin-top: 0;
 }
@@ -2051,7 +2059,7 @@ body::before {
     color: var(--text-primary, #e2e8f0);
     font-size: 0.78rem;
     cursor: pointer;
-    transition: background 0.18s ease, border-color 0.18s ease;
+    transition: background var(--transition-fast) ease, border-color var(--transition-fast) ease;
 }
 
 .honors-recipient-chip:hover {
@@ -2097,7 +2105,7 @@ body::before {
         inset 0 0 0 1px color-mix(in srgb, var(--rank-color, var(--cyan)) 40%, transparent),
         0 0 30px color-mix(in srgb, var(--rank-color, var(--cyan)) 32%, transparent),
         0 20px 60px rgba(0, 0, 0, 0.6);
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow var(--transition-slow) ease;
 }
 
 /* Hover AMPLIFIES rank presence (never dims it) */
@@ -2288,25 +2296,8 @@ body::before {
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
     position: relative;
-    animation: cardSlideIn 0.5s ease backwards;
-}
-
-.class-card:nth-child(1) { animation-delay: 0.05s; }
-.class-card:nth-child(2) { animation-delay: 0.1s; }
-.class-card:nth-child(3) { animation-delay: 0.15s; }
-.class-card:nth-child(4) { animation-delay: 0.2s; }
-
-@keyframes cardSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .class-card::before {
@@ -2335,10 +2326,10 @@ body::before {
 }
 
 /* Staggered class card entrance - opacity only to avoid hover conflict */
-.class-card:nth-child(1) { animation: classCardIn 0.5s ease backwards 0.1s; }
-.class-card:nth-child(2) { animation: classCardIn 0.5s ease backwards 0.2s; }
-.class-card:nth-child(3) { animation: classCardIn 0.5s ease backwards 0.3s; }
-.class-card:nth-child(4) { animation: classCardIn 0.5s ease backwards 0.4s; }
+.class-card:nth-child(1) { animation: classCardIn var(--transition-slower) ease backwards 0.1s; }
+.class-card:nth-child(2) { animation: classCardIn var(--transition-slower) ease backwards var(--transition-base); }
+.class-card:nth-child(3) { animation: classCardIn var(--transition-slower) ease backwards var(--transition-slow); }
+.class-card:nth-child(4) { animation: classCardIn var(--transition-slower) ease backwards 0.4s; }
 
 @keyframes classCardIn {
     from {
@@ -2436,7 +2427,7 @@ body::before {
     font-weight: 600;
     padding: 0.15rem 0.4rem;
     border-radius: 4px;
-    animation: deltaAppear 0.3s ease;
+    animation: deltaAppear var(--transition-slow) ease;
 }
 
 @keyframes deltaAppear {
@@ -2487,7 +2478,7 @@ body::before {
     font-size: 0.75rem;
     color: var(--text-muted);
     z-index: 100;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 .db-status-dot {
@@ -2495,7 +2486,7 @@ body::before {
     height: 8px;
     border-radius: 50%;
     background: #ef4444;
-    transition: background 0.3s ease;
+    transition: background var(--transition-slow) ease;
 }
 
 .db-status.connected .db-status-dot {
@@ -2520,7 +2511,7 @@ body::before {
     gap: 1rem;
     padding: 0.65rem 0.5rem;
     border-radius: 8px;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     cursor: pointer;
     position: relative;
 }
@@ -2601,7 +2592,7 @@ body::before {
     border-radius: 8px;
     color: var(--text-muted);
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     cursor: pointer;
 }
 
@@ -2634,7 +2625,7 @@ body::before {
     cursor: pointer;
     margin-bottom: 2rem;
     padding: 0.5rem 0;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .back-link svg {
@@ -2716,7 +2707,7 @@ body::before {
     border-radius: var(--border-radius);
     padding: 1.5rem 1.75rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
     animation: studentCardIn 0.4s ease backwards;
 }
 
@@ -2853,7 +2844,7 @@ body::before {
     right: 0;
     height: var(--bar-height, 8px);
     border-radius: 2px;
-    transition: height 0.3s ease, filter 0.2s ease;
+    transition: height var(--transition-slow) ease, filter var(--transition-base) ease;
 }
 
 .stat-mini-bar.stat-academic::after { background: #9b59b6; }
@@ -2881,8 +2872,8 @@ body::before {
     max-width: 1000px;
     margin: 2rem auto 0;
     position: relative;
-    animation: profileCardIn 0.5s ease;
-    transition: box-shadow 0.3s ease;
+    animation: profileCardIn var(--transition-slower) ease;
+    transition: box-shadow var(--transition-slow) ease;
 }
 
 .profile-card:hover {
@@ -3025,7 +3016,7 @@ body::before {
     height: 72px;
     flex: 0 0 auto;
     cursor: pointer;
-    transition: transform 0.18s ease;
+    transition: transform var(--transition-fast) ease;
     position: relative;
 }
 
@@ -3064,7 +3055,7 @@ body::before {
     text-align: center;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--transition-fast) ease;
     z-index: 10;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     min-width: max-content;
@@ -3090,7 +3081,7 @@ body::before {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: background var(--transition-base) ease, box-shadow var(--transition-base) ease, transform var(--transition-base) ease;
 }
 
 .profile-download-btn:hover {
@@ -3328,7 +3319,7 @@ body::before {
     height: 100%;
     background: var(--stat-bar-fill);
     border-radius: 4px;
-    transition: width 0.8s ease, background 0.3s ease;
+    transition: width 0.8s ease, background var(--transition-slow) ease;
     position: relative;
     box-shadow: 0 0 15px var(--cyan-glow);
 }
@@ -3419,7 +3410,7 @@ body::before {
 /* Collapsible sections */
 .exams-section.collapsible .exams-section-header {
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background var(--transition-base) ease;
 }
 
 .exams-section.collapsible .exams-section-header:hover {
@@ -3430,7 +3421,7 @@ body::before {
     margin-left: auto;
     font-size: 0.75rem;
     color: var(--text-muted);
-    transition: color 0.2s ease;
+    transition: color var(--transition-base) ease;
 }
 
 .exams-section.collapsible:hover .collapse-icon {
@@ -3440,7 +3431,7 @@ body::before {
 .collapsible-content {
     max-height: 2000px;
     overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.3s ease;
+    transition: max-height 0.4s ease, opacity var(--transition-slow) ease;
     opacity: 1;
 }
 
@@ -3570,7 +3561,7 @@ body::before {
     gap: 1.5rem;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid rgba(77, 201, 230, 0.05);
-    transition: background 0.2s ease;
+    transition: background var(--transition-base) ease;
 }
 
 .past-event-item:last-child {
@@ -3624,7 +3615,7 @@ body::before {
     background: linear-gradient(135deg, rgba(15, 26, 46, 0.8) 0%, rgba(10, 18, 32, 0.6) 100%);
     border: 1px solid rgba(77, 201, 230, 0.1);
     border-radius: var(--border-radius);
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 .exam-type-card:hover {
@@ -3812,7 +3803,7 @@ body::before {
 }
 
 .glitch-overlay.active {
-    animation: glitchFlash 0.15s ease-out;
+    animation: glitchFlash var(--transition-fast) ease-out;
 }
 
 @keyframes glitchFlash {
@@ -3901,7 +3892,7 @@ body::before {
    ======================================== */
 
 .glitching {
-    animation: glitchEffect 0.15s ease;
+    animation: glitchEffect var(--transition-fast) ease;
 }
 
 @keyframes glitchEffect {
@@ -3945,7 +3936,7 @@ body::before {
     padding: 0.25rem 0.5rem;
     margin-left: 0.5rem;
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     vertical-align: middle;
 }
 
@@ -3974,7 +3965,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .compare-checkbox.checked {
@@ -4008,7 +3999,7 @@ body::before {
     border-radius: var(--border-radius-lg);
     padding: 1rem 2rem;
     z-index: 1000;
-    transition: bottom 0.3s ease;
+    transition: bottom var(--transition-slow) ease;
     box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--cyan-glow);
 }
 
@@ -4036,7 +4027,7 @@ body::before {
     color: var(--bg-primary);
     font-weight: 600;
     font-size: 0.9rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .compare-btn:hover:not(:disabled) {
@@ -4056,7 +4047,7 @@ body::before {
     border-radius: var(--border-radius-sm);
     color: var(--text-secondary);
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .compare-cancel:hover {
@@ -4083,7 +4074,7 @@ body::before {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 .comparison-modal.active {
@@ -4100,7 +4091,7 @@ body::before {
     max-height: 85vh;
     overflow-y: auto;
     transform: scale(0.9) translateY(20px);
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-slow) ease;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7), 0 0 40px var(--cyan-glow);
 }
 
@@ -4134,7 +4125,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .comparison-close:hover {
@@ -4160,7 +4151,7 @@ body::before {
     border-radius: 50%;
     overflow: hidden;
     margin: 0 auto 1rem;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow var(--transition-slow) ease;
 }
 
 /* Class-specific avatar glows */
@@ -4408,7 +4399,7 @@ body::before {
     padding: 0.75rem 1rem;
     color: var(--text-primary);
     font-size: 1rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-input-group input:focus {
@@ -4430,7 +4421,7 @@ body::before {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     margin-top: 0.5rem;
     display: inline-flex;
     align-items: center;
@@ -4509,7 +4500,7 @@ body::before {
     border-radius: 8px;
     font-size: 0.85rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-logout-btn:hover {
@@ -4600,7 +4591,7 @@ body::before {
     font-family: 'Orbitron', monospace;
     font-size: 1rem;
     text-align: center;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-class-input input:focus {
@@ -4650,7 +4641,7 @@ body::before {
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-save-btn:hover {
@@ -4672,7 +4663,7 @@ body::before {
     padding: 0.75rem 1rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-reset-btn:hover {
@@ -4705,7 +4696,7 @@ body::before {
     background: rgba(255, 255, 255, 0.02);
     border-radius: 0 8px 8px 0;
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-changelog-item:hover {
@@ -4769,7 +4760,7 @@ body::before {
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.15s ease, visibility 0.15s ease;
+    transition: opacity var(--transition-fast) ease, visibility var(--transition-fast) ease;
 }
 
 .admin-modal-overlay.active {
@@ -4787,7 +4778,7 @@ body::before {
     max-height: 90vh;
     overflow-y: auto;
     overscroll-behavior: contain;
-    animation: modalSlideIn 0.2s ease-out;
+    animation: modalSlideIn var(--transition-base) ease-out;
 }
 
 /* The student edit/add modal has many fields — give it more breathing room */
@@ -4872,7 +4863,7 @@ body::before {
     padding: 0.75rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-modal-cancel:hover {
@@ -4889,7 +4880,7 @@ body::before {
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-modal-confirm:hover {
@@ -4931,11 +4922,11 @@ body::before {
 
 /* Admin View Transitions */
 .admin-login-container {
-    animation: adminFadeIn 0.35s ease-out;
+    animation: adminFadeIn var(--transition-slow) ease-out;
 }
 
 #admin-login-view.fading-out {
-    animation: adminFadeOut 0.35s ease-in forwards;
+    animation: adminFadeOut var(--transition-slow) ease-in forwards;
 }
 
 @keyframes adminFadeIn {
@@ -4991,7 +4982,7 @@ body::before {
 
 /* Admin login icon glitch on hover */
 .admin-login-icon {
-    transition: color 0.2s ease;
+    transition: color var(--transition-base) ease;
 }
 
 .admin-login-icon:hover {
@@ -5029,7 +5020,7 @@ body::before {
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-add-student-btn:hover {
@@ -5078,7 +5069,7 @@ body::before {
     border: 1px solid var(--bg-tertiary);
     border-radius: var(--border-radius-sm);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-student-item:hover {
@@ -5147,7 +5138,7 @@ body::before {
     justify-content: center;
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    transition: color var(--transition-base) ease, background var(--transition-base) ease, transform var(--transition-base) ease;
     flex-shrink: 0;
 }
 .admin-student-download svg {
@@ -5175,7 +5166,7 @@ body::before {
     justify-content: center;
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    transition: color var(--transition-base) ease, background var(--transition-base) ease, transform var(--transition-base) ease;
     flex-shrink: 0;
 }
 
@@ -5221,7 +5212,7 @@ body::before {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-modal-close:hover {
@@ -5580,7 +5571,7 @@ body::before {
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .admin-modal-delete:hover {
@@ -5652,7 +5643,7 @@ body::before {
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 /* Always visible - no opacity changes */
@@ -5668,7 +5659,7 @@ body::before {
     font-size: 0.85rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 .progress-step.active .step-number {
@@ -5699,7 +5690,7 @@ body::before {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: rgba(255, 255, 255, 0.4);
-    transition: color 0.3s ease;
+    transition: color var(--transition-slow) ease;
 }
 
 .progress-step.active .step-label {
@@ -5717,7 +5708,7 @@ body::before {
     margin: 0 0.75rem;
     margin-bottom: 1.4rem;
     border-radius: 2px;
-    transition: background 0.3s ease;
+    transition: background var(--transition-slow) ease;
 }
 
 .progress-line.completed {
@@ -5792,7 +5783,7 @@ body::before {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: border-color 0.3s ease;
+    transition: border-color var(--transition-slow) ease;
 }
 
 .creator-avatar-preview:hover {
@@ -5821,7 +5812,7 @@ body::before {
 /* Creator Steps */
 .creator-step {
     display: none;
-    animation: creatorFadeIn 0.35s ease-out;
+    animation: creatorFadeIn var(--transition-slow) ease-out;
 }
 
 .creator-step.active {
@@ -5887,7 +5878,7 @@ body::before {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
     flex-shrink: 0;
 }
 
@@ -5895,7 +5886,7 @@ body::before {
     width: 18px;
     height: 18px;
     color: var(--text-muted);
-    transition: color 0.2s;
+    transition: color var(--transition-base);
 }
 
 .creator-upload-btn:hover {
@@ -5921,7 +5912,7 @@ body::before {
     padding: 0.75rem 1rem;
     color: var(--text-primary);
     font-size: 0.9rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color var(--transition-base) ease, box-shadow var(--transition-base) ease;
 }
 
 .creator-input-group input:focus {
@@ -5940,7 +5931,7 @@ body::before {
     font-family: inherit;
     min-height: 100px;
     resize: vertical;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color var(--transition-base) ease, box-shadow var(--transition-base) ease;
 }
 
 .creator-input-group textarea:focus {
@@ -5978,7 +5969,7 @@ body::before {
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .creator-select-btn:hover {
@@ -6162,7 +6153,7 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .eval-card:hover {
@@ -6273,7 +6264,7 @@ body::before {
 
 .eval-card-trait .trait-badge.clickable {
     cursor: pointer;
-    transition: opacity 0.15s, filter 0.15s;
+    transition: opacity var(--transition-fast), filter var(--transition-fast);
 }
 
 .eval-card-trait .trait-badge.clickable:hover {
@@ -6376,7 +6367,7 @@ body::before {
 .eval-bar-fill {
     height: 100%;
     border-radius: 4px;
-    transition: width 0.3s ease, left 0.3s ease;
+    transition: width var(--transition-slow) ease, left var(--transition-slow) ease;
     position: absolute;
     top: 0;
     left: 40%;
@@ -6465,7 +6456,7 @@ body::before {
     border: 3px solid var(--cyan);
     margin-top: -7px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
 }
 
 .eval-card-slider::-webkit-slider-thumb:hover {
@@ -6518,7 +6509,7 @@ body::before {
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .eval-card-discover:hover {
@@ -6572,7 +6563,7 @@ body::before {
     background: white;
     border: 2px solid var(--cyan);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform var(--transition-base) ease, box-shadow var(--transition-base) ease;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
@@ -6627,7 +6618,7 @@ body::before {
     border-radius: 8px;
     color: var(--crimson);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -6689,7 +6680,7 @@ body::before {
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 .error-toast.visible {
@@ -6713,7 +6704,7 @@ body::before {
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: all var(--transition-slow) ease;
 }
 
 .success-toast.visible {
@@ -6742,7 +6733,7 @@ body::before {
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -6794,7 +6785,7 @@ body::before {
     max-width: 800px;
     margin: 0 auto 1.5rem;
     position: relative;
-    animation: profileCardIn 0.5s ease;
+    animation: profileCardIn var(--transition-slower) ease;
 }
 
 .creator-preview-card::before {
@@ -6914,7 +6905,7 @@ body::before {
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity var(--transition-slow) ease, visibility var(--transition-slow) ease;
 }
 
 .trait-quiz-modal.active {
@@ -7010,7 +7001,7 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7108,7 +7099,7 @@ body::before {
     font-size: 0.9rem;
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base) ease;
     position: relative;
     overflow: hidden;
 }
@@ -7122,7 +7113,7 @@ body::before {
     height: 100%;
     background: var(--crimson);
     transform: scaleY(0);
-    transition: transform 0.2s ease;
+    transition: transform var(--transition-base) ease;
 }
 
 .trait-quiz-option:hover {
@@ -7769,7 +7760,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base), opacity var(--transition-slow);
     opacity: 0;
     pointer-events: none;
 }
@@ -7783,7 +7774,7 @@ body::before {
     width: 18px;
     height: 18px;
     color: var(--text-muted);
-    transition: color 0.2s;
+    transition: color var(--transition-base);
 }
 
 .music-toggle:focus {
