@@ -2195,7 +2195,7 @@ function renderAdminCommendationsList() {
             tierSelect.innerHTML = '<option value="">Tier</option>';
             tierSelect.disabled = true;
         } else if (tiers.length === 1) {
-            tierSelect.innerHTML = `<option value="${tiers[0]}" selected>${escapeHtml(meta.name)}</option>`;
+            tierSelect.innerHTML = `<option value="${tiers[0]}" selected>—</option>`;
             tierSelect.disabled = true;
         } else {
             tierSelect.innerHTML = '<option value="">Tier</option>' +
