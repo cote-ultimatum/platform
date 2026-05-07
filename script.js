@@ -1851,6 +1851,12 @@ const COMMENDATION_REGISTRY = {
         description: 'Selected for membership',
         tiers: [1],
     },
+    cooking: {
+        category: 'Social',
+        name: 'Cooking Club',
+        description: 'Selected for membership',
+        tiers: [1],
+    },
     cipher: {
         category: 'Limited',
         name: 'Cipher',
