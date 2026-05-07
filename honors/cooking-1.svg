@@ -50,14 +50,19 @@
     <g clip-path="url(#ringClip)">
       <rect width="64" height="64" fill="url(#topHighlight)"/>
     </g>
-    <!-- Chef's toque: poufy three-lobe dome wider than its band -->
+    <!-- Chef's toque: oval dome with three pleat scallops, narrow brim -->
     <g fill="url(#symbolMetalGrad)">
-      <circle cx="20" cy="30" r="8"/>
-      <circle cx="44" cy="30" r="8"/>
-      <circle cx="32" cy="24" r="12"/>
-      <rect x="22" y="37" width="20" height="11" rx="1.5"/>
+      <ellipse cx="32" cy="27" rx="14" ry="10"/>
+      <circle cx="23" cy="19" r="5"/>
+      <circle cx="41" cy="19" r="5"/>
+      <circle cx="32" cy="15" r="5"/>
+      <rect x="22" y="35" width="20" height="12" rx="1.5"/>
     </g>
-    <!-- Seam between dome and band -->
-    <rect x="22" y="38.6" width="20" height="0.9" fill="url(#fieldGrad)" opacity="0.6"/>
+    <!-- Vertical pleat lines on the dome, aligned with the scallops -->
+    <g stroke="url(#fieldGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.45">
+      <line x1="23" y1="22" x2="23" y2="33"/>
+      <line x1="32" y1="18" x2="32" y2="33"/>
+      <line x1="41" y1="22" x2="41" y2="33"/>
+    </g>
   </g>
 </svg>
