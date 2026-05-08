@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Cooking — commendation pin for Cooking Club members. Cotton-candy to rose
-     ring (Discord role gradient: #fbcfe8 → #db2777) + stylized chef's toque. -->
+<!-- Cooking — commendation pin for Cooking Club members. Rose to cotton-candy
+     ring (Discord role gradient: #db2777 → #fbcfe8) + stylized kitchen knife. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
     <radialGradient id="fieldGrad" cx="50%" cy="38%" r="58%">
@@ -8,8 +8,8 @@
       <stop offset="100%" stop-color="#050608"/>
     </radialGradient>
     <linearGradient id="metalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#fbcfe8"/>
-      <stop offset="100%" stop-color="#db2777"/>
+      <stop offset="0%" stop-color="#db2777"/>
+      <stop offset="100%" stop-color="#fbcfe8"/>
     </linearGradient>
     <radialGradient id="topHighlight" cx="50%" cy="20%" r="40%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32"/>
@@ -28,9 +28,9 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <linearGradient id="symbolMetalGrad" x1="0" y1="14" x2="0" y2="48" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fbcfe8"/>
-      <stop offset="100%" stop-color="#db2777"/>
+    <linearGradient id="symbolMetalGrad" x1="0" y1="14" x2="0" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#db2777"/>
+      <stop offset="100%" stop-color="#fbcfe8"/>
     </linearGradient>
     <filter id="ringGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur"/>
@@ -50,27 +50,14 @@
     <g clip-path="url(#ringClip)">
       <rect width="64" height="64" fill="url(#topHighlight)"/>
     </g>
-    <!-- Chef's toque: continuous dome with three pleat scallops tapering into a narrow brim -->
-    <g fill="url(#symbolMetalGrad)">
-      <path d="
-        M 22 35
-        Q 14 32, 14 24
-        Q 14 16, 22 17
-        Q 22 11, 28 14
-        Q 30 9, 32 14
-        Q 34 9, 36 14
-        Q 42 11, 42 17
-        Q 50 16, 50 24
-        Q 50 32, 42 35
-        Z
-      "/>
-      <rect x="22" y="34" width="20" height="13" rx="2"/>
-    </g>
-    <!-- Vertical pleat lines on the lower dome -->
-    <g stroke="url(#fieldGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.4">
-      <line x1="24" y1="22" x2="24" y2="33"/>
-      <line x1="32" y1="20" x2="32" y2="33"/>
-      <line x1="40" y1="22" x2="40" y2="33"/>
+    <!-- Kitchen knife: blade tip upper-right, handle lower-left -->
+    <g fill="url(#symbolMetalGrad)" transform="rotate(-45 32 32)">
+      <!-- Blade: spine straight along top, cutting edge curves with belly -->
+      <path d="M 56 26 L 34 22 L 34 32 Q 46 33.5, 56 26 Z"/>
+      <!-- Bolster: collar between blade and handle -->
+      <rect x="30.5" y="21.5" width="3" height="11" rx="0.6"/>
+      <!-- Handle -->
+      <rect x="9" y="23" width="21.5" height="8" rx="2.2"/>
     </g>
   </g>
 </svg>
