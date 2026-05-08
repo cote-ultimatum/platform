@@ -29,7 +29,7 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <linearGradient id="symbolMetalGrad" x1="0" y1="20" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+    <linearGradient id="symbolMetalGrad" x1="0" y1="20" x2="0" y2="44" gradientUnits="userSpaceOnUse" gradientTransform="rotate(40 32 32)">
       <stop offset="0%" stop-color="#fbcfe8"/>
       <stop offset="100%" stop-color="#db2777"/>
     </linearGradient>
@@ -51,11 +51,13 @@
     <g clip-path="url(#ringClip)">
       <rect width="64" height="64" fill="url(#topHighlight)"/>
     </g>
-    <!-- Knife mirrored from 🔪 emoji. Drawn horizontally then rotated 30° so the
+    <!-- Knife mirrored from 🔪 emoji. Drawn horizontally then rotated 40° so the
          blade tip rides upper-left and the handle settles lower-right.
          Tip at (11,32), butt at (53,32) — both r=21 from center, symmetric.
-         Blade:handle ≈ 60:40 to match the emoji's chunkier handle. -->
-    <g transform="rotate(30 32 32)">
+         Blade:handle ≈ 60:40 to match the emoji's chunkier handle.
+         Gradient is rotated by the same 40° (see symbolMetalGrad above) so the
+         metallic highlight runs spine-to-edge instead of cutting across the blade. -->
+    <g transform="rotate(40 32 32)">
       <!-- Blade: gently sloped spine, deep belly on cutting edge -->
       <path d="M 11 32 L 36 27 L 36 37 Q 22 43, 11 32 Z" fill="url(#symbolMetalGrad)"/>
       <!-- Bolster: thin metallic collar separating blade and handle -->
