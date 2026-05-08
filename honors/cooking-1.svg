@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Cooking — commendation pin for Cooking Club members. Cotton-candy to rose
-     ring (Discord role gradient: #fbcfe8 → #db2777) + stylized kitchen knife. -->
+     ring (Discord role gradient: #fbcfe8 → #db2777) + chef's-knife silhouette
+     modeled on the 🔪 emoji: light bladed body, dark riveted handle. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
     <radialGradient id="fieldGrad" cx="50%" cy="38%" r="58%">
@@ -28,7 +29,7 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <linearGradient id="symbolMetalGrad" x1="0" y1="14" x2="0" y2="50" gradientUnits="userSpaceOnUse">
+    <linearGradient id="symbolMetalGrad" x1="0" y1="20" x2="0" y2="44" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#fbcfe8"/>
       <stop offset="100%" stop-color="#db2777"/>
     </linearGradient>
@@ -50,18 +51,19 @@
     <g clip-path="url(#ringClip)">
       <rect width="64" height="64" fill="url(#topHighlight)"/>
     </g>
-    <!-- Kitchen knife centered in pin field, rotated -45° (tip upper-right, butt lower-left).
-         Max distance from center ≈ 19.5, leaves comfortable margin inside r=24 ring. -->
-    <g transform="rotate(-45 32 32)">
-      <!-- Blade: spine slopes from raised heel down to tip; cutting edge curves with belly -->
-      <path d="M 51 28 L 33 23 L 33 33 Q 45 36, 51 28 Z" fill="url(#symbolMetalGrad)"/>
-      <!-- Bolster: collar between blade and handle -->
-      <rect x="30" y="22" width="3.2" height="12" rx="0.7" fill="url(#symbolMetalGrad)"/>
-      <!-- Handle -->
-      <rect x="14" y="24.5" width="16" height="9" rx="2.5" fill="url(#symbolMetalGrad)"/>
-      <!-- Rivets -->
-      <circle cx="19" cy="29" r="0.9" fill="#1a1d24"/>
-      <circle cx="25" cy="29" r="0.9" fill="#1a1d24"/>
+    <!-- Knife mirrored from 🔪 emoji: blade tip upper-left, dark handle lower-right.
+         Drawn horizontally (tip at x=12, handle at x=53) then rotated 20° so the
+         tip rides comfortably above center. Max distance from center ≈ 21.6. -->
+    <g transform="rotate(20 32 32)">
+      <!-- Blade: gently sloped spine, deep belly on cutting edge -->
+      <path d="M 12 32 L 40 26 L 40 36 Q 22 44, 12 32 Z" fill="url(#symbolMetalGrad)"/>
+      <!-- Bolster: thin metallic collar separating blade and handle -->
+      <rect x="40" y="25.5" width="2.5" height="11" rx="0.5" fill="url(#symbolMetalGrad)"/>
+      <!-- Handle: solid dark, like the emoji -->
+      <rect x="43" y="27" width="10" height="9" rx="2" fill="#1a1d24"/>
+      <!-- Rivets: light pin heads on the dark handle -->
+      <circle cx="46" cy="31.5" r="0.9" fill="url(#symbolMetalGrad)"/>
+      <circle cx="50" cy="31.5" r="0.9" fill="url(#symbolMetalGrad)"/>
     </g>
   </g>
 </svg>
