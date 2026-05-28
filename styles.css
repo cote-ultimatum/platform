@@ -2961,20 +2961,30 @@ body::before {
     /* Grid layout with named areas — header is just info on the left,
        actions on the right. Commendations live under the overall-grade
        box in the body, not in the header.
-         row 1: rank-crest | actions   (only visible for ranked profiles)
-         row 2: name       | actions
-         row 3: class spans both
-         row 4: quote spans both       (so typing doesn't expand col 1) */
+         row 1: name  | actions
+         row 2: class spans both
+         row 3: quote spans both        (so typing doesn't expand col 1)
+       Ranked profiles add a rank-crest row above the name (see below).
+       The crest row is omitted entirely when unranked — otherwise the
+       taller actions column (ID + download) spans into the empty crest
+       row and pushes the name down, leaving a gap above the name. */
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-areas:
-        "rank-crest actions"
         "name actions"
         "class class"
         "quote quote";
     align-items: start;
     column-gap: 1rem;
     row-gap: 0;
+}
+
+.profile-card--ranked .profile-header {
+    grid-template-areas:
+        "rank-crest actions"
+        "name actions"
+        "class class"
+        "quote quote";
 }
 
 .profile-header-info { display: contents; }
@@ -7461,16 +7471,26 @@ body::before {
     /* --- OAA profile --- */
     .profile-header {
         padding: 1.25rem;
-        /* Single-column stack on mobile — every grid area becomes a row */
+        /* Single-column stack on mobile — every grid area becomes a row.
+           Omit the crest row when unranked, otherwise its row-gap leaves
+           empty space above the name. */
         grid-template-columns: 1fr;
         grid-template-areas:
-            "rank-crest"
             "name"
             "class"
             "quote"
             "actions";
         row-gap: 1rem;
         align-items: stretch;
+    }
+
+    .profile-card--ranked .profile-header {
+        grid-template-areas:
+            "rank-crest"
+            "name"
+            "class"
+            "quote"
+            "actions";
     }
 
     .profile-header-info h2 {
