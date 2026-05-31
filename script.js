@@ -3405,20 +3405,26 @@ async function handleGoogleSignIn() {
     };
 
     try {
-        // Redirect flow: page navigates to Google, then back. On return,
-        // initDatabase consumes the result and onAuthChange flips the view.
-        // Non-admin / error cases surface via consumePendingSignInError in
-        // initAdminApp after the page reloads.
+        // Popup flow: Google opens in a popup, returns the result inline.
+        // On success the onAuthChange observer flips the view to the panel,
+        // so we leave the button loading and let it take over.
         const result = await COTEDB.signInWithGoogle();
 
-        if (result.reason === 'pending-redirect') {
-            // Page is about to navigate away; leave the button in loading state.
+        if (result.success) {
             return;
         }
 
-        showErrorToast('Sign-in failed. Try again.');
         restore();
-        playSound('error');
+        if (result.reason === 'cancelled') {
+            // User closed the popup; no error noise.
+            playSound('back');
+        } else if (result.reason === 'not-admin') {
+            showErrorToast('Account not authorized');
+            playSound('error');
+        } else {
+            showErrorToast('Sign-in failed. Try again.');
+            playSound('error');
+        }
     } catch (error) {
         console.error('Sign-in error:', error);
         showErrorToast('Sign-in failed. Try again.');

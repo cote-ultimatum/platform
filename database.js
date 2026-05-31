@@ -247,21 +247,41 @@ function consumePendingSignInError() {
     return err;
 }
 
-// Sign in with Google via full-page redirect. Returns:
-//   { success: false, reason: 'pending-redirect' }  — redirect started; page will navigate
-//   { success: false, reason: 'not-initialized' }   — Firebase not ready
-//   { success: false, reason: 'error', error }      — redirect failed to start
-// After Google redirects back, consumeRedirectResult() in initDatabase handles
-// the returning state and onAuthChange fires for successful sign-ins.
+// Sign in with Google via popup. Returns:
+//   { success: true }                                — signed in as an admin; onAuthChange flips the view
+//   { success: false, reason: 'not-admin', displayName } — signed in but not authorized (signed back out)
+//   { success: false, reason: 'cancelled' }          — user closed the popup
+//   { success: false, reason: 'not-initialized' }    — Firebase not ready
+//   { success: false, reason: 'error', error }       — popup blocked or other failure
+//
+// Uses a popup rather than signInWithRedirect: the redirect handshake relies on
+// third-party storage between the app's domain and the firebaseapp.com
+// authDomain, which Chrome/Safari now block — getRedirectResult() comes back
+// empty and no account is ever created. The popup keeps the credential exchange
+// in a first-party context, so it survives third-party cookie restrictions.
 async function signInWithGoogle() {
     if (!dbState.initialized) {
         return { success: false, reason: 'not-initialized' };
     }
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        await firebase.auth().signInWithRedirect(provider);
-        return { success: false, reason: 'pending-redirect' };
+        const result = await firebase.auth().signInWithPopup(provider);
+        const adminRecord = await checkAdminStatus(result.user.uid);
+        if (!adminRecord) {
+            await firebase.auth().signOut();
+            return {
+                success: false,
+                reason: 'not-admin',
+                displayName: result.user.displayName || result.user.email
+            };
+        }
+        // Admin: onAuthChange observer will flip the view to the panel.
+        return { success: true };
     } catch (error) {
+        if (error?.code === 'auth/popup-closed-by-user' ||
+            error?.code === 'auth/cancelled-popup-request') {
+            return { success: false, reason: 'cancelled' };
+        }
         console.error('Google sign-in error:', error);
         return { success: false, reason: 'error', error: error?.message ?? String(error) };
     }
