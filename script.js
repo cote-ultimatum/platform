@@ -1870,7 +1870,7 @@ const COMMENDATION_REGISTRY = {
         tiers: [1],
     },
     elite: {
-        category: 'Limited',
+        category: 'Service',
         name: 'Elite',
         description: 'Rise above the rest',
         tiers: [1],
