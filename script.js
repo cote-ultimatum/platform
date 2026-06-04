@@ -1870,7 +1870,7 @@ const COMMENDATION_REGISTRY = {
         tiers: [1],
     },
     elite: {
-        category: 'Service',
+        category: 'Limited',
         name: 'Elite',
         description: 'Recognized by the school\'s leadership for outstanding contribution',
         tiers: [1],
