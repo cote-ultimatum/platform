@@ -1872,7 +1872,7 @@ const COMMENDATION_REGISTRY = {
     elite: {
         category: 'Service',
         name: 'Elite',
-        description: 'Rise above the rest',
+        description: 'Recognized by the school\'s leadership for outstanding contribution',
         tiers: [1],
     },
 };
