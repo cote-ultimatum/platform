@@ -1869,6 +1869,12 @@ const COMMENDATION_REGISTRY = {
         description: 'Outperform all challengers',
         tiers: [1],
     },
+    elite: {
+        category: 'Limited',
+        name: 'Elite',
+        description: 'Rise above the rest',
+        tiers: [1],
+    },
 };
 const TIER_NAMES = ['', 'I', 'II', 'III', 'IV'];
 
