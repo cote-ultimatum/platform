@@ -1860,7 +1860,7 @@ const COMMENDATION_REGISTRY = {
     cipher: {
         category: 'Limited',
         name: 'Cipher',
-        description: 'Decipher the hidden message',
+        description: 'Uncover the island\'s secret',
         tiers: [1],
     },
     apex: {
