@@ -1671,7 +1671,10 @@ body::before {
 }
 .profile-rank-quote {
     position: relative;
-    margin: 1.1rem auto 0;
+    /* Ranked profiles hide the class line, so the quote would otherwise sit
+       right under the name. Extra top + bottom margin floats it in the band
+       between the name and the body (image / evaluation). */
+    margin: 2rem auto 1rem;
     padding: 0.4rem 2rem 0.6rem;
     text-align: center;
     font-family: 'Inter', sans-serif;
