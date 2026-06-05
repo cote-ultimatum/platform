@@ -2958,22 +2958,23 @@ body::before {
     padding: 2rem;
     position: relative;
     background: linear-gradient(180deg, rgba(0, 245, 255, 0.05) 0%, transparent 100%);
-    /* Grid layout with named areas — header is just info on the left,
-       actions on the right. Commendations live under the overall-grade
-       box in the body, not in the header.
-         row 1: name  | actions
-         row 2: class spans both
-         row 3: quote spans both        (so typing doesn't expand col 1)
-       Ranked profiles add a rank-crest row above the name (see below).
-       The crest row is omitted entirely when unranked — otherwise the
-       taller actions column (ID + download) spans into the empty crest
-       row and pushes the name down, leaving a gap above the name. */
+    /* Grid layout with named areas — info stacks in col 1, actions in col 2.
+       Commendations live under the overall-grade box in the body, not here.
+         col 1: name / class / quote stacked
+         col 2: actions, spanning every row
+       actions MUST span all rows. The ID box + Download button stack is
+       taller than the name; if it only occupied the name row it would
+       inflate that row's height and push the class line down, opening a
+       gap between name and class. Spanning lets actions float top-right
+       (align-self: start) without affecting the col-1 row heights, so name
+       and class stay tightly stacked.
+       Ranked profiles add a rank-crest row above the name (see below). */
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-areas:
         "name actions"
-        "class class"
-        "quote quote";
+        "class actions"
+        "quote actions";
     align-items: start;
     column-gap: 1rem;
     row-gap: 0;
@@ -2983,8 +2984,8 @@ body::before {
     grid-template-areas:
         "rank-crest actions"
         "name actions"
-        "class class"
-        "quote quote";
+        "class actions"
+        "quote actions";
 }
 
 .profile-header-info { display: contents; }
