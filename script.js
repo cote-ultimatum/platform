@@ -1942,16 +1942,54 @@ function renderProfileCommendations(student) {
         </div>`;
     }).join('');
 
-    // Hover sound + click opens the Honors app focused on this commendation.
+    // Hover sound + tooltip + click opens the Honors app focused on this commendation.
     container.querySelectorAll('.profile-commendation').forEach(el => {
-        el.addEventListener('mouseenter', () => playSound('hover'));
+        el.addEventListener('mouseenter', () => {
+            playSound('hover');
+            showCommendationTooltip(el);
+        });
+        el.addEventListener('mouseleave', hideCommendationTooltip);
         el.addEventListener('click', () => {
             playSound('open');
+            hideCommendationTooltip();
             const type = el.dataset.commendationType;
             const tier = parseInt(el.dataset.commendationTier, 10);
             openHonorsApp({ type, tier });
         });
     });
+}
+
+// The commendation tooltip lives on <body> (not as a pseudo-element on the pin)
+// so it escapes the .profile-card's overflow:hidden, which was clipping the
+// description at the card's edge. Single reusable node, positioned per-hover.
+function getCommendationTooltip() {
+    let tip = document.getElementById('commendation-tooltip');
+    if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'commendation-tooltip';
+        tip.className = 'commendation-tooltip';
+        document.body.appendChild(tip);
+    }
+    return tip;
+}
+
+function showCommendationTooltip(el) {
+    const tip = getCommendationTooltip();
+    tip.textContent = el.dataset.label || '';
+    const rect = el.getBoundingClientRect();
+    tip.style.left = `${rect.left + rect.width / 2}px`;
+    // Default below the pin; flip above if it would run off the viewport bottom.
+    const tipH = tip.offsetHeight;
+    const below = rect.bottom + 8;
+    tip.style.top = (below + tipH > window.innerHeight - 8)
+        ? `${rect.top - 8 - tipH}px`
+        : `${below}px`;
+    tip.classList.add('is-visible');
+}
+
+function hideCommendationTooltip() {
+    const tip = document.getElementById('commendation-tooltip');
+    if (tip) tip.classList.remove('is-visible');
 }
 
 // ========================================

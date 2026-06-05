@@ -3089,16 +3089,13 @@ body::before {
 }
 
 /* Hover tooltip — name + tier on top, description / earn date below.
-   Positioned ABOVE the pin: the parent .profile-card has overflow:hidden, and
-   the commendations sit at the bottom of the left column, so a tooltip below the
-   pin extends past the card's bottom edge and gets clipped by the frame. There's
-   always room above (the 240px image + grade box sit there). */
-.profile-commendation::after {
-    content: attr(data-label);
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+   Rendered as a body-level element (created in renderProfileCommendations and
+   positioned in JS) rather than an ::after on the pin. The .profile-card has
+   overflow:hidden, which clips any descendant tooltip at the card's edge — and
+   the pin's own hover transform traps position:fixed too. Living on <body>, the
+   tooltip sits outside the card and is never cut off by the frame. */
+.commendation-tooltip {
+    position: fixed;
     background: rgba(8, 12, 22, 0.96);
     border: 1px solid color-mix(in srgb, var(--cyan) 35%, transparent);
     color: var(--text-primary);
@@ -3111,14 +3108,14 @@ body::before {
     text-align: center;
     pointer-events: none;
     opacity: 0;
+    transform: translateX(-50%);
     transition: opacity var(--transition-fast) ease;
-    z-index: 10;
+    z-index: 9999;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    min-width: max-content;
     max-width: 220px;
 }
 
-.profile-commendation:hover::after {
+.commendation-tooltip.is-visible {
     opacity: 1;
 }
 
